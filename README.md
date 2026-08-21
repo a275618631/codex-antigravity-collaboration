@@ -2,6 +2,8 @@
 
 > A practical reference architecture for coordinating native agent runtimes without introducing another orchestration framework.
 
+[Architecture website](https://a275618631.github.io/codex-antigravity-collaboration/) · [Traditional Chinese README](README.zh-TW.md)
+
 This repository documents a **working collaboration pattern** built around Codex and Google Antigravity, with a path toward local models, privacy-aware routing, and multi-host execution.
 
 It is intentionally **not** a new agent framework, scheduler, message bus, or enterprise security product.
@@ -189,7 +191,6 @@ The default is **Stage 1** for low-frequency asynchronous work. Stage 2 and Stag
 - [Privacy and Trust](docs/PRIVACY_AND_TRUST.md)
 - [Status and Roadmap](docs/STATUS_AND_ROADMAP.md)
 - [References](docs/REFERENCES.md)
-- [Architecture overview — Traditional Chinese](docs/index.html)
 
 Traditional Chinese overview: [README.zh-TW.md](README.zh-TW.md)
 
