@@ -1,0 +1,23 @@
+schema_version: 1
+
+project_id: "codex-antigravity-collaboration"
+
+display_name: "Codex × Antigravity 雙平台 Agent 協作參考架構"
+
+drive:
+  folder_id: "1CZ3N6T8BlvcL2ocybv3Op8oUF7EgTc4s"
+  folder_url: "https://drive.google.com/drive/folders/1CZ3N6T8BlvcL2ocybv3Op8oUF7EgTc4s"
+  display_name: "Codex × Antigravity｜雙平台 Agent 協作"
+
+github:
+  repository: "a275618631/codex-antigravity-collaboration"
+
+sources_of_truth:
+  code: github
+  tests: github
+  config: github
+  planning: google_drive
+  manuals: google_drive
+  progress: google_drive
+  work_logs: google_drive
+  stage_reports: google_drive
