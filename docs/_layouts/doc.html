@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="light">
+  <title>{{ page.title }} · Codex × Antigravity Collaboration</title>
+  <style>
+    :root{
+      --bg:#f6f8fb;--surface:#fff;--text:#172033;--muted:#5f6b7a;
+      --line:#dfe5ec;--accent:#2458a6;--accent-soft:#eef4ff;
+      --code:#f2f4f7;--shadow:0 10px 28px rgba(23,32,51,.05);
+      --max:920px
+    }
+    *{box-sizing:border-box}
+    html{scroll-behavior:smooth}
+    body{
+      margin:0;background:var(--bg);color:var(--text);
+      font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Noto Sans","Noto Sans TC","PingFang TC","Microsoft JhengHei",sans-serif;
+      line-height:1.75
+    }
+    a{color:var(--accent);text-decoration:none}
+    a:hover{text-decoration:underline}
+    .sitebar{
+      position:sticky;top:0;z-index:20;
+      background:rgba(255,255,255,.94);backdrop-filter:blur(10px);
+      border-bottom:1px solid var(--line)
+    }
+    .sitebar-inner{
+      max-width:1100px;margin:auto;padding:8px 20px;
+      display:flex;gap:18px;align-items:center;overflow-x:auto;white-space:nowrap
+    }
+    .brand{font-weight:800;color:var(--text);margin-right:auto}
+    .sitebar a{font-size:.88rem;font-weight:650;color:#465267}
+    .page{max-width:var(--max);margin:34px auto 72px;padding:0 20px}
+    .article{
+      background:var(--surface);border:1px solid var(--line);
+      border-radius:16px;box-shadow:var(--shadow);padding:38px 44px
+    }
+    .kicker{font-size:.84rem;color:var(--muted);margin-bottom:8px}
+    h1,h2,h3,h4{line-height:1.25;letter-spacing:-.015em;color:#172033}
+    h1{font-size:2.25rem;margin:0 0 24px}
+    h2{font-size:1.55rem;margin:38px 0 12px;padding-top:4px}
+    h3{font-size:1.16rem;margin:28px 0 8px}
+    h4{font-size:1rem;margin:22px 0 6px}
+    p{margin:0 0 15px}
+    ul,ol{padding-left:1.55rem;margin:0 0 16px}
+    li{margin:5px 0}
+    blockquote{
+      margin:22px 0;padding:15px 18px;background:var(--accent-soft);
+      border:1px solid #dbe4f2;border-radius:10px;color:#2f466b
+    }
+    blockquote p:last-child{margin-bottom:0}
+    code{
+      font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+      background:var(--code);padding:.12em .38em;border-radius:5px;font-size:.9em
+    }
+    pre{
+      overflow-x:auto;background:#151b26;color:#eef2f7;
+      padding:17px 19px;border-radius:10px;line-height:1.55
+    }
+    pre code{background:transparent;padding:0;color:inherit}
+    table{width:100%;border-collapse:collapse;margin:20px 0;font-size:.94rem}
+    th,td{border-bottom:1px solid var(--line);padding:11px 12px;text-align:left;vertical-align:top}
+    th{background:#f7f9fc;font-weight:800}
+    hr{border:0;border-top:1px solid var(--line);margin:32px 0}
+    img{max-width:100%;height:auto}
+    .back{
+      margin-top:28px;padding-top:18px;border-top:1px solid var(--line);
+      color:var(--muted);font-size:.9rem
+    }
+    @media(max-width:680px){
+      .article{padding:26px 22px;border-radius:12px}
+      h1{font-size:1.9rem}
+      .sitebar-inner{gap:13px;padding:7px 14px}
+      .brand{display:none}
+    }
+  </style>
+</head>
+<body>
+  <nav class="sitebar" aria-label="Technical documentation">
+    <div class="sitebar-inner">
+      <a class="brand" href="{{ site.baseurl }}/">Codex × Antigravity</a>
+      <a href="{{ site.baseurl }}/">Overview</a>
+      <a href="{{ site.baseurl }}/ARCHITECTURE.html">Architecture</a>
+      <a href="{{ site.baseurl }}/DESIGN_PRINCIPLES.html">Principles</a>
+      <a href="{{ site.baseurl }}/PRIVACY_AND_TRUST.html">Privacy</a>
+      <a href="{{ site.baseurl }}/STATUS_AND_ROADMAP.html">Status</a>
+      <a href="{{ site.baseurl }}/REFERENCES.html">References</a>
+      <a href="https://github.com/a275618631/codex-antigravity-collaboration">GitHub</a>
+    </div>
+  </nav>
+
+  <main class="page">
+    <article class="article">
+      <div class="kicker">Codex × Antigravity Collaboration</div>
+      {{ content }}
+      <div class="back">
+        <a href="{{ site.baseurl }}/">← Back to architecture overview</a>
+      </div>
+    </article>
+  </main>
+</body>
+</html>
