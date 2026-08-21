@@ -22,3 +22,10 @@ The status model remains:
 - Partial
 - Planned
 - Exploratory
+
+## Documentation site
+
+- GitHub Pages now renders the technical Markdown documents through a shared Jekyll layout and thin wrapper pages.
+- Markdown remains the canonical source; the HTML reading views include and render that source at build time rather than duplicating document content.
+- The architecture homepage links to the rendered technical pages instead of raw `.md` files.
+- No runtime capability or architecture scope changed.
