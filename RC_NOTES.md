@@ -25,7 +25,15 @@ The status model remains:
 
 ## Documentation site
 
-- GitHub Pages now renders the technical Markdown documents through a shared Jekyll layout and thin wrapper pages.
-- Markdown remains the canonical source; the HTML reading views include and render that source at build time rather than duplicating document content.
+- GitHub Pages uses a shared Jekyll layout for the technical reading pages.
+- The original English Markdown files remain the canonical engineering documents.
+- The HTML reading pages are localized Traditional Chinese presentation views derived from those documents; each page links back to its English source.
 - The architecture homepage links to the rendered technical pages instead of raw `.md` files.
 - No runtime capability or architecture scope changed.
+
+## Traditional Chinese technical reading views
+
+- The GitHub Pages technical reading pages are now localized in Traditional Chinese.
+- The original English Markdown files remain the canonical engineering documents in the repository.
+- Each localized page links back to its English source document.
+- Product names and necessary technical terms remain in English where that is clearer, with Chinese explanations on first use.
