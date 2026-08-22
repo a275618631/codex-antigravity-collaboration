@@ -1,0 +1,328 @@
+---
+layout: doc
+title: "完整架構"
+source_md: "ARCHITECTURE.md"
+---
+{% capture zh %}
+# 完整架構
+
+## 範圍
+
+這份文件描述的是：**能完整解釋本專案的最小架構**。
+
+目前的參考實作以 **Codex + Antigravity** 為核心。本地模型的隱私分流與跨電腦協調屬於後續擴展，不是使用這套架構的先決條件。
+
+## 核心觀點
+
+這套架構把每一個平台視為一個 **Agent Runtime（Agent 執行環境）**，而不是把整個平台當成單一 Agent。
+
+一個 Runtime 本身可能已經具備：
+
+- 主要 Agent 或協調 Agent；
+- 依角色分工的 Agent；
+- 平台原生的平行 Agent 或 Subagent（子 Agent）；
+- 工作區隔離或 worktree（獨立工作區）；
+- Skills（技能模組）；
+- 工具權限；
+- 瀏覽器、MCP 或其他外部整合。
+
+因此，跨平台架構真正需要協調的是不同的 **Runtime**；只要做得到，平台內部如何排程與分工，就交給各 Runtime 自己處理。
+
+## 整體拓樸
+
+```text
+你／主要協調者
+│
+├─ Codex Runtime
+│  ├─ 協調角色
+│  ├─ 垂直分工工作者
+│  └─ 平台原生平行 Agent
+│
+├─ Antigravity Runtime
+│  ├─ 主要／自訂 Agent
+│  ├─ 角色 Agent
+│  └─ 平台原生 Subagent
+│
+└─ 本地 Runtime
+   ├─ 本地模型
+   └─ 私密／離線工作
+```
+
+Codex 與 Antigravity 之間可以進行**受限制的跨 Runtime 委派**；本地模型則可在需要時加入特定工作。
+
+## 四種協作方式
+
+### 1. Runtime 內部的平行處理
+
+優先使用平台本身已經提供的平行 Agent 或 Subagent。
+
+例如：
+
+- Codex 的平行 Agent 執行緒與 worktree；
+- Antigravity 的背景 Subagent。
+
+本專案**不重新製作這些排程器**。
+
+### 2. 垂直委派
+
+主要協調者把一個範圍清楚的工作，交給同一 Runtime 裡的專門工作者。
+
+私人參考環境可以使用自訂角色名稱；但公開架構真正關心的是角色功能，例如：
+
+```text
+主要協調者
+├─ 快速／低成本工作者
+└─ 深度／實作型工作者
+```
+
+角色名稱只是各自環境的設定，不是這套架構的必要條件。
+
+### 3. 跨 Runtime 委派
+
+一個 Runtime 可以請另一個 Runtime：
+
+- 執行某項工作；
+- 使用對方才有的工具；
+- 或提供獨立的第二意見。
+
+```text
+Codex  ─────> Antigravity
+Codex  <───── Antigravity
+```
+
+跨 Runtime 委派使用小型的「任務／結果」格式，並且設有 hop limit（跨 Runtime 轉交層數限制）。
+
+### 4. 跨電腦委派
+
+同樣的 Runtime 對 Runtime 模式，未來也可以延伸到不同電腦：
+
+```text
+電腦 A / Codex
+        ↓
+電腦 B / Antigravity
+        ↓
+電腦 C / 本地模型
+```
+
+但**跨電腦傳輸不是目前核心實作的一部分**。
+
+## 有限度委派
+
+平台內部展開更多 Agent，與跨平台再委派，是兩件不同的事。
+
+```text
+Runtime A
+├─ 內部 Agent
+├─ 內部 Agent
+└─ Runtime B
+   ├─ 內部 Agent
+   └─ 內部 Agent
+```
+
+收到工作的 Runtime 可以使用自己的原生 Agent 分工；但除非有新的、明確的 routing decision（路由決策），否則不應自動把任務再轉交給另一個外部 Runtime。
+
+這樣可以避免：
+
+- Agent 之間形成遞迴委派迴圈；
+- Token 與 Context（上下文）在不透明的情況下倍增；
+- 寫入責任不清楚；
+- 任務失敗後難以判斷問題發生在哪一層。
+
+## 輕量協作契約
+
+目前雙 Runtime 的工作流程使用結構化的「任務／結果」格式。
+
+一個任務至少應該清楚傳達：
+
+- 目標；
+- 相關 Context 或唯一可信資料來源；
+- 限制條件；
+- 可以做與不能做的動作；
+- 預期輸出；
+- 驗證條件；
+- 停止條件；
+- 結果要回傳給誰。
+
+一個結果至少應該清楚回報：
+
+- 狀態；
+- 摘要；
+- 證據；
+- 已做變更；
+- 驗證結果；
+- 風險；
+- 未解決事項；
+- 建議的下一步。
+
+這個格式刻意維持很小。它只是協助協作的工具，**不是要創造新的通訊協定標準**。
+
+## 依能力分工
+
+任務應該根據 Runtime 的能力與信任邊界來分配，而不是對某個模型或平台有固定偏好。
+
+| 工作類型 | 建議方向 |
+|---|---|
+| Repository（程式庫）實作與工程工作 | Codex |
+| Google 生態或大量瀏覽器操作 | Antigravity |
+| 私密或離線工作 | 本地 Runtime |
+| 獨立審查 | 視需要交給不同 Runtime／模型 |
+| 低風險例行工作 | 使用能完成任務的最低充分能力 |
+| 高風險修改 | 增加驗證，並指定明確的寫入負責人 |
+
+這些是 routing heuristics（路由判斷原則），不是寫死的通用規則。
+
+## 共用 Skills
+
+能跨平台使用的方法，應盡量只有一個 canonical source（唯一來源）。
+
+```text
+共用 Skill
+   ├─ Codex adapter（必要時）
+   ├─ Antigravity adapter（必要時）
+   └─ Local adapter（必要時）
+```
+
+這套架構偏好：
+
+> 標準化的 Skill 包裝 + 薄平台轉接層
+
+而不是把整棵 Skill 目錄複製到每個平台。
+
+目前狀態仍是 **Partial（部分完成）**，因為私人參考環境中的 canonical-source convergence（唯一來源收斂）尚未重新完整驗證。
+
+## 共享工作區與訊息傳輸的差別
+
+對低頻率、非同步工作來說，GitHub 與 Google Drive 可以直接充當 **Shared Workspace（共享工作區）／Blackboard（共用資訊板）**：
+
+```text
+GitHub Issue / 任務檔案
+        ↓
+Agent 執行工作
+        ↓
+PR / 結果 / 文件
+        ↓
+Review（審查）
+```
+
+它的優點正是：
+
+> **不需要再建立新的 Server。**
+
+但這不代表 GitHub 或 Drive 是即時 message bus（訊息匯流排）。
+
+如果未來真的需要 Agent 對 Agent 的明確狀態傳遞，再升級到專門的協定或 Bridge（橋接）即可。
+
+## 協調能力如何逐步升級
+
+### 第 1 階段：共享工作區
+
+先使用已經存在、可長期保存的系統：
+
+- GitHub：程式碼、Issues、Branches、Pull Requests、歷史紀錄；
+- Drive：文件、來源資料、任務／結果產物。
+
+適合：
+
+- 個人或小型團隊；
+- Runtime 數量少；
+- 非同步工作；
+- 協調頻率低。
+
+### 第 2 階段：明確的跨 Runtime 協調
+
+當 Runtime 之間需要明確傳遞 request / result（請求／結果）時，優先使用既有 MCP Bridge 或 A2A 這類 Agent interoperability protocol（Agent 互通協定）。
+
+只增加真正需要的能力，例如：
+
+- request / result 身分識別；
+- routing（路由）；
+- scoped permissions（範圍化權限）；
+- hop limit；
+- timeout（逾時）。
+
+### 第 3 階段：Broker 協調
+
+只有在工作量與規模真的需要時，才加入薄型 Broker（任務仲介服務），處理：
+
+- Queue / State（佇列／狀態）；
+- Task lease（任務租約）；
+- Heartbeat（心跳／存活確認）；
+- Retry（失敗重試）；
+- Timeout；
+- Failure recovery（失敗復原）。
+
+Broker 不取代 GitHub 或 Drive；它只負責**協調狀態**。
+
+## 寫入所有權
+
+「單一寫入者」不代表「只能有一個 Agent 工作」。
+
+更準確的規則是：
+
+> **同一組會互相衝突的修改，同一時間只指定一個主要寫入負責人。**
+
+### 目前如何實作
+
+目前**沒有**自行實作 distributed mutex（分散式互斥鎖）或 global lock service（全域鎖服務）。
+
+對 Git 管理的內容，目前使用：
+
+1. 任務層級的寫入責任分配；
+2. Branch / worktree 隔離不同寫入者；
+3. 由 Git 的 optimistic concurrency（樂觀式併發控制）偵測彼此分歧；
+4. 以 PR / Review / Merge 作為最後整合關卡。
+
+如果兩個 Agent 最後仍修改到重疊內容，衝突會在整合時被明確呈現，而不是藏在本專案自己維護的分散式狀態機裡。
+
+彼此隔離時，仍然可以平行進行：
+
+```text
+任務 A -> branch/worktree A -> Writer A
+任務 B -> branch/worktree B -> Writer B
+任務 C -> branch/worktree C -> Writer C
+
+A/B/C -> Review / Merge Gate -> Main
+```
+
+對不是 Git 管理的產物，也使用同樣原則：
+
+```text
+Agent A -> 草稿 A
+Agent B -> 分析 B
+Agent C -> 審查
+              ↓
+          合併負責人
+              ↓
+            最終產物
+```
+
+如果未來跨電腦協調真的需要同時管理寫入權，才在第 3 階段增加 lease（租約）。目前架構不需要。
+
+## 失敗隔離
+
+這套架構希望：**一個任務或 Runtime 的失敗，盡量不要擴散到整個系統。**
+
+使用的控制方式包括：
+
+- 限制跨 Runtime hop 數；
+- 明確的寫入責任；
+- Workspace / worktree 隔離；
+- Debate（雙方辯論／審查）預設為唯讀；
+- Merge / Finalization（整合／定稿）前先驗證；
+- 保留平台原生的權限與 approval（核准）邊界。
+
+## 刻意不做的事情
+
+這套架構不打算成為：
+
+- 通用 Agent Runtime；
+- 分散式作業系統；
+- Codex 或 Antigravity 內部排程器的替代品；
+- 通用 Workflow Engine（工作流程引擎）；
+- Message Broker（訊息仲介系統）；
+- 只靠 Prompt 就成立的資安邊界；
+- 企業級合規產品。
+
+這些「不做」本身就是架構的一部分。
+{% endcapture %}
+{{ zh | markdownify }}

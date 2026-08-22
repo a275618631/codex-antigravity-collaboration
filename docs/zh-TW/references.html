@@ -1,0 +1,105 @@
+---
+layout: doc
+title: "參考來源"
+source_md: "REFERENCES.md"
+---
+{% capture zh %}
+# 參考來源
+
+來源更新：**2026-08-21**。
+
+以下整理本架構引用的官方文件、開放標準與開源專案，方便進一步查閱。部分來源是平台原生能力，部分則用於延伸設計與技術比較。
+
+## 平台原生 Agent Runtime
+
+### OpenAI Codex
+
+- Codex Product：<https://openai.com/codex/>
+- Introducing the Codex app：<https://openai.com/index/introducing-the-codex-app/>
+
+OpenAI 官方文件中與本架構相關的能力包括：
+
+- 平行 Agent；
+- 分離的 Thread / Project（執行緒／專案）；
+- worktree；
+- Skills；
+- 長時間執行的 Agent Workflow。
+
+### Google Antigravity
+
+- Antigravity 2.0：<https://www.antigravity.google/product/antigravity-2>
+- Subagents：<https://antigravity.google/docs/subagents>
+- CLI Background tasks and subagents：<https://antigravity.google/docs/cli/subagents/>
+- Custom Agents：<https://antigravity.google/blog/introducing-custom-agents>
+
+與本架構相關的能力包括：
+
+- 平行 Subagent；
+- Custom Agents（自訂 Agent）；
+- Projects；
+- Skills；
+- MCP；
+- Hooks；
+- Agent 管理。
+
+## 可重複使用的 Skill 包裝
+
+### Agent Skills specification
+
+- Specification：<https://github.com/agentskills/agentskills/blob/main/docs/specification.mdx>
+
+這份規格定義了：
+
+> `SKILL.md` + YAML frontmatter
+
+這種 Skill 包裝方式，而且已被多種 Agent 工具採用。
+
+## Agent 互通
+
+### Agent2Agent（A2A）
+
+- Repository：<https://github.com/a2aproject/A2A>
+- Project site：<https://a2a-protocol.org/>
+
+A2A 是 Agentic application（Agent 應用）之間進行通訊與互通的開放 Protocol（協定）。
+
+如果未來需要更明確的跨 Runtime 或跨主機協調，它是值得優先評估的現成標準。
+
+## 隱私／匿名化
+
+### Presidio
+
+- Repository：<https://github.com/data-privacy-stack/presidio>
+- Documentation：<https://presidio.dataprivacystack.org/>
+
+Presidio 提供成熟的敏感資料處理能力，包括：
+
+- Detection（偵測）；
+- Redaction（遮蔽）；
+- Masking（遮罩）；
+- Anonymization（匿名化）。
+
+在本架構中，這類成熟元件可用於一般 PII（個人可識別資訊）偵測與匿名化，避免重複實作相同能力。
+
+### LLM Guard
+
+- Repository：<https://github.com/protectai/llm-guard>
+
+LLM Guard 過去示範過：
+
+- LLM Input / Output scanning（輸入／輸出掃描）；
+- Anonymize / Deanonymize（匿名化／還原）模式。
+
+該 Repository 目前已封存，因此這裡主要參考它在輸入／輸出掃描與匿名化流程上的設計方式。
+
+## 相鄰方法論
+
+### Superpowers
+
+- Repository：<https://github.com/obra/superpowers>
+
+這是一套以 Skills 為核心的開發方法，示範如何把可重複使用的 Agent Workflow 與 Verification practice（驗證方法）整理成 Skills。
+
+本架構主要參考其 Skill 化與驗證方法的設計思路。
+{% endcapture %}
+{{ zh | markdownify }}
