@@ -14,28 +14,29 @@ source_md: "STATUS_AND_ROADMAP.md"
 
 ## 狀態定義
 
-- **Implemented（已實作）**：目前參考環境中已實際執行，且有直接證據。
-- **Partial（部分完成）**：實作方向已存在，但驗證或收斂尚未完整。
-- **Planned（已規劃）**：架構與做法已定義，但不宣稱已有正式實作。
-- **Exploratory（探索中）**：可能的未來方向，目前沒有承諾，也不構成核心依賴。
+- **已實作**：目前參考環境中已實際執行，且有直接證據。
+- **部分完成**：實作方向已存在，但驗證或收斂尚未完整。
+- **已規劃**：架構與做法已定義，但不宣稱已有正式實作。
+- **探索中**：可能的未來方向，目前沒有承諾，也不構成核心依賴。
 
 ## 目前實作狀態
 
 | 項目 | 狀態 | 證據邊界 |
 |---|---|---|
-| Codex 唯讀 Preflight（前置檢查） | **已實作** | 已在私人環境執行。 |
-| Codex 低摩擦 Approval / Sandbox 基線 | **已實作** | 設定已套用並讀回確認。 |
-| Antigravity 權限基線 | **已實作** | 私人環境已實際使用細粒度 allow / ask / deny 設定。 |
-| Codex → Antigravity Bridge Smoke Path（基本橋接冒煙測試） | **已實作** | 唯讀 Smoke response 已通過。 |
-| 共用 Task / Result Packet（任務／結果格式） | **已實作** | 已用於協作 Protocol。 |
-| 有限度跨 Runtime 委派 | **已實作** | One-hop guard（單次外部轉交限制）已納入目前 Protocol 與驗證。 |
-| 唯讀 Debate（雙方審查／辯論） | **已實作** | 目前 Protocol 上限為兩輪。 |
+| Codex 唯讀前置檢查 | **已實作** | 已在私人環境執行。 |
+| Codex 低摩擦核准／沙箱基線 | **已實作** | 設定已套用並讀回確認。 |
+| Antigravity 權限基線 | **已實作** | 私人環境已實際使用細粒度允許／詢問／拒絕設定。 |
+| Codex → Antigravity 基本橋接測試 | **已實作** | 唯讀 Smoke response（冒煙測試回應）已通過。 |
+| 共用 Task / Result Packet（任務／結果格式） | **已實作** | 已用於目前協作流程。 |
+| One-Hop Guard（單次跨平台轉交限制） | **已實作** | 已納入目前協作流程與驗證；接收端仍可使用自己的內部 Agent／Subagent。 |
+| Shared Workspace（共享工作區） | **已使用** | GitHub／Google Drive 用於保存任務、結果、文件、PR 與審查紀錄；它是持久工作區，不是即時訊息匯流排。 |
+| 唯讀 Debate（雙方審查／辯論） | **已實作** | 目前流程上限為兩輪。 |
 | 平台原生平行 Agent | **已實作／原生能力** | 使用平台本身能力，不由本專案重做。 |
-| Shared Skill 唯一來源 | **部分完成** | 先前 QA 發現同名 Skill 漂移；唯一來源是否完全收斂仍待重新確認。 |
+| Shared Skill（共用技能）唯一來源 | **部分完成** | 先前 QA 發現同名 Skill 漂移；唯一來源是否完全收斂仍待重新確認。 |
 | Google Project Context / Notebook 使用 | **私人環境已實作** | 對目前私人工作方式有用，但不是公開架構的可攜式必要條件。 |
-| 本地模型雙向溝通 | **Experimental（實驗中）** | 已另外測試，但尚未整合成本文件描述的 Privacy-aware Trust Model。 |
+| 本地模型雙向溝通 | **實驗中** | 已另外測試，但尚未整合成本文件描述的隱私感知信任模型。 |
 
-## 已知限制：Shared Skills
+## 已知限制：Shared Skills（共用技能）
 
 先前 QA 在私人參考環境發現：
 
@@ -45,29 +46,29 @@ source_md: "STATUS_AND_ROADMAP.md"
 
 架構方向仍然是：
 
-> **一個可攜方法 → 一個 canonical source → 只有必要的平台差異才使用薄 Adapter。**
+> **一個可攜方法 → 一個唯一來源 → 只有必要的平台差異才使用薄 Adapter（轉接層）。**
 
-要從 **Partial** 升到 **Implemented**，必須重新執行：
+要從「部分完成」升到「已實作」，必須重新執行：
 
 - Duplicate / drift scan（重複／漂移掃描）；
 - 並明確記錄唯一來源。
 
 ## 近期規劃
 
-### Privacy-aware Local / Cloud Routing（隱私感知的本地／雲端分流）— Planned
+### 隱私感知的本地／雲端分流 — 已規劃
 
 範圍刻意維持小型：
 
-1. 確定性的 Secret / PII 偵測；
+1. 確定性的 Secret / PII（祕密／個人可識別資訊）偵測；
 2. 本地分類；
-3. Context 最小化；
+3. Context（上下文）最小化；
 4. 對允許類別進行可逆假名化；
 5. 本地還原；
 6. 外洩測試。
 
-不建立新的資安 Framework；優先採用成熟 Detection primitive（偵測元件）與薄型本地 Policy layer（政策層）。
+不建立新的資安 Framework（框架）；優先採用成熟偵測元件與薄型本地 Policy layer（政策層）。
 
-### 本地模型作為私密／離線處理路徑 — Planned Integration
+### 本地模型作為私密／離線處理路徑 — 已規劃整合
 
 本地模型預計支援：
 
@@ -76,19 +77,19 @@ source_md: "STATUS_AND_ROADMAP.md"
 - 敏感內容的語意分類；
 - 特定低風險自動化。
 
-它應該補充確定性 Policy，而不是取代它。
+它應該補充確定性 Policy（政策），而不是取代它。
 
 ## 探索中的方向
 
 ### 跨電腦協調
 
-先從多台電腦共用 Workspace 開始。
+先從多台電腦共用 Workspace（工作區）開始。
 
-只有任務真的需要明確的跨主機 request / result 傳輸時，才進入專門的 Agent interoperability layer（Agent 互通層）。
+只有任務真的需要明確的跨主機 request / result（請求／結果）傳輸時，才進入專門的 Agent interoperability layer（Agent 互通層）。
 
-[A2A](https://github.com/a2aproject/A2A) 是一個在自行發明 Agent-to-Agent Protocol 前，值得優先評估的既有標準。
+[A2A](https://github.com/a2aproject/A2A) 是一個在自行發明 Agent-to-Agent Protocol（Agent 對 Agent 通訊協定）前，值得優先評估的既有標準。
 
-### 薄型 Broker
+### 薄型 Broker（任務仲介服務）
 
 Broker **不是目前架構的一部分**。
 
@@ -101,9 +102,9 @@ Broker **不是目前架構的一部分**。
 - Concurrency ownership（併發寫入所有權）；
 - Real-time scheduling（即時排程）。
 
-## 從 Roadmap 升級為「已實作」的條件
+## 從路線圖升級為「已實作」的條件
 
-一個 Roadmap 項目只有同時符合以下條件，才可以標記為 **Implemented**：
+一個路線圖項目只有同時符合以下條件，才可以標記為 **已實作**：
 
 1. 有可以執行或可以直接觀察的實作；
 2. 已進行 End-to-End（端到端）測試；
@@ -118,7 +119,7 @@ Broker **不是目前架構的一部分**。
 
 - 有多個模型；
 - 有多個 Agent；
-- 架構圖畫一個中央 Server 看起來比較整齊；
+- 架構圖畫一個中央 Server（伺服器）看起來比較整齊；
 - 某個 Framework 很熱門；
 - 共用資料夾看起來不夠「高級」。
 
