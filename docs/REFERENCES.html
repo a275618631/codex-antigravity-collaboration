@@ -6,9 +6,9 @@ source_md: "REFERENCES.md"
 {% capture zh %}
 # 參考來源
 
-最後確認日期：**2026-08-21**。
+來源更新：**2026-08-21**。
 
-以下來源用來支撐本專案的架構討論。**它們不全部都是本專案的 Dependency（依賴）。**
+以下整理本架構引用的官方文件、開放標準與開源專案，方便進一步查閱。部分來源是平台原生能力，部分則用於延伸設計與技術比較。
 
 ## 平台原生 Agent Runtime
 
@@ -63,7 +63,7 @@ OpenAI 官方文件中與本架構相關的能力包括：
 
 A2A 是 Agentic application（Agent 應用）之間進行通訊與互通的開放 Protocol（協定）。
 
-如果未來需要更明確的跨 Runtime 或跨主機協調，它是值得優先評估的現成方案。
+如果未來需要更明確的跨 Runtime 或跨主機協調，它是值得優先評估的現成標準。
 
 ## 隱私／匿名化
 
@@ -72,16 +72,16 @@ A2A 是 Agentic application（Agent 應用）之間進行通訊與互通的開�
 - Repository：<https://github.com/data-privacy-stack/presidio>
 - Documentation：<https://presidio.dataprivacystack.org/>
 
-Presidio 提供成熟的敏感資料：
+Presidio 提供成熟的敏感資料處理能力，包括：
 
 - Detection（偵測）；
 - Redaction（遮蔽）；
 - Masking（遮罩）；
 - Anonymization（匿名化）。
 
-本專案把它視為值得重用的**參考元件**，而不是重新實作一般 PII 偵測。
+在本架構中，這類成熟元件可用於一般 PII（個人可識別資訊）偵測與匿名化，避免重複實作相同能力。
 
-### LLM Guard — 僅作為設計先例
+### LLM Guard
 
 - Repository：<https://github.com/protectai/llm-guard>
 
@@ -90,7 +90,7 @@ LLM Guard 過去示範過：
 - LLM Input / Output scanning（輸入／輸出掃描）；
 - Anonymize / Deanonymize（匿名化／還原）模式。
 
-但該 Repository 目前已封存，因此不應把它當成首選的長期 Dependency。
+該 Repository 目前已封存，因此這裡主要參考它在輸入／輸出掃描與匿名化流程上的設計方式。
 
 ## 相鄰方法論
 
@@ -98,27 +98,8 @@ LLM Guard 過去示範過：
 
 - Repository：<https://github.com/obra/superpowers>
 
-這是一套廣泛採用、以 Skills 為核心的開發方法。
+這是一套以 Skills 為核心的開發方法，示範如何把可重複使用的 Agent Workflow 與 Verification practice（驗證方法）整理成 Skills。
 
-它與本專案的關聯在於：
-
-> 展示如何把可重複使用的 Agent Workflow 與 Verification practice（驗證方法）包裝成 Skills。
-
-這不代表本專案需要複製它的整套 Framework。
-
-## 引用外部專案時的分類原則
-
-當本 Repository 提到外部專案時，應清楚標示它屬於哪一類：
-
-- **Native capability（平台原生能力）**：因平台已經提供，所以直接使用。
-- **Standard to evaluate（待評估標準）**：未來互通可能採用的既有標準。
-- **Reference building block（參考元件）**：成熟、值得重用的能力。
-- **Design precedent（設計先例）**：歷史設計值得參考，但不代表建議長期依賴。
-
-不要把：
-
-> GitHub Stars、流行度或社群熱度
-
-當成架構正確性的證據。
+本架構主要參考其 Skill 化與驗證方法的設計思路。
 {% endcapture %}
 {{ zh | markdownify }}
