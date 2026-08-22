@@ -3,3 +3,13 @@ description: "Reference architecture and working case study for Codex × Antigra
 url: "https://a275618631.github.io"
 baseurl: "/codex-antigravity-collaboration"
 markdown: kramdown
+
+# Keep the canonical English Markdown files in the GitHub repository,
+# but do not let Jekyll compile them into Pages URLs that collide with
+# the Traditional Chinese reading pages of the same names.
+exclude:
+  - ARCHITECTURE.md
+  - DESIGN_PRINCIPLES.md
+  - PRIVACY_AND_TRUST.md
+  - STATUS_AND_ROADMAP.md
+  - REFERENCES.md
