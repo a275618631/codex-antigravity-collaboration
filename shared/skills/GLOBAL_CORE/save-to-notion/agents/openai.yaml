@@ -1,0 +1,7 @@
+interface:
+  display_name: "Save to Notion"
+  short_description: "整理 Codex 對話到 Notion 知識庫流程"
+  default_prompt: "save to notion"
+
+policy:
+  allow_implicit_invocation: true

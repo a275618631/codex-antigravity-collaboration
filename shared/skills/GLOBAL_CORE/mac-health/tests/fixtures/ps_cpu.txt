@@ -1,0 +1,5 @@
+  PID  PPID  %CPU %MEM    RSS COMMAND
+54785 54773  95.5  1.1 192608 /Applications/Google Chrome.app/Contents/Frameworks/Google Chrome Framework.framework/Versions/151.0.7922.71/Helpers/Google Chrome Helper (Renderer).app/Contents/MacOS/Google Chrome Helper (Renderer)
+  427     1  62.1  0.7 118528 /System/Library/PrivateFrameworks/SkyLight.framework/Resources/WindowServer -daemon
+18481 18479  35.3  0.3  50280 /Applications/Antigravity.app/Contents/Frameworks/Antigravity Helper.app/Contents/MacOS/Antigravity Helper
+ 1234     1  18.0  0.2  35000 /System/Library/Frameworks/CoreServices.framework/Frameworks/Metadata.framework/Support/mdworker_shared -s mdworker
