@@ -37,7 +37,7 @@ Do not trigger for generic requests such as「修改這個 Repo」「跑 tests�
 5. Invoke the existing single source of truth exactly once:
 
    ```text
-   python3 /Users/cheyu/.codex/model-routing-mvp/route_task.py \
+   python3 "${CODEX_HOME:-$HOME/.codex}/model-routing-mvp/route_task.py" \
      --message "<original task containing the explicit Ox Alpha route>" \
      --workspace "<validated workspace>" \
      --workspace-root "<safe parent root>" \
