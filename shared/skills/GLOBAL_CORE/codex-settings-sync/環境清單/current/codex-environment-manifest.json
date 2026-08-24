@@ -1,0 +1,2049 @@
+{
+  "schema_version": "1.0",
+  "generated_at": "2026-08-07T01:43:35.0796232Z",
+  "machine": {
+    "machine_identifier_exported": false,
+    "username_exported": false,
+    "os": "Windows",
+    "architecture": "x64"
+  },
+  "security": {
+    "secrets_exported": false,
+    "credential_stores_scanned": false,
+    "browser_sessions_scanned": false,
+    "environment_values_exported": false
+  },
+  "summary": {
+    "mcp_servers": 8,
+    "cli_tools": 8,
+    "external_services": 2,
+    "codex_skills": 37,
+    "login_required": 3,
+    "manual_restore_required": 55
+  },
+  "items": [
+    {
+      "id": "mcp:openaiDeveloperDocs",
+      "name": "openaiDeveloperDocs",
+      "category": "mcp_server",
+      "current_status": "configured_not_installed",
+      "discovery": {
+        "source": "codex_config",
+        "historical": false,
+        "confidence": "confirmed"
+      },
+      "installation": {
+        "status": "not_installed",
+        "executable_found": false,
+        "version": ""
+      },
+      "configuration": {
+        "present": true,
+        "enabled": true,
+        "transport": "stdio",
+        "command_template": "",
+        "args": null,
+        "contains_machine_specific_path": false,
+        "environment_variables": []
+      },
+      "authentication": {
+        "required": false,
+        "status": "not_required",
+        "secret_exported": false
+      },
+      "verification": {
+        "Startup": "not_run",
+        "McpInitialize": "not_run",
+        "ToolsList": "not_run",
+        "VerifiedAt": null
+      },
+      "restore": {
+        "automatic_safe": false,
+        "steps": [
+          "在目標電腦安裝或確認 MCP 執行檔",
+          "依 command_template 重新建立 Codex MCP 設定",
+          "重新啟動 Codex",
+          "執行 codex mcp get ",
+          "openaiDeveloperDocs",
+          "依 verification 欄位重新驗證 initialize 與 tools/list"
+        ]
+      },
+      "notes": [
+        "不會同步 env 值、登入狀態或本機絕對路徑。"
+      ]
+    },
+    {
+      "id": "mcp:context7",
+      "name": "context7",
+      "category": "mcp_server",
+      "current_status": "ready",
+      "discovery": {
+        "source": "codex_config",
+        "historical": false,
+        "confidence": "confirmed"
+      },
+      "installation": {
+        "status": "installed",
+        "executable_found": true,
+        "version": ""
+      },
+      "configuration": {
+        "present": true,
+        "enabled": true,
+        "transport": "stdio",
+        "command_template": "npx",
+        "args": [
+          "-y",
+          "@upstash/context7-mcp"
+        ],
+        "contains_machine_specific_path": false,
+        "environment_variables": []
+      },
+      "authentication": {
+        "required": false,
+        "status": "not_required",
+        "secret_exported": false
+      },
+      "verification": {
+        "Startup": "not_run",
+        "McpInitialize": "not_run",
+        "ToolsList": "not_run",
+        "VerifiedAt": null
+      },
+      "restore": {
+        "automatic_safe": false,
+        "steps": [
+          "在目標電腦安裝或確認 MCP 執行檔",
+          "依 command_template 重新建立 Codex MCP 設定",
+          "重新啟動 Codex",
+          "執行 codex mcp get ",
+          "context7",
+          "依 verification 欄位重新驗證 initialize 與 tools/list"
+        ]
+      },
+      "notes": [
+        "不會同步 env 值、登入狀態或本機絕對路徑。"
+      ]
+    },
+    {
+      "id": "mcp:node_repl",
+      "name": "node_repl",
+      "category": "mcp_server",
+      "current_status": "ready",
+      "discovery": {
+        "source": "codex_config",
+        "historical": false,
+        "confidence": "confirmed"
+      },
+      "installation": {
+        "status": "installed",
+        "executable_found": true,
+        "version": ""
+      },
+      "configuration": {
+        "present": true,
+        "enabled": true,
+        "transport": "stdio",
+        "command_template": "%USERPROFILE%\\AppData\\Local\\OpenAI\\Codex\\runtimes\\cua_node\\f8d2abcb7481383b\\bin\\node_repl.exe",
+        "args": null,
+        "contains_machine_specific_path": true,
+        "environment_variables": [
+          {
+            "name": "BROWSER_USE_AVAILABLE_BACKENDS",
+            "configured": true,
+            "value_exported": false
+          },
+          {
+            "name": "BROWSER_USE_CODEX_APP_BUILD_FLAVOR",
+            "configured": true,
+            "value_exported": false
+          },
+          {
+            "name": "BROWSER_USE_CODEX_APP_VERSION",
+            "configured": true,
+            "value_exported": false
+          },
+          {
+            "name": "CODEX_CLI_PATH",
+            "configured": true,
+            "value_exported": false
+          },
+          {
+            "name": "CODEX_HOME",
+            "configured": true,
+            "value_exported": false
+          },
+          {
+            "name": "NODE_REPL_INSTRUCTIONS_USE_CASE_BROWSER",
+            "configured": true,
+            "value_exported": false
+          },
+          {
+            "name": "NODE_REPL_INSTRUCTIONS_USE_CASE_CHROME",
+            "configured": true,
+            "value_exported": false
+          },
+          {
+            "name": "NODE_REPL_NATIVE_PIPE_CONNECT_TIMEOUT_MS",
+            "configured": true,
+            "value_exported": false
+          },
+          {
+            "name": "NODE_REPL_NODE_MODULE_DIRS",
+            "configured": true,
+            "value_exported": false
+          },
+          {
+            "name": "NODE_REPL_NODE_PATH",
+            "configured": true,
+            "value_exported": false
+          },
+          {
+            "name": "NODE_REPL_TRUSTED_BROWSER_CLIENT_SHA256S",
+            "configured": true,
+            "value_exported": false
+          },
+          {
+            "name": "NODE_REPL_TRUSTED_CODE_PATHS",
+            "configured": true,
+            "value_exported": false
+          },
+          {
+            "name": "SKY_CUA_NATIVE_PIPE",
+            "configured": true,
+            "value_exported": false
+          },
+          {
+            "name": "SKY_CUA_NATIVE_PIPE_DIRECTORY",
+            "configured": true,
+            "value_exported": false
+          }
+        ]
+      },
+      "authentication": {
+        "required": true,
+        "status": "manual_verification_required",
+        "secret_exported": false
+      },
+      "verification": {
+        "Startup": "not_run",
+        "McpInitialize": "not_run",
+        "ToolsList": "not_run",
+        "VerifiedAt": null
+      },
+      "restore": {
+        "automatic_safe": false,
+        "steps": [
+          "在目標電腦安裝或確認 MCP 執行檔",
+          "依 command_template 重新建立 Codex MCP 設定",
+          "重新啟動 Codex",
+          "執行 codex mcp get ",
+          "node_repl",
+          "依 verification 欄位重新驗證 initialize 與 tools/list"
+        ]
+      },
+      "notes": [
+        "不會同步 env 值、登入狀態或本機絕對路徑。"
+      ]
+    },
+    {
+      "id": "mcp:headroom",
+      "name": "headroom",
+      "category": "mcp_server",
+      "current_status": "ready",
+      "discovery": {
+        "source": "codex_config",
+        "historical": false,
+        "confidence": "confirmed"
+      },
+      "installation": {
+        "status": "installed",
+        "executable_found": true,
+        "version": ""
+      },
+      "configuration": {
+        "present": true,
+        "enabled": true,
+        "transport": "stdio",
+        "command_template": "%USERPROFILE%\\.codex\\tools\\headroom-venv\\Scripts\\headroom.exe",
+        "args": [
+          "mcp",
+          "serve"
+        ],
+        "contains_machine_specific_path": true,
+        "environment_variables": [
+          {
+            "name": "HEADROOM_TELEMETRY",
+            "configured": true,
+            "value_exported": false
+          }
+        ]
+      },
+      "authentication": {
+        "required": true,
+        "status": "manual_verification_required",
+        "secret_exported": false
+      },
+      "verification": {
+        "Startup": "not_run",
+        "McpInitialize": "not_run",
+        "ToolsList": "not_run",
+        "VerifiedAt": null
+      },
+      "restore": {
+        "automatic_safe": false,
+        "steps": [
+          "在目標電腦安裝或確認 MCP 執行檔",
+          "依 command_template 重新建立 Codex MCP 設定",
+          "重新啟動 Codex",
+          "執行 codex mcp get ",
+          "headroom",
+          "依 verification 欄位重新驗證 initialize 與 tools/list"
+        ]
+      },
+      "notes": [
+        "不會同步 env 值、登入狀態或本機絕對路徑。"
+      ]
+    },
+    {
+      "id": "mcp:notion",
+      "name": "notion",
+      "category": "mcp_server",
+      "current_status": "configured_not_installed",
+      "discovery": {
+        "source": "codex_config",
+        "historical": false,
+        "confidence": "confirmed"
+      },
+      "installation": {
+        "status": "not_installed",
+        "executable_found": false,
+        "version": ""
+      },
+      "configuration": {
+        "present": true,
+        "enabled": true,
+        "transport": "stdio",
+        "command_template": "",
+        "args": null,
+        "contains_machine_specific_path": false,
+        "environment_variables": []
+      },
+      "authentication": {
+        "required": false,
+        "status": "not_required",
+        "secret_exported": false
+      },
+      "verification": {
+        "Startup": "not_run",
+        "McpInitialize": "not_run",
+        "ToolsList": "not_run",
+        "VerifiedAt": null
+      },
+      "restore": {
+        "automatic_safe": false,
+        "steps": [
+          "在目標電腦安裝或確認 MCP 執行檔",
+          "依 command_template 重新建立 Codex MCP 設定",
+          "重新啟動 Codex",
+          "執行 codex mcp get ",
+          "notion",
+          "依 verification 欄位重新驗證 initialize 與 tools/list"
+        ]
+      },
+      "notes": [
+        "不會同步 env 值、登入狀態或本機絕對路徑。"
+      ]
+    },
+    {
+      "id": "mcp:agent_bridge",
+      "name": "agent_bridge",
+      "category": "mcp_server",
+      "current_status": "ready",
+      "discovery": {
+        "source": "codex_config",
+        "historical": false,
+        "confidence": "confirmed"
+      },
+      "installation": {
+        "status": "installed",
+        "executable_found": true,
+        "version": ""
+      },
+      "configuration": {
+        "present": true,
+        "enabled": true,
+        "transport": "stdio",
+        "command_template": "<machine-path-omitted>",
+        "args": null,
+        "contains_machine_specific_path": true,
+        "environment_variables": []
+      },
+      "authentication": {
+        "required": false,
+        "status": "not_required",
+        "secret_exported": false
+      },
+      "verification": {
+        "Startup": "not_run",
+        "McpInitialize": "not_run",
+        "ToolsList": "not_run",
+        "VerifiedAt": null
+      },
+      "restore": {
+        "automatic_safe": false,
+        "steps": [
+          "在目標電腦安裝或確認 MCP 執行檔",
+          "依 command_template 重新建立 Codex MCP 設定",
+          "重新啟動 Codex",
+          "執行 codex mcp get ",
+          "agent_bridge",
+          "依 verification 欄位重新驗證 initialize 與 tools/list"
+        ]
+      },
+      "notes": [
+        "不會同步 env 值、登入狀態或本機絕對路徑。"
+      ]
+    },
+    {
+      "id": "mcp:officecli",
+      "name": "officecli",
+      "category": "mcp_server",
+      "current_status": "ready",
+      "discovery": {
+        "source": "codex_config",
+        "historical": false,
+        "confidence": "confirmed"
+      },
+      "installation": {
+        "status": "installed",
+        "executable_found": true,
+        "version": ""
+      },
+      "configuration": {
+        "present": true,
+        "enabled": true,
+        "transport": "stdio",
+        "command_template": "%USERPROFILE%\\AppData\\Local\\OfficeCLI\\officecli.exe",
+        "args": "mcp",
+        "contains_machine_specific_path": true,
+        "environment_variables": []
+      },
+      "authentication": {
+        "required": false,
+        "status": "not_required",
+        "secret_exported": false
+      },
+      "verification": {
+        "Startup": "failed",
+        "McpInitialize": "not_run",
+        "ToolsList": "not_run",
+        "VerifiedAt": "2026-08-07T01:43:29.8525242Z"
+      },
+      "restore": {
+        "automatic_safe": false,
+        "steps": [
+          "在目標電腦安裝或確認 MCP 執行檔",
+          "依 command_template 重新建立 Codex MCP 設定",
+          "重新啟動 Codex",
+          "執行 codex mcp get ",
+          "officecli",
+          "依 verification 欄位重新驗證 initialize 與 tools/list"
+        ]
+      },
+      "notes": [
+        "不會同步 env 值、登入狀態或本機絕對路徑。"
+      ]
+    },
+    {
+      "id": "mcp:ollama",
+      "name": "ollama",
+      "category": "mcp_server",
+      "current_status": "ready",
+      "discovery": {
+        "source": "codex_config",
+        "historical": false,
+        "confidence": "confirmed"
+      },
+      "installation": {
+        "status": "installed",
+        "executable_found": true,
+        "version": ""
+      },
+      "configuration": {
+        "present": true,
+        "enabled": true,
+        "transport": "stdio",
+        "command_template": "npx",
+        "args": [
+          "-y",
+          "@rawveg/ollama-mcp@1.0.9"
+        ],
+        "contains_machine_specific_path": false,
+        "environment_variables": []
+      },
+      "authentication": {
+        "required": false,
+        "status": "not_required",
+        "secret_exported": false
+      },
+      "verification": {
+        "Startup": "not_run",
+        "McpInitialize": "not_run",
+        "ToolsList": "not_run",
+        "VerifiedAt": null
+      },
+      "restore": {
+        "automatic_safe": false,
+        "steps": [
+          "在目標電腦安裝或確認 MCP 執行檔",
+          "依 command_template 重新建立 Codex MCP 設定",
+          "重新啟動 Codex",
+          "執行 codex mcp get ",
+          "ollama",
+          "依 verification 欄位重新驗證 initialize 與 tools/list"
+        ]
+      },
+      "notes": [
+        "不會同步 env 值、登入狀態或本機絕對路徑。"
+      ]
+    },
+    {
+      "id": "cli:codex",
+      "name": "codex",
+      "category": "cli_tool",
+      "current_status": "ready",
+      "discovery": {
+        "source": "workflow_allowlist",
+        "historical": false,
+        "confidence": "confirmed"
+      },
+      "installation": {
+        "status": "installed",
+        "resolved_command": "codex",
+        "path_template": "%USERPROFILE%\\AppData\\Roaming\\npm\\codex.ps1",
+        "version": "",
+        "architecture": "unknown",
+        "install_method": "unknown"
+      },
+      "usage": {
+        "referenced_by": [
+          "Codex sync workflow"
+        ]
+      },
+      "authentication": {
+        "required": false,
+        "status": "not_required",
+        "secret_exported": false
+      },
+      "restore": {
+        "preferred_install_method": "manual",
+        "steps": [
+          "確認或安裝 codex 執行 codex --version"
+        ],
+        "verify_commands": [
+          "codex --version"
+        ]
+      },
+      "notes": []
+    },
+    {
+      "id": "cli:gh",
+      "name": "gh",
+      "category": "cli_tool",
+      "current_status": "ready",
+      "discovery": {
+        "source": "workflow_allowlist",
+        "historical": false,
+        "confidence": "confirmed"
+      },
+      "installation": {
+        "status": "installed",
+        "resolved_command": "gh",
+        "path_template": "<machine-path-omitted>",
+        "version": "",
+        "architecture": "unknown",
+        "install_method": "unknown"
+      },
+      "usage": {
+        "referenced_by": [
+          "Codex sync workflow"
+        ]
+      },
+      "authentication": {
+        "required": true,
+        "status": "expired_or_invalid",
+        "secret_exported": false
+      },
+      "restore": {
+        "preferred_install_method": "manual",
+        "steps": [
+          "確認或安裝 gh 執行 gh --version"
+        ],
+        "verify_commands": [
+          "gh --version"
+        ]
+      },
+      "notes": []
+    },
+    {
+      "id": "cli:git",
+      "name": "git",
+      "category": "cli_tool",
+      "current_status": "ready",
+      "discovery": {
+        "source": "workflow_allowlist",
+        "historical": false,
+        "confidence": "confirmed"
+      },
+      "installation": {
+        "status": "installed",
+        "resolved_command": "git",
+        "path_template": "<machine-path-omitted>",
+        "version": "git version 2.47.0.windows.1",
+        "architecture": "unknown",
+        "install_method": "unknown"
+      },
+      "usage": {
+        "referenced_by": [
+          "Codex sync workflow"
+        ]
+      },
+      "authentication": {
+        "required": false,
+        "status": "not_required",
+        "secret_exported": false
+      },
+      "restore": {
+        "preferred_install_method": "manual",
+        "steps": [
+          "確認或安裝 git 執行 git --version"
+        ],
+        "verify_commands": [
+          "git --version"
+        ]
+      },
+      "notes": []
+    },
+    {
+      "id": "cli:python",
+      "name": "python",
+      "category": "cli_tool",
+      "current_status": "unknown",
+      "discovery": {
+        "source": "workflow_allowlist",
+        "historical": false,
+        "confidence": "confirmed"
+      },
+      "installation": {
+        "status": "not_installed",
+        "resolved_command": "python",
+        "path_template": "",
+        "version": "",
+        "architecture": "unknown",
+        "install_method": "unknown"
+      },
+      "usage": {
+        "referenced_by": [
+          "Codex sync workflow"
+        ]
+      },
+      "authentication": {
+        "required": false,
+        "status": "not_required",
+        "secret_exported": false
+      },
+      "restore": {
+        "preferred_install_method": "manual",
+        "steps": [
+          "確認或安裝 python 執行 python --version"
+        ],
+        "verify_commands": [
+          "python --version"
+        ]
+      },
+      "notes": []
+    },
+    {
+      "id": "cli:py",
+      "name": "py",
+      "category": "cli_tool",
+      "current_status": "ready",
+      "discovery": {
+        "source": "workflow_allowlist",
+        "historical": false,
+        "confidence": "confirmed"
+      },
+      "installation": {
+        "status": "installed",
+        "resolved_command": "py",
+        "path_template": "<machine-path-omitted>",
+        "version": "",
+        "architecture": "unknown",
+        "install_method": "unknown"
+      },
+      "usage": {
+        "referenced_by": [
+          "Codex sync workflow"
+        ]
+      },
+      "authentication": {
+        "required": false,
+        "status": "not_required",
+        "secret_exported": false
+      },
+      "restore": {
+        "preferred_install_method": "manual",
+        "steps": [
+          "確認或安裝 py 執行 py --version"
+        ],
+        "verify_commands": [
+          "py --version"
+        ]
+      },
+      "notes": []
+    },
+    {
+      "id": "cli:pwsh",
+      "name": "pwsh",
+      "category": "cli_tool",
+      "current_status": "ready",
+      "discovery": {
+        "source": "workflow_allowlist",
+        "historical": false,
+        "confidence": "confirmed"
+      },
+      "installation": {
+        "status": "installed",
+        "resolved_command": "pwsh",
+        "path_template": "%PROGRAMFILES%\\PowerShell\\7\\pwsh.exe",
+        "version": "PowerShell 7.4.4",
+        "architecture": "unknown",
+        "install_method": "unknown"
+      },
+      "usage": {
+        "referenced_by": [
+          "Codex sync workflow"
+        ]
+      },
+      "authentication": {
+        "required": false,
+        "status": "not_required",
+        "secret_exported": false
+      },
+      "restore": {
+        "preferred_install_method": "manual",
+        "steps": [
+          "確認或安裝 pwsh 執行 pwsh --version"
+        ],
+        "verify_commands": [
+          "pwsh --version"
+        ]
+      },
+      "notes": []
+    },
+    {
+      "id": "cli:node",
+      "name": "node",
+      "category": "cli_tool",
+      "current_status": "ready",
+      "discovery": {
+        "source": "workflow_allowlist",
+        "historical": false,
+        "confidence": "confirmed"
+      },
+      "installation": {
+        "status": "installed",
+        "resolved_command": "node",
+        "path_template": "<machine-path-omitted>",
+        "version": "v24.18.0",
+        "architecture": "unknown",
+        "install_method": "unknown"
+      },
+      "usage": {
+        "referenced_by": [
+          "Codex sync workflow"
+        ]
+      },
+      "authentication": {
+        "required": false,
+        "status": "not_required",
+        "secret_exported": false
+      },
+      "restore": {
+        "preferred_install_method": "manual",
+        "steps": [
+          "確認或安裝 node 執行 node --version"
+        ],
+        "verify_commands": [
+          "node --version"
+        ]
+      },
+      "notes": []
+    },
+    {
+      "id": "cli:npm",
+      "name": "npm",
+      "category": "cli_tool",
+      "current_status": "ready",
+      "discovery": {
+        "source": "workflow_allowlist",
+        "historical": false,
+        "confidence": "confirmed"
+      },
+      "installation": {
+        "status": "installed",
+        "resolved_command": "npm",
+        "path_template": "<machine-path-omitted>",
+        "version": "",
+        "architecture": "unknown",
+        "install_method": "unknown"
+      },
+      "usage": {
+        "referenced_by": [
+          "Codex sync workflow"
+        ]
+      },
+      "authentication": {
+        "required": false,
+        "status": "not_required",
+        "secret_exported": false
+      },
+      "restore": {
+        "preferred_install_method": "manual",
+        "steps": [
+          "確認或安裝 npm 執行 npm --version"
+        ],
+        "verify_commands": [
+          "npm --version"
+        ]
+      },
+      "notes": []
+    },
+    {
+      "id": "service:github",
+      "name": "GitHub",
+      "category": "external_service",
+      "current_status": "login_required",
+      "discovery": {
+        "source": "codex_workflow",
+        "historical": false,
+        "confidence": "confirmed"
+      },
+      "installation": {
+        "status": "installed"
+      },
+      "configuration": {
+        "present": true
+      },
+      "authentication": {
+        "required": true,
+        "status": "expired_or_invalid",
+        "account_identifier_exported": false,
+        "secret_exported": false,
+        "verification_method": "gh auth status"
+      },
+      "verification": {
+        "startup": "passed",
+        "connection": "manual_verification_required",
+        "verified_at": null
+      },
+      "restore": {
+        "steps": [
+          "安裝 GitHub CLI",
+          "執行 gh auth login",
+          "執行 gh auth status"
+        ]
+      },
+      "notes": [
+        "不同步 token、cookie、OAuth 憑證或登入 session。"
+      ]
+    },
+    {
+      "id": "service:openai-codex",
+      "name": "OpenAI Codex",
+      "category": "external_service",
+      "current_status": "login_required",
+      "discovery": {
+        "source": "codex_workflow",
+        "historical": false,
+        "confidence": "confirmed"
+      },
+      "installation": {
+        "status": "installed"
+      },
+      "configuration": {
+        "present": true
+      },
+      "authentication": {
+        "required": true,
+        "status": "manual_verification_required",
+        "account_identifier_exported": false,
+        "secret_exported": false,
+        "verification_method": "未讀取登入狀態，需在目標電腦由 Codex UI／CLI 驗證"
+      },
+      "verification": {
+        "startup": "passed",
+        "connection": "manual_verification_required",
+        "verified_at": null
+      },
+      "restore": {
+        "steps": [
+          "安裝 Codex",
+          "在 Codex UI／CLI 重新登入",
+          "執行 Codex 的唯讀狀態檢查"
+        ]
+      },
+      "notes": [
+        "不同步 token、cookie、OAuth 憑證或登入 session。"
+      ]
+    },
+    {
+      "id": "skill:artifact-storage-policy",
+      "name": "artifact-storage-policy",
+      "category": "codex_skill",
+      "current_status": "ready",
+      "discovery": {
+        "source": "codex_home_skills",
+        "historical": false,
+        "confidence": "confirmed"
+      },
+      "installation": {
+        "status": "installed",
+        "source": "local_custom",
+        "path_template": "%USERPROFILE%\\\\.codex\\\\skills\\\\artifact-storage-policy"
+      },
+      "authentication": {
+        "required": false,
+        "status": "not_required",
+        "secret_exported": false
+      },
+      "restore": {
+        "method": "copy_or_reinstall",
+        "source_available": true,
+        "steps": [
+          "從同步 repo 的 skills 分類套用或重新安裝此自訂 skill"
+        ]
+      },
+      "notes": [
+        "內建 .system 與 plugin cache 不列入。"
+      ]
+    },
+    {
+      "id": "skill:autonomous-repair",
+      "name": "autonomous-repair",
+      "category": "codex_skill",
+      "current_status": "ready",
+      "discovery": {
+        "source": "codex_home_skills",
+        "historical": false,
+        "confidence": "confirmed"
+      },
+      "installation": {
+        "status": "installed",
+        "source": "local_custom",
+        "path_template": "%USERPROFILE%\\\\.codex\\\\skills\\\\autonomous-repair"
+      },
+      "authentication": {
+        "required": false,
+        "status": "not_required",
+        "secret_exported": false
+      },
+      "restore": {
+        "method": "copy_or_reinstall",
+        "source_available": true,
+        "steps": [
+          "從同步 repo 的 skills 分類套用或重新安裝此自訂 skill"
+        ]
+      },
+      "notes": [
+        "內建 .system 與 plugin cache 不列入。"
+      ]
+    },
+    {
+      "id": "skill:checklist-validator",
+      "name": "checklist-validator",
+      "category": "codex_skill",
+      "current_status": "ready",
+      "discovery": {
+        "source": "codex_home_skills",
+        "historical": false,
+        "confidence": "confirmed"
+      },
+      "installation": {
+        "status": "installed",
+        "source": "local_custom",
+        "path_template": "%USERPROFILE%\\\\.codex\\\\skills\\\\checklist-validator"
+      },
+      "authentication": {
+        "required": false,
+        "status": "not_required",
+        "secret_exported": false
+      },
+      "restore": {
+        "method": "copy_or_reinstall",
+        "source_available": true,
+        "steps": [
+          "從同步 repo 的 skills 分類套用或重新安裝此自訂 skill"
+        ]
+      },
+      "notes": [
+        "內建 .system 與 plugin cache 不列入。"
+      ]
+    },
+    {
+      "id": "skill:claude-inspired-artifact-design",
+      "name": "claude-inspired-artifact-design",
+      "category": "codex_skill",
+      "current_status": "ready",
+      "discovery": {
+        "source": "codex_home_skills",
+        "historical": false,
+        "confidence": "confirmed"
+      },
+      "installation": {
+        "status": "installed",
+        "source": "local_custom",
+        "path_template": "%USERPROFILE%\\\\.codex\\\\skills\\\\claude-inspired-artifact-design"
+      },
+      "authentication": {
+        "required": false,
+        "status": "not_required",
+        "secret_exported": false
+      },
+      "restore": {
+        "method": "copy_or_reinstall",
+        "source_available": true,
+        "steps": [
+          "從同步 repo 的 skills 分類套用或重新安裝此自訂 skill"
+        ]
+      },
+      "notes": [
+        "內建 .system 與 plugin cache 不列入。"
+      ]
+    },
+    {
+      "id": "skill:code-generation-agent",
+      "name": "code-generation-agent",
+      "category": "codex_skill",
+      "current_status": "ready",
+      "discovery": {
+        "source": "codex_home_skills",
+        "historical": false,
+        "confidence": "confirmed"
+      },
+      "installation": {
+        "status": "installed",
+        "source": "local_custom",
+        "path_template": "%USERPROFILE%\\\\.codex\\\\skills\\\\code-generation-agent"
+      },
+      "authentication": {
+        "required": false,
+        "status": "not_required",
+        "secret_exported": false
+      },
+      "restore": {
+        "method": "copy_or_reinstall",
+        "source_available": true,
+        "steps": [
+          "從同步 repo 的 skills 分類套用或重新安裝此自訂 skill"
+        ]
+      },
+      "notes": [
+        "內建 .system 與 plugin cache 不列入。"
+      ]
+    },
+    {
+      "id": "skill:codex-settings-sync",
+      "name": "codex-settings-sync",
+      "category": "codex_skill",
+      "current_status": "ready",
+      "discovery": {
+        "source": "codex_home_skills",
+        "historical": false,
+        "confidence": "confirmed"
+      },
+      "installation": {
+        "status": "installed",
+        "source": "local_custom",
+        "path_template": "%USERPROFILE%\\\\.codex\\\\skills\\\\codex-settings-sync"
+      },
+      "authentication": {
+        "required": false,
+        "status": "not_required",
+        "secret_exported": false
+      },
+      "restore": {
+        "method": "copy_or_reinstall",
+        "source_available": true,
+        "steps": [
+          "從同步 repo 的 skills 分類套用或重新安裝此自訂 skill"
+        ]
+      },
+      "notes": [
+        "內建 .system 與 plugin cache 不列入。"
+      ]
+    },
+    {
+      "id": "skill:context-pack-builder",
+      "name": "context-pack-builder",
+      "category": "codex_skill",
+      "current_status": "ready",
+      "discovery": {
+        "source": "codex_home_skills",
+        "historical": false,
+        "confidence": "confirmed"
+      },
+      "installation": {
+        "status": "installed",
+        "source": "local_custom",
+        "path_template": "%USERPROFILE%\\\\.codex\\\\skills\\\\context-pack-builder"
+      },
+      "authentication": {
+        "required": false,
+        "status": "not_required",
+        "secret_exported": false
+      },
+      "restore": {
+        "method": "copy_or_reinstall",
+        "source_available": true,
+        "steps": [
+          "從同步 repo 的 skills 分類套用或重新安裝此自訂 skill"
+        ]
+      },
+      "notes": [
+        "內建 .system 與 plugin cache 不列入。"
+      ]
+    },
+    {
+      "id": "skill:data-analyst-agent",
+      "name": "data-analyst-agent",
+      "category": "codex_skill",
+      "current_status": "ready",
+      "discovery": {
+        "source": "codex_home_skills",
+        "historical": false,
+        "confidence": "confirmed"
+      },
+      "installation": {
+        "status": "installed",
+        "source": "local_custom",
+        "path_template": "%USERPROFILE%\\\\.codex\\\\skills\\\\data-analyst-agent"
+      },
+      "authentication": {
+        "required": false,
+        "status": "not_required",
+        "secret_exported": false
+      },
+      "restore": {
+        "method": "copy_or_reinstall",
+        "source_available": true,
+        "steps": [
+          "從同步 repo 的 skills 分類套用或重新安裝此自訂 skill"
+        ]
+      },
+      "notes": [
+        "內建 .system 與 plugin cache 不列入。"
+      ]
+    },
+    {
+      "id": "skill:decision-log-agent",
+      "name": "decision-log-agent",
+      "category": "codex_skill",
+      "current_status": "ready",
+      "discovery": {
+        "source": "codex_home_skills",
+        "historical": false,
+        "confidence": "confirmed"
+      },
+      "installation": {
+        "status": "installed",
+        "source": "local_custom",
+        "path_template": "%USERPROFILE%\\\\.codex\\\\skills\\\\decision-log-agent"
+      },
+      "authentication": {
+        "required": false,
+        "status": "not_required",
+        "secret_exported": false
+      },
+      "restore": {
+        "method": "copy_or_reinstall",
+        "source_available": true,
+        "steps": [
+          "從同步 repo 的 skills 分類套用或重新安裝此自訂 skill"
+        ]
+      },
+      "notes": [
+        "內建 .system 與 plugin cache 不列入。"
+      ]
+    },
+    {
+      "id": "skill:documentation-agent",
+      "name": "documentation-agent",
+      "category": "codex_skill",
+      "current_status": "ready",
+      "discovery": {
+        "source": "codex_home_skills",
+        "historical": false,
+        "confidence": "confirmed"
+      },
+      "installation": {
+        "status": "installed",
+        "source": "local_custom",
+        "path_template": "%USERPROFILE%\\\\.codex\\\\skills\\\\documentation-agent"
+      },
+      "authentication": {
+        "required": false,
+        "status": "not_required",
+        "secret_exported": false
+      },
+      "restore": {
+        "method": "copy_or_reinstall",
+        "source_available": true,
+        "steps": [
+          "從同步 repo 的 skills 分類套用或重新安裝此自訂 skill"
+        ]
+      },
+      "notes": [
+        "內建 .system 與 plugin cache 不列入。"
+      ]
+    },
+    {
+      "id": "skill:email-triage-agent",
+      "name": "email-triage-agent",
+      "category": "codex_skill",
+      "current_status": "ready",
+      "discovery": {
+        "source": "codex_home_skills",
+        "historical": false,
+        "confidence": "confirmed"
+      },
+      "installation": {
+        "status": "installed",
+        "source": "local_custom",
+        "path_template": "%USERPROFILE%\\\\.codex\\\\skills\\\\email-triage-agent"
+      },
+      "authentication": {
+        "required": false,
+        "status": "not_required",
+        "secret_exported": false
+      },
+      "restore": {
+        "method": "copy_or_reinstall",
+        "source_available": true,
+        "steps": [
+          "從同步 repo 的 skills 分類套用或重新安裝此自訂 skill"
+        ]
+      },
+      "notes": [
+        "內建 .system 與 plugin cache 不列入。"
+      ]
+    },
+    {
+      "id": "skill:engineering-manager-agent",
+      "name": "engineering-manager-agent",
+      "category": "codex_skill",
+      "current_status": "ready",
+      "discovery": {
+        "source": "codex_home_skills",
+        "historical": false,
+        "confidence": "confirmed"
+      },
+      "installation": {
+        "status": "installed",
+        "source": "local_custom",
+        "path_template": "%USERPROFILE%\\\\.codex\\\\skills\\\\engineering-manager-agent"
+      },
+      "authentication": {
+        "required": false,
+        "status": "not_required",
+        "secret_exported": false
+      },
+      "restore": {
+        "method": "copy_or_reinstall",
+        "source_available": true,
+        "steps": [
+          "從同步 repo 的 skills 分類套用或重新安裝此自訂 skill"
+        ]
+      },
+      "notes": [
+        "內建 .system 與 plugin cache 不列入。"
+      ]
+    },
+    {
+      "id": "skill:error-observability",
+      "name": "error-observability",
+      "category": "codex_skill",
+      "current_status": "ready",
+      "discovery": {
+        "source": "codex_home_skills",
+        "historical": false,
+        "confidence": "confirmed"
+      },
+      "installation": {
+        "status": "installed",
+        "source": "local_custom",
+        "path_template": "%USERPROFILE%\\\\.codex\\\\skills\\\\error-observability"
+      },
+      "authentication": {
+        "required": false,
+        "status": "not_required",
+        "secret_exported": false
+      },
+      "restore": {
+        "method": "copy_or_reinstall",
+        "source_available": true,
+        "steps": [
+          "從同步 repo 的 skills 分類套用或重新安裝此自訂 skill"
+        ]
+      },
+      "notes": [
+        "內建 .system 與 plugin cache 不列入。"
+      ]
+    },
+    {
+      "id": "skill:file-organizer",
+      "name": "file-organizer",
+      "category": "codex_skill",
+      "current_status": "ready",
+      "discovery": {
+        "source": "codex_home_skills",
+        "historical": false,
+        "confidence": "confirmed"
+      },
+      "installation": {
+        "status": "installed",
+        "source": "local_custom",
+        "path_template": "%USERPROFILE%\\\\.codex\\\\skills\\\\file-organizer"
+      },
+      "authentication": {
+        "required": false,
+        "status": "not_required",
+        "secret_exported": false
+      },
+      "restore": {
+        "method": "copy_or_reinstall",
+        "source_available": true,
+        "steps": [
+          "從同步 repo 的 skills 分類套用或重新安裝此自訂 skill"
+        ]
+      },
+      "notes": [
+        "內建 .system 與 plugin cache 不列入。"
+      ]
+    },
+    {
+      "id": "skill:knowledge-base-builder",
+      "name": "knowledge-base-builder",
+      "category": "codex_skill",
+      "current_status": "ready",
+      "discovery": {
+        "source": "codex_home_skills",
+        "historical": false,
+        "confidence": "confirmed"
+      },
+      "installation": {
+        "status": "installed",
+        "source": "local_custom",
+        "path_template": "%USERPROFILE%\\\\.codex\\\\skills\\\\knowledge-base-builder"
+      },
+      "authentication": {
+        "required": false,
+        "status": "not_required",
+        "secret_exported": false
+      },
+      "restore": {
+        "method": "copy_or_reinstall",
+        "source_available": true,
+        "steps": [
+          "從同步 repo 的 skills 分類套用或重新安裝此自訂 skill"
+        ]
+      },
+      "notes": [
+        "內建 .system 與 plugin cache 不列入。"
+      ]
+    },
+    {
+      "id": "skill:legacy-code-analysis",
+      "name": "legacy-code-analysis",
+      "category": "codex_skill",
+      "current_status": "ready",
+      "discovery": {
+        "source": "codex_home_skills",
+        "historical": false,
+        "confidence": "confirmed"
+      },
+      "installation": {
+        "status": "installed",
+        "source": "local_custom",
+        "path_template": "%USERPROFILE%\\\\.codex\\\\skills\\\\legacy-code-analysis"
+      },
+      "authentication": {
+        "required": false,
+        "status": "not_required",
+        "secret_exported": false
+      },
+      "restore": {
+        "method": "copy_or_reinstall",
+        "source_available": true,
+        "steps": [
+          "從同步 repo 的 skills 分類套用或重新安裝此自訂 skill"
+        ]
+      },
+      "notes": [
+        "內建 .system 與 plugin cache 不列入。"
+      ]
+    },
+    {
+      "id": "skill:meeting-action-agent",
+      "name": "meeting-action-agent",
+      "category": "codex_skill",
+      "current_status": "ready",
+      "discovery": {
+        "source": "codex_home_skills",
+        "historical": false,
+        "confidence": "confirmed"
+      },
+      "installation": {
+        "status": "installed",
+        "source": "local_custom",
+        "path_template": "%USERPROFILE%\\\\.codex\\\\skills\\\\meeting-action-agent"
+      },
+      "authentication": {
+        "required": false,
+        "status": "not_required",
+        "secret_exported": false
+      },
+      "restore": {
+        "method": "copy_or_reinstall",
+        "source_available": true,
+        "steps": [
+          "從同步 repo 的 skills 分類套用或重新安裝此自訂 skill"
+        ]
+      },
+      "notes": [
+        "內建 .system 與 plugin cache 不列入。"
+      ]
+    },
+    {
+      "id": "skill:ml-engineer-agent",
+      "name": "ml-engineer-agent",
+      "category": "codex_skill",
+      "current_status": "ready",
+      "discovery": {
+        "source": "codex_home_skills",
+        "historical": false,
+        "confidence": "confirmed"
+      },
+      "installation": {
+        "status": "installed",
+        "source": "local_custom",
+        "path_template": "%USERPROFILE%\\\\.codex\\\\skills\\\\ml-engineer-agent"
+      },
+      "authentication": {
+        "required": false,
+        "status": "not_required",
+        "secret_exported": false
+      },
+      "restore": {
+        "method": "copy_or_reinstall",
+        "source_available": true,
+        "steps": [
+          "從同步 repo 的 skills 分類套用或重新安裝此自訂 skill"
+        ]
+      },
+      "notes": [
+        "內建 .system 與 plugin cache 不列入。"
+      ]
+    },
+    {
+      "id": "skill:notion-template-router",
+      "name": "notion-template-router",
+      "category": "codex_skill",
+      "current_status": "ready",
+      "discovery": {
+        "source": "codex_home_skills",
+        "historical": false,
+        "confidence": "confirmed"
+      },
+      "installation": {
+        "status": "installed",
+        "source": "local_custom",
+        "path_template": "%USERPROFILE%\\\\.codex\\\\skills\\\\notion-template-router"
+      },
+      "authentication": {
+        "required": false,
+        "status": "not_required",
+        "secret_exported": false
+      },
+      "restore": {
+        "method": "copy_or_reinstall",
+        "source_available": true,
+        "steps": [
+          "從同步 repo 的 skills 分類套用或重新安裝此自訂 skill"
+        ]
+      },
+      "notes": [
+        "內建 .system 與 plugin cache 不列入。"
+      ]
+    },
+    {
+      "id": "skill:output-contract",
+      "name": "output-contract",
+      "category": "codex_skill",
+      "current_status": "ready",
+      "discovery": {
+        "source": "codex_home_skills",
+        "historical": false,
+        "confidence": "confirmed"
+      },
+      "installation": {
+        "status": "installed",
+        "source": "local_custom",
+        "path_template": "%USERPROFILE%\\\\.codex\\\\skills\\\\output-contract"
+      },
+      "authentication": {
+        "required": false,
+        "status": "not_required",
+        "secret_exported": false
+      },
+      "restore": {
+        "method": "copy_or_reinstall",
+        "source_available": true,
+        "steps": [
+          "從同步 repo 的 skills 分類套用或重新安裝此自訂 skill"
+        ]
+      },
+      "notes": [
+        "內建 .system 與 plugin cache 不列入。"
+      ]
+    },
+    {
+      "id": "skill:personal-task-router",
+      "name": "personal-task-router",
+      "category": "codex_skill",
+      "current_status": "ready",
+      "discovery": {
+        "source": "codex_home_skills",
+        "historical": false,
+        "confidence": "confirmed"
+      },
+      "installation": {
+        "status": "installed",
+        "source": "local_custom",
+        "path_template": "%USERPROFILE%\\\\.codex\\\\skills\\\\personal-task-router"
+      },
+      "authentication": {
+        "required": false,
+        "status": "not_required",
+        "secret_exported": false
+      },
+      "restore": {
+        "method": "copy_or_reinstall",
+        "source_available": true,
+        "steps": [
+          "從同步 repo 的 skills 分類套用或重新安裝此自訂 skill"
+        ]
+      },
+      "notes": [
+        "內建 .system 與 plugin cache 不列入。"
+      ]
+    },
+    {
+      "id": "skill:portable-tool-delivery",
+      "name": "portable-tool-delivery",
+      "category": "codex_skill",
+      "current_status": "ready",
+      "discovery": {
+        "source": "codex_home_skills",
+        "historical": false,
+        "confidence": "confirmed"
+      },
+      "installation": {
+        "status": "installed",
+        "source": "local_custom",
+        "path_template": "%USERPROFILE%\\\\.codex\\\\skills\\\\portable-tool-delivery"
+      },
+      "authentication": {
+        "required": false,
+        "status": "not_required",
+        "secret_exported": false
+      },
+      "restore": {
+        "method": "copy_or_reinstall",
+        "source_available": true,
+        "steps": [
+          "從同步 repo 的 skills 分類套用或重新安裝此自訂 skill"
+        ]
+      },
+      "notes": [
+        "內建 .system 與 plugin cache 不列入。"
+      ]
+    },
+    {
+      "id": "skill:pr-review-agent",
+      "name": "pr-review-agent",
+      "category": "codex_skill",
+      "current_status": "ready",
+      "discovery": {
+        "source": "codex_home_skills",
+        "historical": false,
+        "confidence": "confirmed"
+      },
+      "installation": {
+        "status": "installed",
+        "source": "local_custom",
+        "path_template": "%USERPROFILE%\\\\.codex\\\\skills\\\\pr-review-agent"
+      },
+      "authentication": {
+        "required": false,
+        "status": "not_required",
+        "secret_exported": false
+      },
+      "restore": {
+        "method": "copy_or_reinstall",
+        "source_available": true,
+        "steps": [
+          "從同步 repo 的 skills 分類套用或重新安裝此自訂 skill"
+        ]
+      },
+      "notes": [
+        "內建 .system 與 plugin cache 不列入。"
+      ]
+    },
+    {
+      "id": "skill:preventive-repair",
+      "name": "preventive-repair",
+      "category": "codex_skill",
+      "current_status": "ready",
+      "discovery": {
+        "source": "codex_home_skills",
+        "historical": false,
+        "confidence": "confirmed"
+      },
+      "installation": {
+        "status": "installed",
+        "source": "local_custom",
+        "path_template": "%USERPROFILE%\\\\.codex\\\\skills\\\\preventive-repair"
+      },
+      "authentication": {
+        "required": false,
+        "status": "not_required",
+        "secret_exported": false
+      },
+      "restore": {
+        "method": "copy_or_reinstall",
+        "source_available": true,
+        "steps": [
+          "從同步 repo 的 skills 分類套用或重新安裝此自訂 skill"
+        ]
+      },
+      "notes": [
+        "內建 .system 與 plugin cache 不列入。"
+      ]
+    },
+    {
+      "id": "skill:project-manager-agent",
+      "name": "project-manager-agent",
+      "category": "codex_skill",
+      "current_status": "ready",
+      "discovery": {
+        "source": "codex_home_skills",
+        "historical": false,
+        "confidence": "confirmed"
+      },
+      "installation": {
+        "status": "installed",
+        "source": "local_custom",
+        "path_template": "%USERPROFILE%\\\\.codex\\\\skills\\\\project-manager-agent"
+      },
+      "authentication": {
+        "required": false,
+        "status": "not_required",
+        "secret_exported": false
+      },
+      "restore": {
+        "method": "copy_or_reinstall",
+        "source_available": true,
+        "steps": [
+          "從同步 repo 的 skills 分類套用或重新安裝此自訂 skill"
+        ]
+      },
+      "notes": [
+        "內建 .system 與 plugin cache 不列入。"
+      ]
+    },
+    {
+      "id": "skill:prompt-portability",
+      "name": "prompt-portability",
+      "category": "codex_skill",
+      "current_status": "ready",
+      "discovery": {
+        "source": "codex_home_skills",
+        "historical": false,
+        "confidence": "confirmed"
+      },
+      "installation": {
+        "status": "installed",
+        "source": "local_custom",
+        "path_template": "%USERPROFILE%\\\\.codex\\\\skills\\\\prompt-portability"
+      },
+      "authentication": {
+        "required": false,
+        "status": "not_required",
+        "secret_exported": false
+      },
+      "restore": {
+        "method": "copy_or_reinstall",
+        "source_available": true,
+        "steps": [
+          "從同步 repo 的 skills 分類套用或重新安裝此自訂 skill"
+        ]
+      },
+      "notes": [
+        "內建 .system 與 plugin cache 不列入。"
+      ]
+    },
+    {
+      "id": "skill:rca-agent",
+      "name": "rca-agent",
+      "category": "codex_skill",
+      "current_status": "ready",
+      "discovery": {
+        "source": "codex_home_skills",
+        "historical": false,
+        "confidence": "confirmed"
+      },
+      "installation": {
+        "status": "installed",
+        "source": "local_custom",
+        "path_template": "%USERPROFILE%\\\\.codex\\\\skills\\\\rca-agent"
+      },
+      "authentication": {
+        "required": false,
+        "status": "not_required",
+        "secret_exported": false
+      },
+      "restore": {
+        "method": "copy_or_reinstall",
+        "source_available": true,
+        "steps": [
+          "從同步 repo 的 skills 分類套用或重新安裝此自訂 skill"
+        ]
+      },
+      "notes": [
+        "內建 .system 與 plugin cache 不列入。"
+      ]
+    },
+    {
+      "id": "skill:report-writer-agent",
+      "name": "report-writer-agent",
+      "category": "codex_skill",
+      "current_status": "ready",
+      "discovery": {
+        "source": "codex_home_skills",
+        "historical": false,
+        "confidence": "confirmed"
+      },
+      "installation": {
+        "status": "installed",
+        "source": "local_custom",
+        "path_template": "%USERPROFILE%\\\\.codex\\\\skills\\\\report-writer-agent"
+      },
+      "authentication": {
+        "required": false,
+        "status": "not_required",
+        "secret_exported": false
+      },
+      "restore": {
+        "method": "copy_or_reinstall",
+        "source_available": true,
+        "steps": [
+          "從同步 repo 的 skills 分類套用或重新安裝此自訂 skill"
+        ]
+      },
+      "notes": [
+        "內建 .system 與 plugin cache 不列入。"
+      ]
+    },
+    {
+      "id": "skill:research-synthesizer",
+      "name": "research-synthesizer",
+      "category": "codex_skill",
+      "current_status": "ready",
+      "discovery": {
+        "source": "codex_home_skills",
+        "historical": false,
+        "confidence": "confirmed"
+      },
+      "installation": {
+        "status": "installed",
+        "source": "local_custom",
+        "path_template": "%USERPROFILE%\\\\.codex\\\\skills\\\\research-synthesizer"
+      },
+      "authentication": {
+        "required": false,
+        "status": "not_required",
+        "secret_exported": false
+      },
+      "restore": {
+        "method": "copy_or_reinstall",
+        "source_available": true,
+        "steps": [
+          "從同步 repo 的 skills 分類套用或重新安裝此自訂 skill"
+        ]
+      },
+      "notes": [
+        "內建 .system 與 plugin cache 不列入。"
+      ]
+    },
+    {
+      "id": "skill:save-to-notion",
+      "name": "save-to-notion",
+      "category": "codex_skill",
+      "current_status": "ready",
+      "discovery": {
+        "source": "codex_home_skills",
+        "historical": false,
+        "confidence": "confirmed"
+      },
+      "installation": {
+        "status": "installed",
+        "source": "local_custom",
+        "path_template": "%USERPROFILE%\\\\.codex\\\\skills\\\\save-to-notion"
+      },
+      "authentication": {
+        "required": false,
+        "status": "not_required",
+        "secret_exported": false
+      },
+      "restore": {
+        "method": "copy_or_reinstall",
+        "source_available": true,
+        "steps": [
+          "從同步 repo 的 skills 分類套用或重新安裝此自訂 skill"
+        ]
+      },
+      "notes": [
+        "內建 .system 與 plugin cache 不列入。"
+      ]
+    },
+    {
+      "id": "skill:skill-evaluator",
+      "name": "skill-evaluator",
+      "category": "codex_skill",
+      "current_status": "ready",
+      "discovery": {
+        "source": "codex_home_skills",
+        "historical": false,
+        "confidence": "confirmed"
+      },
+      "installation": {
+        "status": "installed",
+        "source": "local_custom",
+        "path_template": "%USERPROFILE%\\\\.codex\\\\skills\\\\skill-evaluator"
+      },
+      "authentication": {
+        "required": false,
+        "status": "not_required",
+        "secret_exported": false
+      },
+      "restore": {
+        "method": "copy_or_reinstall",
+        "source_available": true,
+        "steps": [
+          "從同步 repo 的 skills 分類套用或重新安裝此自訂 skill"
+        ]
+      },
+      "notes": [
+        "內建 .system 與 plugin cache 不列入。"
+      ]
+    },
+    {
+      "id": "skill:task-router",
+      "name": "task-router",
+      "category": "codex_skill",
+      "current_status": "ready",
+      "discovery": {
+        "source": "codex_home_skills",
+        "historical": false,
+        "confidence": "confirmed"
+      },
+      "installation": {
+        "status": "installed",
+        "source": "local_custom",
+        "path_template": "%USERPROFILE%\\\\.codex\\\\skills\\\\task-router"
+      },
+      "authentication": {
+        "required": false,
+        "status": "not_required",
+        "secret_exported": false
+      },
+      "restore": {
+        "method": "copy_or_reinstall",
+        "source_available": true,
+        "steps": [
+          "從同步 repo 的 skills 分類套用或重新安裝此自訂 skill"
+        ]
+      },
+      "notes": [
+        "內建 .system 與 plugin cache 不列入。"
+      ]
+    },
+    {
+      "id": "skill:visual-response",
+      "name": "visual-response",
+      "category": "codex_skill",
+      "current_status": "ready",
+      "discovery": {
+        "source": "codex_home_skills",
+        "historical": false,
+        "confidence": "confirmed"
+      },
+      "installation": {
+        "status": "installed",
+        "source": "local_custom",
+        "path_template": "%USERPROFILE%\\\\.codex\\\\skills\\\\visual-response"
+      },
+      "authentication": {
+        "required": false,
+        "status": "not_required",
+        "secret_exported": false
+      },
+      "restore": {
+        "method": "copy_or_reinstall",
+        "source_available": true,
+        "steps": [
+          "從同步 repo 的 skills 分類套用或重新安裝此自訂 skill"
+        ]
+      },
+      "notes": [
+        "內建 .system 與 plugin cache 不列入。"
+      ]
+    },
+    {
+      "id": "skill:web-research-citation",
+      "name": "web-research-citation",
+      "category": "codex_skill",
+      "current_status": "ready",
+      "discovery": {
+        "source": "codex_home_skills",
+        "historical": false,
+        "confidence": "confirmed"
+      },
+      "installation": {
+        "status": "installed",
+        "source": "local_custom",
+        "path_template": "%USERPROFILE%\\\\.codex\\\\skills\\\\web-research-citation"
+      },
+      "authentication": {
+        "required": false,
+        "status": "not_required",
+        "secret_exported": false
+      },
+      "restore": {
+        "method": "copy_or_reinstall",
+        "source_available": true,
+        "steps": [
+          "從同步 repo 的 skills 分類套用或重新安裝此自訂 skill"
+        ]
+      },
+      "notes": [
+        "內建 .system 與 plugin cache 不列入。"
+      ]
+    },
+    {
+      "id": "skill:work-report-delivery",
+      "name": "work-report-delivery",
+      "category": "codex_skill",
+      "current_status": "ready",
+      "discovery": {
+        "source": "codex_home_skills",
+        "historical": false,
+        "confidence": "confirmed"
+      },
+      "installation": {
+        "status": "installed",
+        "source": "local_custom",
+        "path_template": "%USERPROFILE%\\\\.codex\\\\skills\\\\work-report-delivery"
+      },
+      "authentication": {
+        "required": false,
+        "status": "not_required",
+        "secret_exported": false
+      },
+      "restore": {
+        "method": "copy_or_reinstall",
+        "source_available": true,
+        "steps": [
+          "從同步 repo 的 skills 分類套用或重新安裝此自訂 skill"
+        ]
+      },
+      "notes": [
+        "內建 .system 與 plugin cache 不列入。"
+      ]
+    },
+    {
+      "id": "skill:workflow-automation-agent",
+      "name": "workflow-automation-agent",
+      "category": "codex_skill",
+      "current_status": "ready",
+      "discovery": {
+        "source": "codex_home_skills",
+        "historical": false,
+        "confidence": "confirmed"
+      },
+      "installation": {
+        "status": "installed",
+        "source": "local_custom",
+        "path_template": "%USERPROFILE%\\\\.codex\\\\skills\\\\workflow-automation-agent"
+      },
+      "authentication": {
+        "required": false,
+        "status": "not_required",
+        "secret_exported": false
+      },
+      "restore": {
+        "method": "copy_or_reinstall",
+        "source_available": true,
+        "steps": [
+          "從同步 repo 的 skills 分類套用或重新安裝此自訂 skill"
+        ]
+      },
+      "notes": [
+        "內建 .system 與 plugin cache 不列入。"
+      ]
+    },
+    {
+      "id": "skill:writing-style-intake",
+      "name": "writing-style-intake",
+      "category": "codex_skill",
+      "current_status": "ready",
+      "discovery": {
+        "source": "codex_home_skills",
+        "historical": false,
+        "confidence": "confirmed"
+      },
+      "installation": {
+        "status": "installed",
+        "source": "local_custom",
+        "path_template": "%USERPROFILE%\\\\.codex\\\\skills\\\\writing-style-intake"
+      },
+      "authentication": {
+        "required": false,
+        "status": "not_required",
+        "secret_exported": false
+      },
+      "restore": {
+        "method": "copy_or_reinstall",
+        "source_available": true,
+        "steps": [
+          "從同步 repo 的 skills 分類套用或重新安裝此自訂 skill"
+        ]
+      },
+      "notes": [
+        "內建 .system 與 plugin cache 不列入。"
+      ]
+    }
+  ]
+}

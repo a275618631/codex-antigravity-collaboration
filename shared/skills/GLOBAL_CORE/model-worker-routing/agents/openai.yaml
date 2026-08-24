@@ -1,0 +1,4 @@
+interface:
+  display_name: "Model Worker Routing"
+  short_description: "Explicitly route tasks to Ox Alpha"
+  default_prompt: "Use $model-worker-routing to route an explicitly requested task to Ox Alpha."

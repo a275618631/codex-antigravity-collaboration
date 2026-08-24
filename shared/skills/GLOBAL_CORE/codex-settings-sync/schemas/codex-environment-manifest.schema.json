@@ -1,0 +1,73 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.invalid/codex-environment-manifest.schema.json",
+  "title": "Codex Environment Manifest",
+  "type": "object",
+  "required": ["schema_version", "generated_at", "machine", "security", "summary", "items"],
+  "properties": {
+    "schema_version": { "const": "1.0" },
+    "generated_at": { "type": "string", "format": "date-time" },
+    "machine": {
+      "type": "object",
+      "required": ["machine_identifier_exported", "username_exported", "os", "architecture"],
+      "properties": {
+        "machine_identifier_exported": { "const": false },
+        "username_exported": { "const": false },
+        "os": { "type": "string" },
+        "architecture": { "type": "string" }
+      },
+      "additionalProperties": false
+    },
+    "security": {
+      "type": "object",
+      "required": ["secrets_exported", "credential_stores_scanned", "browser_sessions_scanned", "environment_values_exported"],
+      "properties": {
+        "secrets_exported": { "const": false },
+        "credential_stores_scanned": { "const": false },
+        "browser_sessions_scanned": { "const": false },
+        "environment_values_exported": { "const": false }
+      },
+      "additionalProperties": false
+    },
+    "summary": {
+      "type": "object",
+      "required": ["mcp_servers", "cli_tools", "external_services", "codex_skills", "login_required", "manual_restore_required"],
+      "properties": {
+        "mcp_servers": { "type": "integer", "minimum": 0 },
+        "cli_tools": { "type": "integer", "minimum": 0 },
+        "external_services": { "type": "integer", "minimum": 0 },
+        "codex_skills": { "type": "integer", "minimum": 0 },
+        "login_required": { "type": "integer", "minimum": 0 },
+        "manual_restore_required": { "type": "integer", "minimum": 0 }
+      },
+      "additionalProperties": false
+    },
+    "items": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/item" },
+      "uniqueItems": true
+    }
+  },
+  "additionalProperties": false,
+  "$defs": {
+    "item": {
+      "type": "object",
+      "required": ["id", "name", "category", "current_status", "discovery", "installation", "authentication", "restore", "notes"],
+      "properties": {
+        "id": { "type": "string", "minLength": 1 },
+        "name": { "type": "string", "minLength": 1 },
+        "category": { "enum": ["mcp_server", "cli_tool", "external_service", "codex_skill"] },
+        "current_status": { "enum": ["ready", "installed_not_configured", "configured_not_installed", "login_required", "verification_failed", "manual_review", "historical_only", "unknown"] },
+        "discovery": { "type": "object", "required": ["source", "historical", "confidence"], "properties": { "source": { "type": "string" }, "historical": { "type": "boolean" }, "confidence": { "enum": ["confirmed", "likely", "possible", "unknown"] } }, "additionalProperties": true },
+        "installation": { "type": "object", "additionalProperties": true },
+        "configuration": { "type": "object", "additionalProperties": true },
+        "usage": { "type": "object", "additionalProperties": true },
+        "authentication": { "type": "object", "required": ["required", "status", "secret_exported"], "properties": { "required": { "type": "boolean" }, "status": { "enum": ["logged_in", "not_logged_in", "expired_or_invalid", "not_required", "unknown", "manual_verification_required"] }, "secret_exported": { "const": false } }, "additionalProperties": true },
+        "verification": { "type": "object", "additionalProperties": true },
+        "restore": { "type": "object", "required": ["steps"], "properties": { "steps": { "type": "array", "items": { "type": "string" }, "minItems": 1 } }, "additionalProperties": true },
+        "notes": { "type": "array", "items": { "type": "string" } }
+      },
+      "additionalProperties": true
+    }
+  }
+}

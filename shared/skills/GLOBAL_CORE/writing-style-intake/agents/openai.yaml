@@ -1,0 +1,4 @@
+interface:
+  display_name: "文字風格確認"
+  short_description: "撰寫各類交付內容前先確認風格，產出台灣繁中自然文字"
+  default_prompt: "使用 $writing-style-intake 先確認這份內容的文字風格，再開始撰寫。"

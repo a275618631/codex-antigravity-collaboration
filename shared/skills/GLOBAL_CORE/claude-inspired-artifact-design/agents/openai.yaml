@@ -1,0 +1,4 @@
+interface:
+  display_name: "Claude 風格產出"
+  short_description: "套用 Claude 式文字、版面與 Artifact 規範"
+  default_prompt: "Use $claude-inspired-artifact-design to produce a calm, content-first, well-structured artifact or response."

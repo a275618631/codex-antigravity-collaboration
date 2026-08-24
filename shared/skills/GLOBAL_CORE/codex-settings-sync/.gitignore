@@ -1,0 +1,22 @@
+.env
+.env.*
+credentials/
+*.token.json
+*.key
+*.pem
+
+影片產物/
+專案產物/
+outputs/
+*.mp4
+*.mov
+*.avi
+*.mkv
+
+__pycache__/
+.pytest_cache/
+.DS_Store
+Thumbs.db
+
+# 環境清單 history 是本機盤點歷史，不作跨電腦日常同步
+環境清單/history/
