@@ -1,15 +1,16 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "format_version": "3.1.0",
-  "generated_at": "2026-08-24T18:15:00+08:00",
-  "description": "Machine-independent canonical manifest for Codex, Antigravity, and Shared .agents configuration.",
+  "generated_at": "2026-08-25T00:15:00+08:00",
+  "description": "Authoritative Single Canonical Registry for Codex, Antigravity, and Shared .agents configuration.",
+  "canonical_repository": "a275618631/codex-antigravity-collaboration",
   "artifacts": [
     {
       "artifact": "shared-collaboration-protocol-v3.md",
       "canonical_repo": "a275618631/codex-antigravity-collaboration",
       "canonical_path": "shared/rules/shared-collaboration-protocol-v3.md",
       "version": "3.1.0",
-      "sha256": "c120c3752f6f24bade140fc034823d58d9f1b062930c10db20066bc13bbc7fad",
+      "sha256": "27a3fbca3c9bc0f27173a3241a6f807bef1832ad366c9e0c78b3068162222d9a",
       "runtime": "shared",
       "scope": "global",
       "source_of_truth": "canonical_repo",
@@ -57,7 +58,7 @@
       "canonical_repo": "a275618631/codex-antigravity-collaboration",
       "canonical_path": "shared/skills/GLOBAL_CORE/codex-settings-sync/SKILL.md",
       "version": "3.1.0",
-      "sha256": "28072f8f3698e2bf7ed48c1b0e119e7d2db728bb7fb8598f742553881eabf55a",
+      "sha256": "74585f473250ccbe3cd09e54e404a0fa4ef9aba680389b9c6a988789fdf501c4",
       "runtime": "shared",
       "scope": "global",
       "source_of_truth": "canonical_repo",
