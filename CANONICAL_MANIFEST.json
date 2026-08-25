@@ -224,7 +224,7 @@
     {
       "artifact": "antigravity-gemini-adapter",
       "canonical_repo": "a275618631/antigravity-config",
-      "canonical_path": "antigravity/GEMINI.md",
+      "canonical_path": "GEMINI.md",
       "version": "3.1.0",
       "sha256": "794ea730833d547fb8bf41cfe90d20694a8e8d7b62c2e7c87f1f65222a0fff80",
       "runtime": "antigravity",
@@ -236,7 +236,7 @@
     {
       "artifact": "codex-default-rules",
       "canonical_repo": "a275618631/codex-settings-sync",
-      "canonical_path": "codex/rules/default.rules",
+      "canonical_path": "rules/default.rules",
       "version": "3.1.0",
       "sha256": "0ab067ff4f805fa56b79957d7867c70c4087710451e04c96eab4fecf3b3c57aa",
       "runtime": "codex",
