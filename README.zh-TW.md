@@ -123,6 +123,18 @@ Queue / State / Lease / Heartbeat / Retry
 - [Status and Roadmap](docs/STATUS_AND_ROADMAP.md)
 - [References](docs/REFERENCES.md)
 
+## 本機雙向 MCP Bridge（已驗證）
+
+本專案現在包含一個僅限本機使用的 Codex × Antigravity MCP bridge：
+
+- [Bridge 程式與測試](local_bridge/)
+- 兩個桌面 runtime 各自以 stdio 啟動 bridge process。
+- 兩端透過同一個鎖定的 JSONL mailbox 傳遞 bounded text message。
+- bridge 不執行訊息中的指令，也不包含 OAuth、PAT 或其他憑證。
+- 這是 pull-based transport；模型需要呼叫 `bridge_receive`，不會自動插入另一個已執行中的回合。
+
+重啟後已完成 Codex → Antigravity → Codex 的實際 smoke test。完整的本機設定與安全邊界請見 [local bridge README](local_bridge/README.md)。
+
 ## 定位
 
 這個專案最適合被理解為：
