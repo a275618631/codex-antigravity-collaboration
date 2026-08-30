@@ -30,9 +30,10 @@ Bridge 不執行訊息中的指令，不包含 OAuth、PAT、API key 或其他�
 
 - Repository：`a275618631/codex-antigravity-collaboration`
 - Branch：`codex/bridge-mcp-writeback-20260830`
-- Commit：`1903508589a635a4356b6c274a4a8838484d802b`
+- Commit：`1903508589a635a4356b6c274a4a8838484d802b`（分支最後提交：`59b1eff`）
 - Pull Request：[PR #4](https://github.com/a275618631/codex-antigravity-collaboration/pull/4)
-- Base：`main`；PR 保持 open，未執行 merge。
+- Base：`main`；PR #4 已於 2026-08-30 完成 Squash Merge 至 `main`（Merge commit: `2c2d6a9e88edf52227f0452f5cdeec8e31762804`）。
+- 本機狀態：本機專案與 Codex 共用目錄之 `main` 分支已 fast-forward 同步至最新，working tree clean。
 
 ## Google Drive 交付
 
