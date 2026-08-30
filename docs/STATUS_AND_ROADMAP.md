@@ -1,6 +1,6 @@
 # Status and Roadmap
 
-Checked against the private reference environment on **2026-08-21**.
+Checked against the private reference environment on **2026-08-29**.
 
 This file is intentionally conservative. If two implementation reports disagree, the lower-confidence status is used until the discrepancy is resolved.
 
@@ -23,13 +23,15 @@ This file is intentionally conservative. If two implementation reports disagree,
 | Bounded external delegation | **Implemented** | One-hop guard is part of the current protocol and validation. |
 | Bounded read-only Debate | **Implemented** | Two-round maximum is part of the current protocol. |
 | Platform-native parallel agents | **Implemented / Native** | Relies on platform capabilities rather than project code. |
-| Shared skill source | **Partial** | Current QA previously detected same-name skill drift; canonical-source convergence remains to be re-verified. |
+| Shared skill source | **Partial** | The v3.1 canonical source and all 20 manifest restore targets now hash-verify in the private environment; the public `main` manifest still has two stale source paths pending PR #2. |
 | Google project-context/notebook usage | **Implemented in private environment** | Useful in the working setup but not a portable requirement of this public architecture. |
 | Local-model bidirectional communication | **Experimental** | Exercised separately from the current privacy-aware trust model. |
 
 ## Known limitation: shared skills
 
-A previous QA pass found multiple same-name Skills with divergent content in the private reference environment.
+A previous QA pass found multiple same-name Skills with divergent content in the private reference environment. The
+2026-08-29 closure audit now verifies the active v3.1 canonical set and all 20 live restore targets, but the public
+`main` branch still points two adapter entries at obsolete source paths until PR #2 is merged.
 
 Therefore the public project should **not** claim that all agent runtimes already consume a perfectly synchronized canonical skill tree.
 

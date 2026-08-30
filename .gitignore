@@ -17,3 +17,10 @@ venv/
 node_modules/
 *.log
 .tmp/
+
+# Secrets & Credentials
+.env
+.env.*
+credentials.json
+*.pem
+*.key
