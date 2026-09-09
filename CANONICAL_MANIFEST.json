@@ -214,7 +214,7 @@
       "canonical_repo": "a275618631/codex-settings-sync",
       "canonical_path": "codex/AGENTS.md",
       "version": "3.1.0",
-      "sha256": "4cfeb1a8436f6425d801f4b004c43f832fb7d4128daafff0b3e430435f828037",
+      "sha256": "f6608511d03d0bcf3e63e4b578b455c4a8c504417df9cedc0b834b2bedfc2792",
       "runtime": "codex",
       "scope": "global",
       "source_of_truth": "canonical_repo",
