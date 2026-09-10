@@ -210,6 +210,30 @@
       "required": true
     },
     {
+      "artifact": "skill:file-organizer",
+      "canonical_repo": "a275618631/codex-antigravity-collaboration",
+      "canonical_path": "shared/skills/GLOBAL_CORE/file-organizer/SKILL.md",
+      "version": "3.1.0",
+      "sha256": "c12260d7a8a37525c4d968dbb8da94b8ba65e816515d910af9d2aae22ba5e17e",
+      "runtime": "shared",
+      "scope": "global",
+      "source_of_truth": "canonical_repo",
+      "restore_target": ".agents/skills/file-organizer/SKILL.md",
+      "required": true
+    },
+    {
+      "artifact": "skill:pr-review-agent",
+      "canonical_repo": "a275618631/codex-antigravity-collaboration",
+      "canonical_path": "shared/skills/GLOBAL_CORE/pr-review-agent/SKILL.md",
+      "version": "3.1.0",
+      "sha256": "ae8870763577d5062c84087747c0a8209f3137585bbfb730235aabedc9b730c1",
+      "runtime": "shared",
+      "scope": "global",
+      "source_of_truth": "canonical_repo",
+      "restore_target": ".agents/skills/pr-review-agent/SKILL.md",
+      "required": true
+    },
+    {
       "artifact": "codex-agents-adapter",
       "canonical_repo": "a275618631/codex-settings-sync",
       "canonical_path": "codex/AGENTS.md",
