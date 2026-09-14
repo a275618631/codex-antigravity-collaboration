@@ -2,6 +2,14 @@
 
 只有需要正式 routing ledger、多目的地交付或稽核紀錄時才載入本 schema。
 
+## Conditional platform defaults
+
+These are live defaults to verify immediately before writing. They never override an explicit user destination or repository.
+
+- Antigravity Drive parent: `https://drive.google.com/drive/folders/1aaYM0LH7nZc8nGVeGJWWvGuZQEb4zQ2G`
+- Antigravity GitHub owner: `https://github.com/a275618631`
+- Formal artifact filenames must contain the project or feature, purpose, and creation date (`YYYY-MM-DD`).
+
 ```yaml
 storage_request:
   task: ""

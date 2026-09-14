@@ -55,6 +55,33 @@ foreach ($skill in $skills) {
 }
 
 $manifest = Get-Content -Raw -LiteralPath $manifestPath | ConvertFrom-Json
+$manifestSkillArtifacts = @($manifest.artifacts | Where-Object {
+    $_.canonical_repo -eq 'a275618631/codex-antigravity-collaboration' -and
+    $_.artifact -like 'skill:*' -and
+    $_.artifact -notlike 'skill-reference:*'
+})
+$discoveredSkillPaths = @{}
+foreach ($skill in $skills) {
+    $relative = [IO.Path]::GetRelativePath($repoRoot, $skill.FullName).Replace('\', '/')
+    $discoveredSkillPaths[$relative] = $skill.FullName
+}
+if ($manifestSkillArtifacts.Count -ne $discoveredSkillPaths.Count) {
+    $errors.Add("Manifest Skill count ($($manifestSkillArtifacts.Count)) does not match discovered Skill count ($($discoveredSkillPaths.Count))")
+}
+$manifestSkillPaths = @{}
+foreach ($artifact in $manifestSkillArtifacts) {
+    $manifestSkillPaths[$artifact.canonical_path] = $true
+}
+foreach ($relative in $discoveredSkillPaths.Keys) {
+    if (-not $manifestSkillPaths.ContainsKey($relative)) {
+        $errors.Add("Discovered Skill missing from manifest: $relative")
+    }
+}
+foreach ($relative in $manifestSkillPaths.Keys) {
+    if (-not $discoveredSkillPaths.ContainsKey($relative)) {
+        $errors.Add("Manifest Skill not discovered: $relative")
+    }
+}
 foreach ($artifact in $manifest.artifacts) {
     if ($artifact.canonical_repo -ne 'a275618631/codex-antigravity-collaboration') { continue }
     $path = Join-Path $repoRoot ($artifact.canonical_path -replace '/', [IO.Path]::DirectorySeparatorChar)
@@ -73,4 +100,3 @@ if ($errors.Count -gt 0) {
 }
 
 Write-Host "PASS: $($skills.Count) Skills; frontmatter, descriptions, names, references, and manifest hashes validated."
-

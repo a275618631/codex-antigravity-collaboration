@@ -7,7 +7,7 @@ description: 管理 Codex 交付物的專案識別、Google Drive／GitHub 路�
 
 ## 目的
 
-先確認專案、目的地與既有位置，再建立或寫入外部交付物。此 Skill 是工作報告、Project Delivery Orchestrator、Google Drive 保存與 GitHub repository 選擇的共同政策；不負責搬移歷史檔案，也不取代平台專用工具。
+先確認專案、目的地與既有位置，再建立或寫入外部交付物。此 Skill 是工作報告、Google Drive 保存與 GitHub repository 選擇的共同政策；不負責搬移歷史檔案，也不取代平台專用工具。
 
 ## 觸發條件
 
@@ -15,6 +15,12 @@ description: 管理 Codex 交付物的專案識別、Google Drive／GitHub 路�
 - 使用者要求保存到 Google Drive、GitHub，或同時保存到兩者。
 - 需要選擇新 repository、專案資料夾或交付目錄。
 - 需要判斷是否沿用既有專案、分支或版本。
+
+## 外部平台分流
+
+- Codex 交付物放在 Google Drive 的 `CODEX/<project folder>/`；Antigravity 交付物放在其指定 Drive folder；兩者不得互相覆寫。
+- GitHub 交付物沿用既有專案 owner/repository 與非保護分支；不要因單一任務建立重複 repository。
+- 正式交付、多檔案成果或外部上傳才建立完整交付物索引；單一本機小改且沒有交付要求時，簡短回報即可。
 
 ## Input Schema
 
