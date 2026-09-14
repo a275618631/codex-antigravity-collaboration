@@ -18,16 +18,7 @@ description: 管理 Codex 交付物的專案識別、Google Drive／GitHub 路�
 
 ## Input Schema
 
-```yaml
-storage_request:
-  task: ""
-  project_key: ""
-  aliases: []
-  destinations: [google_drive|github]
-  artifacts: [{purpose: "", filename: ""}]
-  date: "YYYY-MM-DD"
-  user_authorized_write: false
-```
+需要建立完整 routing ledger 或交付物索引時，讀取 [references/storage-contract.md](references/storage-contract.md)。一般單一目的地工作不必載入 schema。
 
 ## Resolution Workflow
 
@@ -38,70 +29,6 @@ storage_request:
 5. 檔名使用繁體中文，至少包含專案／功能、用途與建立日期；避免只用 `report.md`、`final.docx`、`output.txt`。
 6. 寫入後必須讀回 metadata／內容，核對實際 parent、完整路徑、檔名、URL、MIME／大小與 repository／分支。
 7. 發現錯放、重複、檔名不合規或無法回讀時，狀態為 `needs_repair` 或 `failed`，不得報告為完成。移動、重新命名、覆蓋、刪除或權限變更需另有明確授權。
-
-## Output Schema
-
-```yaml
-routing:
-  task: ""
-  date: ""
-  lane: fast|slow
-  workflow: project-delivery-orchestrator
-  skills_invoked: []
-  agents_invoked: []
-storage:
-  project_key: ""
-  relationship: new|continuation|branch|related|needs_review
-  platform: google_drive|github|both
-  drive:
-    expected_root: CODEX
-    expected_project_folder: ""
-    expected_parent_id: ""
-    actual_parent_id: ""
-    actual_path: ""
-    root_leak_detected: false
-    reused_existing_project_folder: false
-    duplicate_project_folders_found: []
-    top_folder_date_before: ""
-    top_folder_date_after: ""
-    placement_verified: false
-  github:
-    expected_repo: ""
-    actual_repo: ""
-    reused_existing_repo: false
-    new_repo_reason: ""
-    duplicate_or_related_repos_found: []
-    placement_verified: false
-artifacts:
-  - purpose: ""
-    expected_filename: ""
-    actual_filename: ""
-    local_path: ""
-    url: ""
-    storage_path: ""
-    parent_id: ""
-    repository: ""
-    branch: ""
-    status: created|updated|not_saved|needs_repair|failed
-    verification: ""
-    created_at: ""
-    filename_language: zh-TW
-    project_in_filename: false
-    purpose_in_filename: false
-    creation_date_in_filename: false
-    naming_verified: false
-validations:
-  routing_ledger: pass|fail|not_applicable
-  content: pass|fail|not_run
-  format: pass|fail|not_run
-  remote_exists: pass|fail|not_run
-  permission: pass|fail|not_run
-  storage_location: pass|fail|not_run
-  project_reuse: pass|fail|not_run
-  filename_policy: pass|fail|not_run
-  top_folder_date: pass|fail|not_run
-unresolved: []
-```
 
 ## 交付物索引與摘要錨點
 

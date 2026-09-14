@@ -20,7 +20,6 @@ description: 當需要在寄出、發布、合併、部署、歸檔或交接前�
 - `risk_level`
 - `audience`
 - `storage_ledger`
-- `storage_ledger`
 
 ## Workflow
 
@@ -29,7 +28,6 @@ description: 當需要在寄出、發布、合併、部署、歸檔或交接前�
 3. 每項標記 pass、fail 或 needs review。
 4. 列出必修項目。
 5. 產生 readiness score 與核准建議。
-6. 若涉及外部保存，檢查 routing ledger、CODEX 根／parent、專案沿用、檔名政策、GitHub repository／branch 與寫入後回讀。
 6. 若涉及外部保存，檢查 routing ledger、CODEX 根／parent、專案沿用、檔名政策、GitHub repository／branch 與寫入後回讀。
 
 ## Output Schema
@@ -48,8 +46,6 @@ description: 當需要在寄出、發布、合併、部署、歸檔或交接前�
 - 每個 failure 必須有明確原因。
 - 高風險項目需要人工核准。
 - 缺資料不可默默通過。
-- Drive 交付必須同時通過：`storage_location`、`project_reuse`、`filename_policy`、`remote_exists`；缺任一項即 `needs_review` 或 `fail`。
-- GitHub 交付必須確認 owner、repository、branch、實際檔案位置與 commit／遠端存在性；不可用本機路徑代替。
 - Drive 交付必須同時通過：`storage_location`、`project_reuse`、`filename_policy`、`remote_exists`；缺任一項即 `needs_review` 或 `fail`。
 - GitHub 交付必須確認 owner、repository、branch、實際檔案位置與 commit／遠端存在性；不可用本機路徑代替。
 - 本 Skill 負責判斷成果是否可交付；完成後的修改清單、測試結果與待確認事項格式由 `output-contract` 處理。

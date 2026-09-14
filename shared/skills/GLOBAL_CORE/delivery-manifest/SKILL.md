@@ -1,6 +1,6 @@
 ---
 name: delivery-manifest
-description: "每次產生、修改、上傳或寄送檔案後，產生統一的交付物索引 (Delivery Manifest)，並嚴格控管 Google Drive 上傳路徑。"
+description: 為正式交付、多檔案成果或外部上傳建立可驗證的交付物索引，並控管 Google Drive/GitHub 實際存放位置；一般本機小改且沒有交付要求時不使用。
 ---
 
 # Delivery Manifest (交付物索引與平台分流)
