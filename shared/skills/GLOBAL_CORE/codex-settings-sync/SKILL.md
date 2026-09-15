@@ -7,7 +7,7 @@ description: 管理、備份、匯出、同步、還原與檢查 Codex 專屬設
 
 ## 1. 權威歸屬 (Canonical Ownership)
 
-- **Shared Artifacts 權威庫**：`a275618631/codex-antigravity-collaboration`（擁有 Shared Protocol、16 項 Global Core Skills 與 Canonical Registry）。
+- **Shared Artifacts 權威庫**：`a275618631/codex-antigravity-collaboration`（擁有 Shared Protocol、13 項 Global Core Skills 與 Canonical Registry）。
 - **Codex-specific Artifacts 權威庫**：`a275618631/codex-settings-sync`（擁有 Codex Thin Adapter、Codex 權限規則 `default.rules`、可攜設定與同步工具）。
 - **Antigravity-specific Artifacts 權威庫**：`a275618631/antigravity-config`（擁有 Antigravity Thin Adapter 與專屬外掛設定）。
 

@@ -6,7 +6,7 @@
 
 ### 10 大核心不變量
 1. **原生能力優先 (Native Capabilities First)**：各 Runtime 優先使用本機原生 Subagents、Worktrees、Skills、Permissions 與排程機制，不額外建立非必要的調度層或 Broker。
-2. **共享核心，薄適配層 (Shared Core, Thin Adapters)**：共用核心 Rules 與 16 項 Global Core Skills，各平台僅維護薄適配層 (Thin Adapters)。
+2. **共享核心，薄適配層 (Shared Core, Thin Adapters)**：共用核心 Rules 與 13 項 Global Core Skills，各平台僅維護薄適配層 (Thin Adapters)。
 3. **有限委派與防遞迴 (Bounded Delegation / One-Hop)**：跨平台委派嚴格限制為最多一跳 (1-Hop)，杜絕遞迴調用風暴（例如：A ➔ B 合規；A ➔ B ➔ A 嚴禁）。
 4. **單一寫入者 (One Active Writer Per Write-Set)**：支援多方唯讀分析與審查，但同一目標檔案集 (write-set) 同一時間僅允許單一 active writer 進行修改。
 5. **嚴格安全與無 Secret 傳遞 (No Secret Transfer)**：禁止在 Prompt、封包、日誌或程式碼中傳遞任何 API Key、Token、Password、Cookie、OAuth Secret、SSH Key 或 `.env`。
@@ -22,3 +22,7 @@
 
 - **執行期能力與調度指南**：請參閱 `references/runtime-routing.md`。
 - **跨平台任務與結果封包規格**：請參閱 `references/cross-runtime-packets.md`。
+
+## 3. 回應媒介選擇
+
+只有在視覺化能實質改善理解時才使用圖表、流程圖或其他視覺形式；簡單回答不加圖。
