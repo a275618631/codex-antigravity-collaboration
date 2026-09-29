@@ -117,6 +117,12 @@ Queue / State / Lease / Heartbeat / Retry
 
 ## 文件
 
+- [GitHub 本地 Codex 自動交接使用手冊（2026-09-29）](GitHub本地Codex自動交接_使用手冊_20260929.md)
+- [GitHub 本地交接 Receiver 技術入口](github_handoff/README_GITHUB_HANDOFF_20260929.md)
+- [GitHub 本地交接安全與威脅模型](SECURITY_GITHUB_HANDOFF_20260929.md)
+- [GitHub 本地交接維運 Runbook](RUNBOOK_GITHUB_HANDOFF_20260929.md)
+- [GitHub 本地交接最終驗收報告](FINAL_REPORT_GITHUB_HANDOFF_20260929.md)
+
 - [Architecture](docs/ARCHITECTURE.md)
 - [Design Principles](docs/DESIGN_PRINCIPLES.md)
 - [Privacy and Trust](docs/PRIVACY_AND_TRUST.md)
