@@ -1,0 +1,39 @@
+name: Codex local task
+description: Submit a task to an approved local Codex host
+title: "[Codex Task] "
+labels: ["codex-task"]
+body:
+  - type: markdown
+    attributes:
+      value: "Approval is a separate trusted comment containing the digest of the final task. Editing this issue invalidates approval."
+  - type: textarea
+    id: packet
+    attributes:
+      label: Task packet
+      description: Keep every heading and use repository-relative scopes only.
+      value: |
+        ## Task ID
+        GH-
+        ## Goal
+
+        ## Target Repo
+        OWNER/repository
+        ## Base Branch
+        main
+        ## Read Scope
+        - src
+        ## Write Scope
+        - src
+        ## Forbidden
+        - secrets
+        - force push
+        ## Acceptance
+        - tests pass
+        ## Host
+        primary-host
+        ## Lane
+        standard
+        ## Risk
+        low
+    validations:
+      required: true
