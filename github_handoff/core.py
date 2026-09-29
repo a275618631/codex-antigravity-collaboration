@@ -176,6 +176,10 @@ def execute_task(task: dict[str, Any], config: dict[str, Any]) -> dict[str, Any]
     command = build_codex_command(worktree, schema, output, config.get("model"))
     outcome = run_codex(command, build_prompt(task), int(config.get("execution_timeout_seconds", 3600)))
     if outcome["status"] != "Completed" or outcome.get("returncode") != 0: return outcome
+    try:
+        outcome["changed_files"] = validate_changed_paths(worktree, task["Write Scope"])
+    except SafetyError as exc:
+        return {**outcome, "status": "Failed", "reason": str(exc)}
     try: outcome["result_packet"] = validate_result_packet(output, task["Task ID"])
     except SafetyError as exc: return {**outcome, "status": "Failed", "reason": str(exc)}
     return outcome
@@ -188,23 +192,66 @@ def validate_worktree(worktree: Path, allowed_root: Path) -> None:
     if probe.returncode or probe.stdout.strip() != "true": raise SafetyError("invalid git worktree")
 
 
+def validate_changed_paths(worktree: Path, allowed_write_scope: list[str]) -> list[str]:
+    if not allowed_write_scope:
+        raise SafetyError("write scope must contain at least one allowlisted path")
+    commands = (
+        ["git", "-C", str(worktree), "diff", "--name-only", "-z", "HEAD"],
+        ["git", "-C", str(worktree), "ls-files", "--others", "--exclude-standard", "-z"],
+    )
+    changed: set[str] = set()
+    for command in commands:
+        result = subprocess.run(command, capture_output=True, timeout=20)
+        if result.returncode:
+            raise SafetyError("failed to inspect worktree changes")
+        changed.update(item.decode("utf-8", errors="strict") for item in result.stdout.split(b"\0") if item)
+    outside = sorted(path for path in changed if not _allowed_scope(path, allowed_write_scope))
+    if outside:
+        raise SafetyError("Codex changed files outside approved write scope: " + ", ".join(outside))
+    return sorted(changed)
+
+
 def run_codex(command: list[str], prompt: str, timeout: int, cancel: threading.Event | None = None) -> dict[str, Any]:
-    started = time.monotonic(); process = subprocess.Popen(command, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
-    assert process.stdin; process.stdin.write(prompt); process.stdin.close()
-    while process.poll() is None:
-        if cancel and cancel.is_set():
+    started = time.monotonic()
+    # Files avoid PIPE back-pressure deadlocking a verbose, long-running Codex process.
+    with tempfile.TemporaryFile(mode="w+", encoding="utf-8") as stdout_file, tempfile.TemporaryFile(mode="w+", encoding="utf-8") as stderr_file:
+        process = subprocess.Popen(command, stdin=subprocess.PIPE, stdout=stdout_file, stderr=stderr_file, text=True)
+        assert process.stdin
+        process.stdin.write(prompt)
+        process.stdin.close()
+        stopped: str | None = None
+        while process.poll() is None:
+            if cancel and cancel.is_set():
+                stopped = "cancelled"
+                break
+            if time.monotonic() - started > timeout:
+                stopped = "timeout"
+                break
+            time.sleep(0.1)
+        if stopped:
             process.terminate()
-            try: process.communicate(timeout=5)
-            except subprocess.TimeoutExpired: process.kill(); process.communicate()
-            return {"status": "Cancelled", "duration_seconds": time.monotonic() - started}
-        if time.monotonic() - started > timeout:
-            process.terminate()
-            try: process.communicate(timeout=5)
-            except subprocess.TimeoutExpired: process.kill(); process.communicate()
-            return {"status": "Failed", "reason": "timeout", "duration_seconds": time.monotonic() - started}
-        time.sleep(0.1)
-    stdout, stderr = process.stdout.read(), process.stderr.read()
-    return {"status": "Completed" if process.returncode == 0 else "Failed", "returncode": process.returncode, "stdout": redact(stdout), "stderr": redact(stderr), "duration_seconds": time.monotonic() - started}
+            try:
+                process.wait(timeout=5)
+            except subprocess.TimeoutExpired:
+                process.kill()
+                process.wait()
+        stdout_file.seek(0); stderr_file.seek(0)
+        stdout, stderr = stdout_file.read(), stderr_file.read()
+    duration = time.monotonic() - started
+    if stopped == "cancelled":
+        return {"status": "Cancelled", "duration_seconds": duration}
+    if stopped == "timeout":
+        return {"status": "Failed", "reason": "timeout", "duration_seconds": duration}
+    try:
+        events = [json.loads(line) for line in stdout.splitlines() if line.strip()]
+    except json.JSONDecodeError as exc:
+        return {"status": "Failed", "reason": f"invalid Codex JSONL: {exc}", "returncode": process.returncode, "duration_seconds": duration}
+    event_types = [event.get("type") for event in events]
+    terminal_ok = bool(event_types) and event_types[-1] == "turn.completed" and not ({"turn.failed", "error"} & set(event_types))
+    status = "Completed" if process.returncode == 0 and terminal_ok else "Failed"
+    reason = None if status == "Completed" else "Codex did not produce a successful terminal JSONL event"
+    return {"status": status, "reason": reason, "returncode": process.returncode, "events": events,
+            "stdout": redact(stdout), "stderr": redact(stderr), "duration_seconds": duration}
 
 
 class GitHubAPI:

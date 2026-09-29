@@ -11,17 +11,19 @@ An approval is valid only when the task actor, approver, repository, host, and e
 - Issue content is parsed into fixed fields and passed to Codex through stdin. It is never interpolated into a shell command.
 - Git, Codex, and helper commands use argument arrays. Dangerous sandbox-bypass flags are absent.
 - Execution uses `workspace-write` only inside a dedicated Git worktree below the configured worktree root. A future read-only analysis mode should use `read-only` by default.
+- Before success, tracked and untracked changes are enumerated from Git and rejected if any path falls outside the approved write scope. The dedicated worktree is retained for inspection after rejection.
 - State is atomically replaced and records consumed nonces, task digests, terminal status, timeout, and interrupted/stale execution.
 - GitHub reads use ETag caching and bounded retry/backoff. Writes are serialized and progress is intended to reuse one comment with a minimum update interval.
 - Token input is process-scoped through an environment variable. Never run `gh auth token`, print a token, persist it in config, commit it, or include it in prompts/logs.
 - Redaction removes common token/password patterns and user home path prefixes before progress output. Detailed evidence stays in the restricted local state directory.
-- Success is fail-closed: exit code zero, no timeout/cancellation, and a valid structured Result Packet are all required.
+- Success is fail-closed: exit code zero, a final `turn.completed` JSONL event without an error event, no timeout/cancellation, write-scope validation, and a valid structured Result Packet are all required.
 - The requested model may be recorded, but the actual model and token usage remain `N/A` unless the CLI explicitly emits trustworthy evidence.
 
 ## Residual risks
 
 - A compromised authorized GitHub account can approve malicious natural-language work within an allowlisted scope.
 - Prefix-based repository-relative scope controls require the Codex sandbox and worktree boundary as defense in depth; symbolic-link escape testing remains important before production.
+- The Codex workspace sandbox can read the whole isolated checkout; the MVP does not technically enforce a narrower read scope inside that checkout. Keep sensitive files out of the test clone and treat read scope as an approval/prompt boundary until OS-level path isolation is added.
 - Environment variables may be readable by privileged local processes. Prefer OS credential storage that injects a process-scoped token at launch.
 - The MVP is a polling client, not a hardened multi-tenant runner. Use one private inbox, one primary host, and one active write task.
 
