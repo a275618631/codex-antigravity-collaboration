@@ -8,7 +8,7 @@ import sys
 import subprocess
 
 from github_handoff.core import (MockGitHubAPI, SafetyError, StateStore, build_codex_command,
-    parse_task, process_once, reconcile, redact, run_codex, task_digest, validate_changed_paths, verify_approval)
+    parse_task, process_once, progress_summary, reconcile, redact, run_codex, task_digest, validate_changed_paths, verify_approval)
 
 BODY = """## Task ID
 GH-1
@@ -101,6 +101,21 @@ class ContractTests(unittest.TestCase):
     def test_runner_rejects_invalid_jsonl(self):
         result=run_codex([sys.executable,"-c","print('not-json')"], "x", 5)
         self.assertEqual(result["status"], "Failed")
+    def test_result_schema_is_strict_for_every_object(self):
+        schema=json.loads((Path(__file__).parents[1]/"github_handoff"/"result.schema.json").read_text(encoding="utf-8"))
+        def visit(node):
+            if isinstance(node,dict):
+                if node.get("type")=="object": self.assertIs(node.get("additionalProperties"),False)
+                for value in node.values(): visit(value)
+            elif isinstance(node,list):
+                for value in node: visit(value)
+        visit(schema)
+    def test_progress_summary_excludes_raw_events_and_logs(self):
+        summary=progress_summary({"task_id":"x","state":"Completed","result":{"status":"Completed",
+            "stdout":"secret log","stderr":"private path","events":[{"type":"turn.completed"}],
+            "changed_files":["docs/a.txt"],"result_packet":{"result_packet":{"status":"SUCCESS","summary":"done"}}}})
+        self.assertNotIn("secret log",summary); self.assertNotIn("private path",summary); self.assertNotIn("turn.completed",summary)
+        self.assertIn("docs/a.txt",summary); self.assertIn("done",summary)
     def test_changed_path_outside_scope_rejected(self):
         with tempfile.TemporaryDirectory() as tmp:
             root=Path(tmp); subprocess.run(["git","init","-q",str(root)],check=True)
