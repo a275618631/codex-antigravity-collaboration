@@ -7,7 +7,7 @@
 3. Windows: **NOT VERIFIED**; bundled Python ran unit tests, but normal system Python is absent.
 4. ChatGPT → automatic local Codex: **not production-ready until the one-time authorization/setup below**.
 5. Phone status/result: designed through one GitHub Issue progress comment; real writeback not authorized or tested.
-6. Automated tests: **18 PASS / 0 FAIL**; JSON, PowerShell, shell, canonical validation, and diff whitespace checks passed.
+6. Automated tests: **22 PASS / 0 FAIL**; JSON, PowerShell, shell, canonical validation, and diff whitespace checks passed.
 7. Delivery: local branch `codex/github-local-handoff-mvp-20260929`; local commit created; no push or PR was performed.
 8. Manual work: one consolidated authorization for private test repos/token, Python install, host config, real smoke, optional service activation, push/PR.
 9. Known risks: real GitHub API/worktree/Codex path and symlink escape behavior remain unverified; unattended cancellation is limited.
@@ -23,7 +23,7 @@
 
 ## Validation evidence
 
-- Bundled Python `unittest discover -s tests -v`: 18 tests, all passed.
+- Bundled Python `unittest discover -s tests -v`: 22 tests, all passed.
 - Bundled Python `compileall`: passed.
 - JSON load of all handoff JSON files: passed.
 - PowerShell parser for the Windows verification script: passed.

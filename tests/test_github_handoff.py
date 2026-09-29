@@ -4,9 +4,11 @@ from pathlib import Path
 import tempfile
 import threading
 import unittest
+import sys
+import subprocess
 
 from github_handoff.core import (MockGitHubAPI, SafetyError, StateStore, build_codex_command,
-    parse_task, process_once, reconcile, redact, run_codex, task_digest, verify_approval)
+    parse_task, process_once, reconcile, redact, run_codex, task_digest, validate_changed_paths, verify_approval)
 
 BODY = """## Task ID
 GH-1
@@ -89,7 +91,25 @@ class ContractTests(unittest.TestCase):
         with self.assertRaisesRegex(SafetyError, "model"): build_codex_command(Path("w"),Path("s"),Path("o"),"model; command")
     def test_redaction(self): self.assertNotIn("ghp_", redact("token=ghp_abcdefghijklmnopqrstuvwxyz"))
     def test_cancel_runner(self):
-        event=threading.Event(); event.set(); result=run_codex(["git","hash-object","--stdin"], "x", 5, event); self.assertEqual(result["status"], "Cancelled")
+        event=threading.Event(); event.set(); result=run_codex([sys.executable,"-c","import time; time.sleep(5)"], "x", 5, event); self.assertEqual(result["status"], "Cancelled")
+    def test_runner_requires_success_terminal_event(self):
+        result=run_codex([sys.executable,"-c","print('{}')"], "x", 5)
+        self.assertEqual(result["status"], "Failed")
+    def test_runner_accepts_success_terminal_event(self):
+        result=run_codex([sys.executable,"-c",'print(\'{"type":"turn.completed"}\')'], "x", 5)
+        self.assertEqual(result["status"], "Completed")
+    def test_runner_rejects_invalid_jsonl(self):
+        result=run_codex([sys.executable,"-c","print('not-json')"], "x", 5)
+        self.assertEqual(result["status"], "Failed")
+    def test_changed_path_outside_scope_rejected(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root=Path(tmp); subprocess.run(["git","init","-q",str(root)],check=True)
+            subprocess.run(["git","-C",str(root),"config","user.email","test@example.invalid"],check=True)
+            subprocess.run(["git","-C",str(root),"config","user.name","Test"],check=True)
+            (root/"src").mkdir(); (root/"src"/"ok.txt").write_text("ok",encoding="utf-8")
+            subprocess.run(["git","-C",str(root),"add","src/ok.txt"],check=True); subprocess.run(["git","-C",str(root),"commit","-qm","base"],check=True)
+            (root/"outside.txt").write_text("bad",encoding="utf-8")
+            with self.assertRaisesRegex(SafetyError,"outside approved write scope"): validate_changed_paths(root,["src"])
     def test_executor_exception_is_blocked(self):
         with tempfile.TemporaryDirectory() as tmp:
             store=StateStore(Path(tmp)/"state.json"); api=MockGitHubAPI([issue()])
