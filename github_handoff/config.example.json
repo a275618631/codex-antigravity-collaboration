@@ -1,0 +1,13 @@
+{
+  "inbox_repo": "OWNER/private-codex-inbox",
+  "host_id": "primary-host",
+  "token_env": "GH_TOKEN",
+  "state_file": "~/.local/state/github-handoff/state.json",
+  "run_marker": "~/.local/state/github-handoff/receiver.run",
+  "allowed_task_actors": ["OWNER"],
+  "allowed_approvers": ["OWNER"],
+  "allowed_repos": {"OWNER/example": {"local_path": "/path/to/local/clone", "worktree_root": "~/.local/share/github-handoff/worktrees/OWNER-example", "base_branches": ["main"], "read_scope": ["src", "tests", "docs"], "write_scope": ["src", "tests", "docs"]}},
+  "report_interval_seconds": 300,
+  "stale_seconds": 3600,
+  "execution_timeout_seconds": 3600
+}

@@ -1,0 +1,13 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "GitHub transport extension for the canonical Task Packet",
+  "type": "object",
+  "required": ["task_packet", "transport"],
+  "properties": {
+    "task_packet": {"type": "object", "required": ["task_id", "objective", "lane", "scope", "constraints", "validation_criteria"]},
+    "transport": {"type": "object", "required": ["issue", "task_digest", "host", "approval_actor", "approval_nonce", "state"], "properties": {
+      "issue": {"type": "integer"}, "task_digest": {"type": "string", "pattern": "^[a-f0-9]{64}$"}, "host": {"type": "string"}, "approval_actor": {"type": "string"}, "approval_nonce": {"type": "string"},
+      "state": {"enum": ["Draft", "Awaiting Approval", "Queued", "Running", "Validating", "Reporting", "Completed", "Failed", "Blocked", "Cancelled"]}
+    }}
+  }
+}
