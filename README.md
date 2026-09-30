@@ -186,6 +186,12 @@ The default is **Stage 1** for low-frequency asynchronous work. Stage 2 and Stag
 
 ## Documentation
 
+- [GitHub → local Codex user guide (Traditional Chinese, 2026-09-29)](GitHub本地Codex自動交接_使用手冊_20260929.md)
+- [GitHub handoff receiver technical entry](github_handoff/README_GITHUB_HANDOFF_20260929.md)
+- [GitHub handoff security and threat model](SECURITY_GITHUB_HANDOFF_20260929.md)
+- [GitHub handoff operations runbook](RUNBOOK_GITHUB_HANDOFF_20260929.md)
+- [GitHub handoff acceptance report](FINAL_REPORT_GITHUB_HANDOFF_20260929.md)
+
 - [Architecture](docs/ARCHITECTURE.md)
 - [Design Principles](docs/DESIGN_PRINCIPLES.md)
 - [Privacy and Trust](docs/PRIVACY_AND_TRUST.md)

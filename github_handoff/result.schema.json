@@ -1,0 +1,38 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["result_packet"],
+  "properties": {
+    "result_packet": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["task_id", "responder", "status", "summary", "changes", "evidence", "validation_results", "risks_and_limitations", "remaining_work", "recommendation", "transport"],
+      "properties": {
+        "task_id": {"type": "string"},
+        "responder": {"type": "string", "enum": ["Codex"]},
+        "status": {"type": "string", "enum": ["SUCCESS", "PARTIAL", "FAILED", "BLOCKED"]},
+        "summary": {"type": "string"},
+        "changes": {"type": "array", "items": {"type": "string"}},
+        "evidence": {"type": "array", "items": {"type": "string"}},
+        "validation_results": {"type": "array", "items": {"type": "string"}},
+        "risks_and_limitations": {"type": "array", "items": {"type": "string"}},
+        "remaining_work": {"type": "array", "items": {"type": "string"}},
+        "recommendation": {"type": "string"},
+        "transport": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["issue", "task_digest", "host", "approval_actor", "approval_nonce", "state"],
+          "properties": {
+            "issue": {"type": "integer"},
+            "task_digest": {"type": "string", "pattern": "^[a-f0-9]{64}$"},
+            "host": {"type": "string"},
+            "approval_actor": {"type": "string"},
+            "approval_nonce": {"type": "string"},
+            "state": {"type": "string"}
+          }
+        }
+      }
+    }
+  }
+}
