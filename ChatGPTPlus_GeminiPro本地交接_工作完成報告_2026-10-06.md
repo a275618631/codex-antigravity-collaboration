@@ -50,7 +50,7 @@
 
 1. 用限制於測試 inbox＋sandbox repos 的短期 fine-grained Token，在 Windows 前景執行新增版本的 `doctor`、`dry-run`、`watch` 真實 E2E；Token 不可貼入聊天。
 2. 在 ChatGPT Plus Web／Mobile 與 Gemini AI Pro Web／Mobile 各完成一次「產生 Task Brief → 確認 Issue → 結果貼回續談」。
-3. 使用只限 canonical repo、Contents／Pull requests 最小權限的 delivery token，commit／push 本輪變更並更新既有 Draft PR #8；不得默默使用廣權限 OAuth，不得 merge。
+3. 本機 commit `499c51d` 已建立。後續使用只限 canonical repo、Contents／Pull requests 最小權限的 delivery token push，更新既有 Draft PR #8；不得默默使用廣權限 OAuth，不得 merge。
 4. 只有上述 Windows 與四入口驗收通過後，才另案審查是否安裝 Scheduled Task。macOS 需實機另驗。
 
 ## 交付物索引
@@ -61,5 +61,5 @@
 - GitHub：`a275618631/codex-antigravity-collaboration`
 - Branch：`codex/github-local-handoff-mvp-20260929`
 - Existing Draft PR：<https://github.com/a275618631/codex-antigravity-collaboration/pull/8>
-- 本輪遠端狀態：尚未 push，因此 PR #8 尚未包含本輪變更。
+- 本輪 Git 狀態：已建立本機 commit `499c51d`；尚未 push，因此 PR #8 尚未包含本輪變更。
 - Google Drive metadata／parent ID：本工作階段無 Drive connector，未驗證；檔案已保存在使用者指定的本機 Drive／repo 工作區。

@@ -83,4 +83,4 @@
 - 新增流程的真實 GitHub E2E 尚未執行；若執行，需使用者於本機安全輸入短期 fine-grained Token，不得貼在聊天。
 - ChatGPT Plus Web/Mobile、Gemini AI Pro Web/Mobile 需真人帳號逐項操作，現在均為 `NOT VERIFIED`。
 - macOS 與 Scheduled Task／常駐服務仍為 `NOT VERIFIED`，且本輪沒有啟用。
-- 本輪變更尚未 commit／push；不得默默使用廣權限 OAuth，需另以 repo-scoped delivery credential 完成。
+- 本輪程式與文件已建立本機 commit `499c51d`；尚未 push。不得默默使用廣權限 OAuth，需另以 repo-scoped delivery credential 完成。
