@@ -29,7 +29,7 @@
             "host": {"type": "string"},
             "approval_actor": {"type": "string"},
             "approval_nonce": {"type": "string"},
-            "state": {"type": "string"}
+            "state": {"type": "string", "enum": ["Draft", "Awaiting Approval", "Queued", "Running", "Validating", "Reporting", "Completed", "Failed", "Blocked", "Cancelled"]}
           }
         }
       }

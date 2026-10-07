@@ -35,5 +35,13 @@ body:
         standard
         ## Risk
         low
+        ## Origin Surface
+        manual
+        ## Client
+        unspecified
+        ## Parent Task ID
+
+        ## Revision
+        1
     validations:
       required: true

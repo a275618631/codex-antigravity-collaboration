@@ -122,6 +122,9 @@ Queue / State / Lease / Heartbeat / Retry
 - [GitHub 本地交接安全與威脅模型](SECURITY_GITHUB_HANDOFF_20260929.md)
 - [GitHub 本地交接維運 Runbook](RUNBOOK_GITHUB_HANDOFF_20260929.md)
 - [GitHub 本地交接最終驗收報告](FINAL_REPORT_GITHUB_HANDOFF_20260929.md)
+- [ChatGPT Plus／Gemini AI Pro 本地交接完整規劃（2026-10-06）](ChatGPTPlus_GeminiPro本地交接_完整任務規劃_2026-10-06.md)
+- [Chat App 本地交接操作手冊（2026-10-06）](ChatApp本地交接_操作手冊_2026-10-06.md)
+- [本輪工作日誌與驗收清單](ChatGPTPlus_GeminiPro本地交接_工作日誌_2026-10-06.md)
 
 - [Architecture](docs/ARCHITECTURE.md)
 - [Design Principles](docs/DESIGN_PRINCIPLES.md)

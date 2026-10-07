@@ -8,6 +8,9 @@
   "allowed_approvers": ["OWNER"],
   "allowed_repos": {"OWNER/example": {"local_path": "/path/to/local/clone", "worktree_root": "~/.local/share/github-handoff/worktrees/OWNER-example", "base_branches": ["main"], "read_scope": ["src", "tests", "docs"], "write_scope": ["src", "tests", "docs"]}},
   "report_interval_seconds": 300,
+  "poll_interval_seconds": 30,
+  "max_backoff_seconds": 300,
+  "max_issue_body_chars": 6000,
   "stale_seconds": 3600,
   "execution_timeout_seconds": 3600
 }

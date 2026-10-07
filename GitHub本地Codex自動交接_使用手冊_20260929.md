@@ -5,7 +5,8 @@
 目前已驗證的正式流程是：
 
 ```text
-ChatGPT／手機建立 GitHub Issue
+ChatGPT Plus／Gemini AI Pro（Web 或 Mobile）產生標準 Task Brief
+→ 使用者確認建立 GitHub Issue
 → 授權者核對內容並張貼 digest + nonce 核准
 → Windows 主機以前景 once 模式接單
 → Codex 在獨立 worktree 修改與驗證
@@ -14,7 +15,8 @@ ChatGPT／手機建立 GitHub Issue
 
 - Windows 前景 `once`：已通過真實 Private Repo E2E。
 - macOS：NOT VERIFIED。
-- 常駐背景輪詢：尚未啟用或驗證。
+- 前景 `watch` 輪詢：已實作並通過本機自動測試；真實 GitHub E2E 待驗。
+- Scheduled Task／常駐服務：未啟用，也不會由本工具自動安裝。
 - 自動 Merge：刻意不提供。
 
 ## 事前準備
@@ -90,6 +92,14 @@ python -m github_handoff --config C:\secure\receiver-config.json once
 
 `once` 會建立獨立 worktree、以 `workspace-write` 啟動 `codex exec`、收集 JSONL、驗證 Result Packet 及寫入範圍，最後將最小摘要回寫 Issue。
 
+日常前景輪詢：
+
+```powershell
+python -m github_handoff --config C:\secure\receiver-config.json watch
+```
+
+另一個終端可使用 `stop` 移除 marker。`watch` 持有 PID／host lock、遇暫時錯誤採上限 backoff；它不是 Windows 服務。
+
 ## 查詢、取消與復原
 
 查詢本機狀態：
@@ -98,7 +108,7 @@ python -m github_handoff --config C:\secure\receiver-config.json once
 python -m github_handoff --config C:\secure\receiver-config.json status
 ```
 
-- 執行前取消：關閉 Issue 或移除核准，確保下次 poll 不再領取。
+- 執行前取消：allowlisted approver 在最新編輯後張貼 `/codex-cancel task=<Task-ID> host=<host_id>`。
 - 前景執行中取消：在執行 Receiver 的終端按一般中斷鍵；重新啟動時會將逾時中的任務對帳為 `Blocked`。
 - 失敗後：先檢查受限 evidence 目錄與保留的 worktree；若修改 Issue 內容，必須重新核准。
 - Worktree 不會自動刪除，確認不需保留變更後再人工移除精確路徑。
@@ -123,7 +133,7 @@ Issue 只應保留：
 
 ## 目前限制
 
-- 只驗證 Windows 前景 `once`；macOS 與 Scheduled Task／LaunchAgent 尚未驗證。
+- Windows `once` 具有 2026-09-29 真實 E2E PASS；2026-10-06 新增 `watch` 僅完成本機自動測試，尚未重跑真實 GitHub E2E。macOS 與 Scheduled Task／LaunchAgent 均未驗證。
 - Read scope 是核准與 prompt 邊界；Codex sandbox 仍可讀取隔離 checkout。敏感檔案不應出現在執行 clone。
 - 執行中的遠端取消仍以人工中斷及重啟對帳為主。
 - 不提供 Dashboard、通用 Queue、對外 Gateway 或自動 Merge。

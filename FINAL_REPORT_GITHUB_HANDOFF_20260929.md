@@ -1,17 +1,25 @@
 # Final report — GitHub → local Codex handoff MVP (2026-09-29)
 
+## 2026-10-06 current-state addendum
+
+- Draft PR [#8](https://github.com/a275618631/codex-antigravity-collaboration/pull/8) and branch delivery were completed previously; statements below saying Push/PR are pending are historical and superseded.
+- The current increment is scoped only to personal ChatGPT Plus and Google AI Pro Gemini on web/mobile, with one manual GitHub Issue confirmation.
+- Foreground `watch`, crash-safe same-host lock recovery, bounded backoff, pre-execution trusted cancellation, canonical chat metadata, strict Result Packet transport binding, pagination/PR filtering, one progress comment, and token-free `issue-link` are implemented locally.
+- Current automated validation: **50 PASS / 0 FAIL** plus compileall, JSON parsing, PowerShell parsing, diff whitespace checks, secret scan, and independent security review (`NO_BLOCKING_FINDINGS`).
+- The 2026-09-29 Windows real E2E remains historical PASS. The new 2026-10-06 increment has no real-token GitHub E2E yet; ChatGPT/Gemini four-surface manual checks and macOS remain `NOT VERIFIED`.
+
 ## ADHD summary
 
-1. Final status: **COMPLETE FOR FOREGROUND MVP** — Windows private-repo E2E passed; Draft PR remains pending repository-scoped credentials.
+1. Final status: **COMPLETE FOR FOREGROUND MVP** — Windows private-repo E2E passed; Draft PR #8 exists.
 2. Mac real E2E: **NOT VERIFIED**.
 3. Windows host `51398-3779`: **PASS** using bundled Python 3.12.14 and Codex CLI 0.150.1.
 4. ChatGPT → GitHub Issue → approved local Codex `once` execution → GitHub result writeback: **PASS**.
 5. Phone status/result: GitHub Issue contains one redacted minimal `Completed` summary; raw events and local paths were removed.
 6. Automated tests: **24 PASS / 0 FAIL**; JSON, PowerShell, shell, canonical validation, and diff whitespace checks passed.
-7. Delivery: local branch `codex/github-local-handoff-mvp-20260929`; push and Draft PR await a separate repository-scoped token.
-8. Manual work: provide a Fine-grained Token limited to `codex-antigravity-collaboration` with Contents and Pull requests read/write.
+7. Delivery: branch `codex/github-local-handoff-mvp-20260929` was pushed and Draft PR #8 was created.
+8. Manual work: review the Draft PR; do not merge until the current addendum's unverified items are resolved.
 9. Known risks: unattended cancellation is limited; macOS and background-service activation remain unverified.
-10. Next minimum item: push the existing branch and create a Draft PR without merging.
+10. Next minimum item: perform a new safe GitHub E2E for the 2026-10-06 increment before enabling routine watch usage.
 
 ## Delivered
 
@@ -36,9 +44,9 @@
 - Fine-grained test token had access to exactly the two selected test repositories in direct probes and was cleared from the process environment after execution.
 - GitHub Issue cleanup left one 663-character progress summary and no raw events, stdout, stderr, or local absolute paths.
 
-## Remaining repository delivery authorization
+## Repository delivery status
 
-The E2E token intentionally cannot access the canonical implementation repository. Push and Draft PR require a separate Fine-grained Token limited to `a275618631/codex-antigravity-collaboration`, with Metadata read, Contents read/write, and Pull requests read/write. The token must remain process-scoped and be cleared immediately after delivery. No merge or background service activation is authorized.
+The E2E token intentionally could not access the canonical implementation repository. A separate repository-scoped delivery token was subsequently used to push the branch and create Draft PR #8, then cleared from the process environment. No merge or background service activation is authorized.
 
 ## Canonical and metrics impact
 

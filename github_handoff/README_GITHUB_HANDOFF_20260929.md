@@ -1,6 +1,8 @@
 # GitHub → local Codex handoff MVP (2026-09-29)
 
-This receiver polls one private GitHub inbox and executes only a separately approved, allowlisted task on one configured host. It uses the Python standard library, creates a dedicated Git worktree, passes a bounded Task Packet to `codex exec` over stdin, and writes a redacted progress summary back to one issue comment.
+This receiver polls one private GitHub inbox and executes only a separately approved, allowlisted task on one configured host. It uses the Python standard library, creates a dedicated Git worktree, passes a bounded Task Packet to `codex exec` over stdin, and updates one redacted progress comment through Queued, Running, Validating, Reporting, and terminal states.
+
+The supported chat surfaces are personal ChatGPT Plus and Google AI Pro Gemini on web/mobile. They create and review a Task Brief; GitHub remains the only task, approval, and status ledger. This project does not claim native chat writeback.
 
 The GitHub Issue is data, not a command. Approval requires a trusted comment created after the latest issue edit:
 
@@ -20,10 +22,23 @@ Run from the repository root:
 python3 -m github_handoff --config ~/.config/github-handoff/config.json doctor
 python3 -m github_handoff --config ~/.config/github-handoff/config.json dry-run
 python3 -m github_handoff --config ~/.config/github-handoff/config.json once
+python3 -m github_handoff --config ~/.config/github-handoff/config.json watch
 python3 -m github_handoff --config ~/.config/github-handoff/config.json status
 ```
 
-`start` and `stop` only create/remove a local run marker. They intentionally do not install or activate a daemon. See the dated runbook for deployment choices and recovery.
+`watch` is a foreground polling loop with a crash-recoverable single-writer lock and bounded error backoff. `start` and `stop` only create/remove its local run marker. They intentionally do not install or activate a daemon.
+
+Generate a token-free prefilled Issue URL from a reviewed Task Brief:
+
+```bash
+python3 -m github_handoff --config ~/.config/github-handoff/config.json issue-link --body-file task-brief.md
+```
+
+Cancel an approved task before execution with a trusted post-edit comment:
+
+```text
+/codex-cancel task=<Task-ID> host=<configured-host>
+```
 
 States: Draft → Awaiting Approval → Queued → Running → Validating → Reporting → Completed. Failed, Blocked, and Cancelled are terminal states.
 

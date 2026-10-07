@@ -191,6 +191,8 @@ The default is **Stage 1** for low-frequency asynchronous work. Stage 2 and Stag
 - [GitHub handoff security and threat model](SECURITY_GITHUB_HANDOFF_20260929.md)
 - [GitHub handoff operations runbook](RUNBOOK_GITHUB_HANDOFF_20260929.md)
 - [GitHub handoff acceptance report](FINAL_REPORT_GITHUB_HANDOFF_20260929.md)
+- [ChatGPT Plus / Gemini AI Pro local handoff plan (Traditional Chinese, 2026-10-06)](ChatGPTPlus_GeminiPro本地交接_完整任務規劃_2026-10-06.md)
+- [Chat app local handoff operations guide (Traditional Chinese, 2026-10-06)](ChatApp本地交接_操作手冊_2026-10-06.md)
 
 - [Architecture](docs/ARCHITECTURE.md)
 - [Design Principles](docs/DESIGN_PRINCIPLES.md)

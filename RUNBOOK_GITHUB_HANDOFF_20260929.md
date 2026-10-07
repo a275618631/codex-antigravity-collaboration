@@ -10,23 +10,23 @@
 
 ## Open and approve from phone or web
 
-1. Create an Issue using **Codex local task**. Keep paths repository-relative and choose the configured primary host.
+1. In ChatGPT Plus or Google AI Pro Gemini (web/mobile), create the canonical Task Brief, then create an Issue using **Codex local task** or the local `issue-link` command. Keep paths repository-relative and choose the configured primary host.
 2. Review the final Issue and compute its digest locally. A GitHub label or Issue claim is not approval.
 3. From an allowlisted GitHub account, post the exact approval command with a fresh nonce and host.
-4. Run `once`. The phone can follow the single progress comment and any manually authorized PR.
+4. Run `once`, or run foreground `watch` after local validation. The phone can follow the single progress comment and any manually authorized PR.
 
 For Gemini, share the same Issue URL or a redacted Task Brief manually. This MVP does not claim automatic web-chat synchronization.
 
 ## Query, cancel, and recover
 
 - `status` reconciles stale in-progress records to Blocked after the configured timeout.
-- `stop` removes the local run marker; terminate an active foreground `once` process with the normal OS interrupt. The interrupted task remains recoverable and is reconciled on restart.
-- To cancel before execution, remove the approval or close the Issue before the next poll. Production activation should add a reviewed cancellation label/comment workflow before unattended scheduling.
+- `stop` removes the local run marker; normal OS interrupt also stops foreground `watch`. An interrupted task remains recoverable and is reconciled on restart.
+- To cancel before execution, an allowlisted approver posts `/codex-cancel task=<Task-ID> host=<configured-host>` after the latest edit. Running-task remote cancellation is not claimed; interrupt the foreground receiver locally.
 - On failure, inspect only the restricted local evidence directory, correct the cause, edit the Issue if scope changes, and issue a new digest/nonce approval.
 - Worktrees are deliberately retained for inspection. Remove one only after verifying its exact path and preserving wanted changes.
 
 ## Start/stop and uninstall
 
-The MVP `start`/`stop` commands manage only a local marker. The macOS and Windows scripts run `doctor`; they do not install LaunchAgents, Scheduled Tasks, or services. Formal background activation requires the single authorization listed in the final report.
+`watch` is a foreground loop with a PID/host lock, stale same-host lock recovery, bounded polling backoff, and marker-controlled stop. `start`/`stop` manage only the marker. The Windows watch script runs `doctor` and `watch`; no script installs LaunchAgents, Scheduled Tasks, or services.
 
 To uninstall, stop the foreground process, remove the explicitly configured state/worktree directory after review, remove the external config, and remove the token from OS credential storage. No remote data is automatically deleted.
