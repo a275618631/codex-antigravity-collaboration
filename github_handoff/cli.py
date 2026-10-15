@@ -12,14 +12,16 @@ def main(argv=None) -> int:
     parser = argparse.ArgumentParser(prog="github-handoff"); parser.add_argument("--config", type=Path, required=True)
     sub = parser.add_subparsers(dest="command", required=True)
     for name in ("doctor", "status", "once", "dry-run", "start", "stop"): sub.add_parser(name)
-    args = parser.parse_args(argv); config = load_config(args.config); state = StateStore(Path(config["state_file"]).expanduser())
+    args = parser.parse_args(argv); config = load_config(args.config)
     if args.command == "doctor": print(json.dumps(doctor(config), indent=2)); return 0
+    token = os.environ.get(config.get("token_env", "GH_TOKEN"), "")
+    if args.command in {"once", "dry-run"} and not token:
+        print("GitHub token is not configured", file=sys.stderr); return 2
+    state = StateStore(Path(config["state_file"]).expanduser())
     if args.command == "status": reconcile(state, int(config.get("stale_seconds", 3600))); print(json.dumps(state.load(), indent=2)); return 0
     marker = Path(config.get("run_marker", str(Path(config["state_file"]).with_suffix(".run")))).expanduser()
     if args.command == "stop": marker.unlink(missing_ok=True); print("receiver stop requested"); return 0
     if args.command == "start": marker.parent.mkdir(parents=True, exist_ok=True); marker.write_text(str(os.getpid()), encoding="ascii"); print("local run marker created; no service was installed"); return 0
-    token = os.environ.get(config.get("token_env", "GH_TOKEN"), "")
-    if not token: print("GitHub token is not configured", file=sys.stderr); return 2
     api = GitHubAPI(config["inbox_repo"], token, config.get("api_base", "https://api.github.com"))
     execute = None if args.command == "dry-run" else lambda task: execute_task(task, config)
     lock = Path(config["state_file"]).expanduser().with_suffix(".lock")

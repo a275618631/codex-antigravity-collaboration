@@ -1,0 +1,45 @@
+schema_version: 1
+records:
+  - id: local-multi-agent-collaboration
+    canonical_name: Local Multi Agent Collaboration System
+    type: system
+    repo_url: https://github.com/a275618631/codex-antigravity-collaboration
+    drive_folder_id: 1CZ3N6T8BlvcL2ocybv3Op8oUF7EgTc4s
+    drive_url: https://drive.google.com/drive/folders/1CZ3N6T8BlvcL2ocybv3Op8oUF7EgTc4s
+    current_display_name: 本地多Agent協作系統
+    previous_names:
+      - 2026-08-21_雙平台Agent協作架構
+      - 2026-09-02_雙平台Agent協作架構
+    lifecycle_status: active
+    evidence_level: verified_metadata
+    last_verified_at: '2026-10-15T00:00:00+08:00'
+  - id: github-local-handoff
+    canonical_name: GitHub Local Handoff
+    type: module
+    repo_url: https://github.com/a275618631/codex-antigravity-collaboration
+    drive_folder_id: 1J9Z2PhOJMiZxk3TS-nRwnJa5YXtEezwi
+    drive_url: https://drive.google.com/drive/folders/1J9Z2PhOJMiZxk3TS-nRwnJa5YXtEezwi
+    parent_system_id: local-multi-agent-collaboration
+    module_id: github-local-handoff
+    lifecycle_status: in_progress
+    evidence_level: current_unit_validation
+    last_verified_at: '2026-10-15T00:00:00+08:00'
+  - id: agent-tool-policy-engine
+    canonical_name: Agent Tool Policy Engine
+    type: external_component
+    repo_url: https://github.com/a275618631/agent-tool-policy-engine
+    drive_folder_id: 1VBxnHwT6oEo6h9WMJJZh5PouAA2_lE1E
+    drive_url: https://drive.google.com/drive/folders/1VBxnHwT6oEo6h9WMJJZh5PouAA2_lE1E
+    parent_system_id: local-multi-agent-collaboration
+    module_id: policy-engine
+    lifecycle_status: external
+    evidence_level: remote_branch_and_tag_verified
+    last_verified_at: '2026-10-15T00:00:00+08:00'
+  - id: system-one-router
+    canonical_name: System One Router
+    type: experiment
+    parent_system_id: local-multi-agent-collaboration
+    module_id: routing
+    lifecycle_status: experiment
+    evidence_level: interface_only
+    last_verified_at: '2026-10-15T00:00:00+08:00'

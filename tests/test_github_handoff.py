@@ -6,9 +6,11 @@ import threading
 import unittest
 import sys
 import subprocess
+from unittest.mock import patch
 
 from github_handoff.core import (MockGitHubAPI, SafetyError, StateStore, build_codex_command,
     parse_task, process_once, progress_summary, reconcile, redact, run_codex, task_digest, validate_changed_paths, verify_approval)
+from github_handoff.cli import main
 
 BODY = """## Task ID
 GH-1
@@ -46,6 +48,22 @@ def issue(body=BODY, actor="owner", nonce="nonce-123456"):
         "comments":[{"author":"owner","created_at":"2026-01-01T00:00:01Z","body":f"/codex-approve digest={digest} nonce={nonce} host=host-a"}]}
 
 class ContractTests(unittest.TestCase):
+    def test_doctor_does_not_create_state_directory(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            config_path = Path(tmp) / "config.json"
+            state_path = Path(tmp) / "not-created" / "state.json"
+            config_path.write_text(json.dumps({"state_file": str(state_path), "host_id": "host-a", "allowed_repos": {}}), encoding="utf-8")
+            with patch("sys.argv", ["github-handoff"]):
+                self.assertEqual(main(["--config", str(config_path), "doctor"]), 0)
+            self.assertFalse(state_path.parent.exists())
+    def test_dry_run_without_token_does_not_create_state_directory(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            config_path = Path(tmp) / "config.json"
+            state_path = Path(tmp) / "not-created" / "state.json"
+            config_path.write_text(json.dumps({"state_file": str(state_path), "token_env": "TEST_MISSING_TOKEN", "host_id": "host-a", "allowed_repos": {}}), encoding="utf-8")
+            with patch.dict("os.environ", {}, clear=True):
+                self.assertEqual(main(["--config", str(config_path), "dry-run"]), 2)
+            self.assertFalse(state_path.parent.exists())
     def test_parse_and_digest_stable(self): self.assertEqual(task_digest(parse_task(BODY)), task_digest(parse_task(BODY)))
     def test_missing_field_rejected(self):
         with self.assertRaises(SafetyError): parse_task("## Task ID\nx")
