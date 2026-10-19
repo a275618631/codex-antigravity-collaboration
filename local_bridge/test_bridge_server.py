@@ -2,6 +2,7 @@ import json
 import os
 from pathlib import Path
 import subprocess
+import sys
 import tempfile
 import unittest
 
@@ -23,11 +24,11 @@ class BridgeServerTests(unittest.TestCase):
             env["CODEX_ANTIGRAVITY_BRIDGE_HOME"] = mailbox
 
             codex = subprocess.Popen(
-                ["python3", str(SERVER)], stdin=subprocess.PIPE, stdout=subprocess.PIPE,
+                [sys.executable, str(SERVER)], stdin=subprocess.PIPE, stdout=subprocess.PIPE,
                 stderr=subprocess.PIPE, text=True, env={**env, "CODEX_ANTIGRAVITY_BRIDGE_AGENT": "codex"},
             )
             antigravity = subprocess.Popen(
-                ["python3", str(SERVER)], stdin=subprocess.PIPE, stdout=subprocess.PIPE,
+                [sys.executable, str(SERVER)], stdin=subprocess.PIPE, stdout=subprocess.PIPE,
                 stderr=subprocess.PIPE, text=True, env={**env, "CODEX_ANTIGRAVITY_BRIDGE_AGENT": "antigravity"},
             )
             try:
