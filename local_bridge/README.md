@@ -1,7 +1,11 @@
 # Codex × Antigravity local bridge
 
 This directory contains the small local MCP server used by the two desktop
-clients on this Mac.
+clients on Windows or macOS.
+
+The Windows-compatible implementation is recorded by local commit `6d0cc96`.
+It uses `msvcrt` byte-range locking on Windows and `fcntl` locking on POSIX
+systems. The MCP tools and JSONL mailbox format are unchanged.
 
 ## Transport model
 
@@ -35,3 +39,15 @@ the same server script and mailbox path.
 
 After editing either configuration, start a new session or restart the
 corresponding desktop app so its MCP tool list is rebuilt.
+
+## Validation boundary
+
+Run the existing bridge test from the repository root:
+
+```powershell
+python -m unittest local_bridge.test_bridge_server -v
+```
+
+The local two-process test is PASS. It does not prove that a real Codex desktop
+session and a real Antigravity desktop session are both authenticated and
+connected; that Live handoff remains BLOCKED until those runtimes are present.

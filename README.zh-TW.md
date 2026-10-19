@@ -134,6 +134,14 @@ Queue / State / Lease / Heartbeat / Retry
 
 ## 本機雙向 MCP Bridge（已驗證）
 
+### Windows 現況（2026-10-19）
+
+- 本機 Windows Bridge：**PASS**；本機 commit `6d0cc96` 已將 `fcntl` 改為 Windows `msvcrt`／其他平台 `fcntl` 的跨平台鎖定，未改變 MCP Tools 或 JSONL mailbox 格式。
+- 51 項既有測試與雙程序訊息傳遞已通過。
+- 真實 Codex ↔ Antigravity Runtime 接力：**BLOCKED**，仍需兩個實際桌面 Runtime 與登入工作階段。
+- portable worktree 保持獨立，既有未提交檔案視為使用者資料，不清理、不搬移、不覆寫。
+- T7 OS 級跨專案寫入強制隔離仍為 **FAIL**；禁止無人值守跨專案寫入。
+
 本專案現在包含一個僅限本機使用的 Codex × Antigravity MCP bridge：
 
 - [Bridge 程式與測試](local_bridge/)
@@ -142,7 +150,7 @@ Queue / State / Lease / Heartbeat / Retry
 - bridge 不執行訊息中的指令，也不包含 OAuth、PAT 或其他憑證。
 - 這是 pull-based transport；模型需要呼叫 `bridge_receive`，不會自動插入另一個已執行中的回合。
 
-重啟後已完成 Codex → Antigravity → Codex 的實際 smoke test。完整的本機設定與安全邊界請見 [local bridge README](local_bridge/README.md)。
+歷史文件曾記錄 Codex → Antigravity → Codex smoke path；本輪 Windows 證據是雙程序 bridge 測試，真實 Runtime 接力仍為 BLOCKED。完整的本機設定與安全邊界請見 [local bridge README](local_bridge/README.md)。
 
 ## 定位
 

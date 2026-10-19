@@ -202,6 +202,16 @@ The default is **Stage 1** for low-frequency asynchronous work. Stage 2 and Stag
 
 Traditional Chinese overview: [README.zh-TW.md](README.zh-TW.md)
 
+## Current local handoff state (2026-10-19)
+
+- Windows local bridge: **PASS**. Commit `6d0cc96` adds platform-specific file locking (`msvcrt` on Windows, `fcntl` elsewhere) without changing MCP tools or JSONL mailbox format.
+- Local evidence: 51 existing unit/CLI/bridge tests pass, including two bridge processes exchanging messages.
+- Real Codex ↔ Antigravity runtime handoff: **BLOCKED** until both actual desktop runtimes are available and authenticated.
+- Portable worktree: protected and not modified. Its pre-existing uncommitted files are not part of this branch.
+- T7 OS-level cross-project write enforcement remains **FAIL**; unattended cross-project writes are prohibited.
+
+The canonical local entry is this README → `AGENTS.md` → `PROJECT.yaml` → `local_bridge/README.md`. This repository is a reference architecture and bounded local bridge, not a new orchestration framework.
+
 ## Project maturity
 
 This repository is best read as a **reference architecture plus a working two-runtime case study**.
