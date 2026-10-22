@@ -53,3 +53,27 @@ changes, Push, Merge, or portable-worktree operations.
   runtime status is `LIVE_BLOCKED` until a fresh handshake succeeds.
 - No repository or workspace files were included in the probe, and no
   write-capable delegation was started.
+
+## Follow-up CLI probe — 2026-10-22
+
+A subsequent read-only request through the Codex one-hop Antigravity bridge
+successfully invoked the installed Antigravity CLI and returned the exact
+nonce acknowledgement:
+
+```text
+Model: Gemini 3.8 Flash (High)
+Nonce: B-LIVE-MVJ2JX9H
+Response: AGY_ACK B-LIVE-MVJ2JX9H
+CLI status: SUCCESS; exit code 0; duration 44.77 seconds
+```
+
+This verifies one bounded Codex → Antigravity CLI → Codex request/response
+round trip at that time. It does **not** establish that an already-open desktop
+GUI alone is sufficient, freshly verify the separate desktop MCP mailbox path,
+or authorize task execution, repository writes, unattended operation, or
+cross-Repo access. T7 OS-level cross-project write isolation remains **FAIL**;
+the local receiver must remain fail-closed for unattended cross-project work.
+
+The timeout above and this later success are both retained as chronological
+evidence. The successful CLI probe supersedes the earlier timeout only for the
+specific CLI route; it does not clear the broader `LIVE_BLOCKED` safety gate.
