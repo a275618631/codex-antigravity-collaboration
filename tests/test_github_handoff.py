@@ -77,8 +77,23 @@ class ContractTests(unittest.TestCase):
         altered = BODY.replace("## Base Branch\nmain", "## Base Branch\nrelease")
         with self.assertRaisesRegex(SafetyError, "base branch"): verify_approval(issue(altered), parse_task(altered), config("x"), {"used_nonces":[]})
     def test_scope_rejected(self):
-        altered = BODY.replace("- src\n## Forbidden", "- ../private\n## Forbidden")
-        with self.assertRaises(SafetyError): verify_approval(issue(altered), parse_task(altered), config("x"), {"used_nonces":[]})
+        for scope in ("../private", "src/../private", r"src\..\private", "C:/private"):
+            with self.subTest(scope=scope):
+                altered = BODY.replace("- src\n## Forbidden", f"- {scope}\n## Forbidden")
+                with self.assertRaises(SafetyError):
+                    verify_approval(issue(altered), parse_task(altered), config("x"), {"used_nonces":[]})
+
+    def test_empty_write_scope_is_rejected_before_execution(self):
+        body = BODY.replace("## Write Scope\n- src\n", "## Write Scope\n")
+        with self.assertRaisesRegex(SafetyError, "Write Scope"):
+            parse_task(body)
+
+        task = parse_task(BODY); task["Write Scope"] = []
+        candidate = issue()
+        digest = task_digest(task)
+        candidate["comments"][0]["body"] = f"/codex-approve digest={digest} nonce=nonce-123456 host=host-a"
+        with self.assertRaisesRegex(SafetyError, "write scope"):
+            verify_approval(candidate, task, config("x"), {"used_nonces": []})
     def test_edit_invalidates_digest(self):
         changed = BODY.replace("Update docs", "Update code")
         candidate = issue(); candidate["body"] = changed

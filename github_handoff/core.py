@@ -138,8 +138,14 @@ class StateStore:
 
 
 def _allowed_scope(item: str, prefixes: list[str]) -> bool:
-    normalized = Path(item).as_posix().lstrip("/")
-    return not normalized.startswith("../") and any(normalized == p or normalized.startswith(p.rstrip("/") + "/") for p in prefixes)
+    normalized = item.replace("\\", "/")
+    if not normalized or normalized.startswith("/") or re.match(r"^[A-Za-z]:", normalized):
+        return False
+    parts = normalized.split("/")
+    if any(part in {"", ".", ".."} for part in parts):
+        return False
+    normalized = "/".join(parts)
+    return any(normalized == p or normalized.startswith(p.rstrip("/") + "/") for p in prefixes)
 
 
 def verify_approval(issue: dict[str, Any], task: dict[str, Any], config: dict[str, Any], state: dict[str, Any], *, allow_used_nonce: str | None = None) -> dict[str, str]:
@@ -148,6 +154,7 @@ def verify_approval(issue: dict[str, Any], task: dict[str, Any], config: dict[st
     if task["Target Repo"] not in config["allowed_repos"]: raise SafetyError("repo not allowlisted")
     allowed = config["allowed_repos"][task["Target Repo"]]
     if task["Base Branch"] not in allowed.get("base_branches", ["main"]): raise SafetyError("base branch not allowlisted")
+    if not task["Write Scope"]: raise SafetyError("write scope must contain at least one allowlisted path")
     for scope_name, key in (("Read Scope", "read_scope"), ("Write Scope", "write_scope")):
         for item in task[scope_name]:
             if not _allowed_scope(item, allowed[key]): raise SafetyError(f"scope not allowlisted: {item}")
