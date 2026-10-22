@@ -239,13 +239,32 @@ def build_prompt(task: dict[str, Any]) -> str:
 def validate_result_packet(path: Path, task_id: str, expected_transport: dict[str, Any] | None = None) -> dict[str, Any]:
     try: result = json.loads(path.read_text(encoding="utf-8"))
     except (OSError, json.JSONDecodeError) as exc: raise SafetyError(f"invalid structured result: {exc}") from exc
-    packet = result.get("result_packet", {})
     required = {"task_id", "responder", "status", "summary", "changes", "evidence", "validation_results", "risks_and_limitations", "remaining_work", "recommendation", "transport"}
-    if required - packet.keys() or packet.get("task_id") != task_id or packet.get("status") not in {"SUCCESS", "PARTIAL", "FAILED", "BLOCKED"}:
-        raise SafetyError("result packet failed required-field validation")
+    if not isinstance(result, dict) or set(result) != {"result_packet"}:
+        raise SafetyError("result packet failed strict schema validation")
+    packet = result["result_packet"]
+    if not isinstance(packet, dict) or set(packet) != required:
+        raise SafetyError("result packet failed strict schema validation")
+    if (packet["task_id"] != task_id or not isinstance(packet["task_id"], str)
+            or packet["responder"] != "Codex" or not isinstance(packet["status"], str)
+            or packet["status"] not in {"SUCCESS", "PARTIAL", "FAILED", "BLOCKED"}
+            or not isinstance(packet["summary"], str) or not isinstance(packet["recommendation"], str)):
+        raise SafetyError("result packet failed strict schema validation")
+    for field in ("changes", "evidence", "validation_results", "risks_and_limitations", "remaining_work"):
+        if not isinstance(packet[field], list) or any(not isinstance(item, str) for item in packet[field]):
+            raise SafetyError("result packet failed strict schema validation")
+    transport = packet["transport"]
+    transport_keys = {"issue", "task_digest", "host", "approval_actor", "approval_nonce", "state"}
+    if (not isinstance(transport, dict) or set(transport) != transport_keys
+            or type(transport["issue"]) is not int
+            or not isinstance(transport["task_digest"], str)
+            or not re.fullmatch(r"[a-f0-9]{64}", transport["task_digest"])
+            or any(not isinstance(transport[key], str) for key in ("host", "approval_actor", "approval_nonce"))
+            or not isinstance(transport["state"], str)
+            or transport["state"] not in {"Draft", "Awaiting Approval", "Queued", "Running", "Validating", "Reporting", "Completed", "Failed", "Blocked", "Cancelled"}):
+        raise SafetyError("result packet failed strict schema validation")
     if expected_transport is not None:
-        transport = packet.get("transport")
-        if not isinstance(transport, dict) or transport.keys() != expected_transport.keys():
+        if transport.keys() != expected_transport.keys():
             raise SafetyError("result transport does not match expected transport")
         for key, expected in expected_transport.items():
             actual = transport.get(key)

@@ -168,6 +168,27 @@ class ContractTests(unittest.TestCase):
             path.write_text(json.dumps(tampered), encoding="utf-8")
             with self.assertRaisesRegex(SafetyError, "transport"):
                 validate_result_packet(path, "GH-1", expected)
+
+    def test_result_packet_enforces_strict_schema_types_and_keys(self):
+        payload = {"result_packet": {"task_id": "GH-1", "responder": "Codex", "status": "SUCCESS",
+            "summary": "done", "changes": [], "evidence": [], "validation_results": [],
+            "risks_and_limitations": [], "remaining_work": [], "recommendation": "none",
+            "transport": {"issue": 1, "task_digest": "a" * 64, "host": "host-a",
+                "approval_actor": "owner", "approval_nonce": "nonce-123456", "state": "Running"}}}
+        invalid_results = []
+        extra_key = json.loads(json.dumps(payload)); extra_key["result_packet"]["extra"] = "not allowed"
+        invalid_results.append(extra_key)
+        wrong_type = json.loads(json.dumps(payload)); wrong_type["result_packet"]["changes"] = "not-an-array"
+        invalid_results.append(wrong_type)
+        wrong_responder = json.loads(json.dumps(payload)); wrong_responder["result_packet"]["responder"] = "Gemini"
+        invalid_results.append(wrong_responder)
+        with tempfile.TemporaryDirectory() as tmp:
+            path = Path(tmp) / "result.json"
+            for result in invalid_results:
+                with self.subTest(result=result):
+                    path.write_text(json.dumps(result), encoding="utf-8")
+                    with self.assertRaisesRegex(SafetyError, "strict schema"):
+                        validate_result_packet(path, "GH-1")
     def test_result_packet_status_mapping_is_fail_closed(self):
         for packet_status, receiver_status in (("SUCCESS", "Completed"), ("FAILED", "Failed"),
                                                 ("PARTIAL", "Blocked"), ("BLOCKED", "Blocked")):
