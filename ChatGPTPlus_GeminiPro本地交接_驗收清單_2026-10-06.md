@@ -44,17 +44,20 @@
 
 - [x] 原有 24 項測試無回歸。
 - [x] 新增 metadata、URL、loop、progress 去重、取消／復原測試。
-- [x] 完整測試套件 PASS（50 PASS／0 FAIL）。
+- [x] 完整測試套件 PASS（59 PASS／0 FAIL：58 handoff／CLI + 1 two-process bridge）。
 - [x] `git diff --check` PASS。
 - [x] Secret／本機路徑掃描 PASS。
 - [x] 文件列示的狀態、commit、PR 與實際結果一致。
 
 ## G. 實機／遠端驗收
 
-- [x] Windows 本機自動測試：PASS；新增版本真實 GitHub E2E 未驗證。
+- [x] Windows 本機自動測試：PASS（59 項）；新增版本真實 GitHub E2E 未驗證。
+- [x] 限定唯讀 Antigravity CLI nonce 接力：PASS（2026-10-22）；直接桌面 MCP mailbox 路徑尚未重新驗證。
+- [ ] T7 OS 級跨專案寫入隔離：FAIL；不得啟用無人值守／跨 Repo 寫入，需人工完成主機 ACL 修正與驗收。
 - [ ] ChatGPT Plus Web：PASS／FAIL／NOT VERIFIED。
 - [ ] ChatGPT Plus Mobile：PASS／FAIL／NOT VERIFIED。
 - [ ] Gemini AI Pro Web：PASS／FAIL／NOT VERIFIED。
 - [ ] Gemini AI Pro Mobile：PASS／FAIL／NOT VERIFIED。
 - [ ] macOS：PASS／FAIL／NOT VERIFIED。
-- [ ] Draft PR 已更新；不得 merge。（現有 PR #8，本輪尚未 push）
+- [x] PR #9 已在 2026-10-22 經使用者明確核准後合併。
+- [ ] PR #10（本次狀態與證據文件修訂）已 Push，待審；未授權自動合併。

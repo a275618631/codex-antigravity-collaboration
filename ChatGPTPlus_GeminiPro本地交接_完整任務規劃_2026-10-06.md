@@ -85,13 +85,15 @@ ChatGPT Plus／Gemini AI Pro 討論
 
 ### P4｜文件、平台驗收與交付
 
-狀態：`COMPLETE (LOCAL) / EXTERNAL E2E NOT VERIFIED`
+狀態：`COMPLETE (LOCAL) / LIMITED CLI PROBE PASS / EXTERNAL E2E NOT VERIFIED`
 
-- 更新使用手冊、Runbook、Security、Final Report 與 README。
+- 更新使用手冊、Runbook、Security、Final Report、README、計畫與驗收清單；PR #9 已於 2026-10-22 依使用者明確核准合併。
 - Windows 執行完整單元／整合測試；不使用真實 Token 的測試均自動完成。
 - 真實 GitHub E2E 只在既有專用 Private 測試 repo、短期 fine-grained Token 及使用者明確執行下進行。
-- ChatGPT Plus Web/Mobile、Gemini AI Pro Web/Mobile 分別記錄為 `PASS`、`FAIL` 或 `NOT VERIFIED`。
-- 更新既有 Draft PR；不得 merge。
+- 2026-10-22 限定唯讀 Antigravity CLI nonce probe：`PASS`；直接桌面 MCP mailbox 路徑與桌面 GUI 單獨可用性尚未重新驗證。
+- ChatGPT Plus Web/Mobile、Gemini AI Pro Web/Mobile 與 macOS 實機流程仍為 `NOT VERIFIED`。
+- T7 OS 級跨專案寫入隔離仍為 `FAIL`；不得執行無人值守或跨 Repo 寫入。主機 ACL 修正需管理員／使用者人工操作。
+- PR #10 僅更新上述新證據與狀態，保持開啟待審；不得自動合併。
 
 相依：P1–P3。
 
@@ -114,7 +116,7 @@ ChatGPT Plus／Gemini AI Pro 討論
 - ChatGPT Plus／Gemini AI Pro 都能產生同格式 Task Brief 與一鍵預填 Issue。
 - Receiver 能以前景輪詢模式持續運作，單一留言呈現進度，並保持去重與核准安全。
 - Result Packet 可帶回原對話繼續討論；後續工作透過 child Issue 安全重派。
-- 所有非真實 GitHub 寫入測試自動通過；Windows 真實 E2E 沿用既有 PASS 證據，新增流程若未重跑則明確標記待驗。
+- 所有非真實 GitHub 寫入測試自動通過；59 項 Windows 單元／整合測試與限定 CLI nonce probe 已 PASS。直接桌面 MCP mailbox、真實 GitHub E2E 與 T7 OS 隔離仍未通過或未驗證，必須分別標示，不可互相代替。
 - 計畫、工作日誌、操作文件、驗收結果與交付物索引均保存在本 repo。
 - 不宣稱「完全原生對話內自動化」；不啟用常駐服務、不自動 merge。
 
