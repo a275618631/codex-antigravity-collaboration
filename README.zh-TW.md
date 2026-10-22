@@ -29,7 +29,7 @@ Codex、Antigravity 與本地模型各有不同強項。若把所有能力再包
 
 | 能力 | 狀態 |
 |---|---|
-| Codex ↔ Antigravity Bridge / smoke path | **已實作** |
+| Codex ↔ Antigravity Bridge / smoke path | **已實作／目前 LIVE_BLOCKED**；2026-10-20 曾有歷史唯讀 nonce PASS，2026-10-22 本輪重測逾時。詳見證據紀錄。 |
 | Task / Result 協作契約 | **已實作** |
 | One-hop / bounded external delegation | **已實作** |
 | Read-only、最多兩輪 Debate | **已實作** |
@@ -117,6 +117,15 @@ Queue / State / Lease / Heartbeat / Retry
 
 ## 文件
 
+- [GitHub 本地 Codex 自動交接使用手冊（2026-09-29）](GitHub本地Codex自動交接_使用手冊_20260929.md)
+- [GitHub 本地交接 Receiver 技術入口](github_handoff/README_GITHUB_HANDOFF_20260929.md)
+- [GitHub 本地交接安全與威脅模型](SECURITY_GITHUB_HANDOFF_20260929.md)
+- [GitHub 本地交接維運 Runbook](RUNBOOK_GITHUB_HANDOFF_20260929.md)
+- [GitHub 本地交接最終驗收報告](FINAL_REPORT_GITHUB_HANDOFF_20260929.md)
+- [ChatGPT Plus／Gemini AI Pro 本地交接完整規劃（2026-10-06）](ChatGPTPlus_GeminiPro本地交接_完整任務規劃_2026-10-06.md)
+- [Chat App 本地交接操作手冊（2026-10-06）](ChatApp本地交接_操作手冊_2026-10-06.md)
+- [本輪工作日誌與驗收清單](ChatGPTPlus_GeminiPro本地交接_工作日誌_2026-10-06.md)
+
 - [Architecture](docs/ARCHITECTURE.md)
 - [Design Principles](docs/DESIGN_PRINCIPLES.md)
 - [Privacy and Trust](docs/PRIVACY_AND_TRUST.md)
@@ -124,6 +133,16 @@ Queue / State / Lease / Heartbeat / Retry
 - [References](docs/REFERENCES.md)
 
 ## 本機雙向 MCP Bridge（已驗證）
+
+### Windows 現況（2026-10-20）
+
+- 本機 Windows Bridge：**PASS**；本機 commit `6d0cc96` 已將 `fcntl` 改為 Windows `msvcrt`／其他平台 `fcntl` 的跨平台鎖定，未改變 MCP Tools 或 JSONL mailbox 格式。
+- 目前本地驗證：53 項 GitHub handoff 測試與雙程序 local bridge 測試 PASS；compileall、JSON、canonical skills、diff check 與 Windows bundled-Python doctor 入口均 PASS。
+- Human Gate／Task 狀態流程已完成本地驗證：未核准維持 `Awaiting Approval / PENDING`；可信核准進入 `Queued / APPROVED`；無效核准或執行失敗 fail-closed 為 `Blocked`。
+- Windows 驗證入口會在 `python` 不在 `PATH` 且 `py -3` 找不到 runtime 時，自動 fallback 到 Codex bundled Python。
+- 歷史限定範圍的真實 Codex ↔ Antigravity Runtime 接力：**PASS**（2026-10-20）；但 2026-10-22 本輪唯讀 CLI nonce 重測於 55 秒逾時，目前狀態維持 **LIVE_BLOCKED**，直到新的接力成功。請見[證據與本輪狀態](LIVE_HANDOFF_EVIDENCE_20261020.md)。
+- portable worktree 保持獨立，既有未提交檔案視為使用者資料，不清理、不搬移、不覆寫。
+- T7 OS 級跨專案寫入強制隔離仍為 **FAIL**；禁止無人值守或跨 Repo 寫入。
 
 本專案現在包含一個僅限本機使用的 Codex × Antigravity MCP bridge：
 
@@ -133,7 +152,7 @@ Queue / State / Lease / Heartbeat / Retry
 - bridge 不執行訊息中的指令，也不包含 OAuth、PAT 或其他憑證。
 - 這是 pull-based transport；模型需要呼叫 `bridge_receive`，不會自動插入另一個已執行中的回合。
 
-重啟後已完成 Codex → Antigravity → Codex 的實際 smoke test。完整的本機設定與安全邊界請見 [local bridge README](local_bridge/README.md)。
+本輪已取得實際 Codex → MCP Bridge → Antigravity → Codex nonce 證據；雙程序 local bridge 測試仍是獨立的 mailbox transport 驗證。完整的本機設定與安全邊界請見 [local bridge README](local_bridge/README.md)。
 
 ## 定位
 

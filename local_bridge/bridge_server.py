@@ -10,13 +10,18 @@ message transport/status tools; it does not execute commands from messages.
 from __future__ import annotations
 
 import datetime as _dt
-import fcntl
+from contextlib import contextmanager
 import json
 import os
 from pathlib import Path
 import re
 import sys
 import uuid
+
+if os.name == "nt":
+    import msvcrt
+else:
+    import fcntl
 
 
 SERVER_NAME = "codex-antigravity-bridge"
@@ -54,10 +59,30 @@ class Mailbox:
         if not AGENT_ID_RE.fullmatch(self.agent_id):
             raise ValueError("CODEX_ANTIGRAVITY_BRIDGE_AGENT must be a simple agent identifier")
 
+    @contextmanager
     def _locked(self, exclusive: bool):
-        handle = self.lock_path.open("a+")
-        fcntl.flock(handle.fileno(), fcntl.LOCK_EX if exclusive else fcntl.LOCK_SH)
-        return handle
+        """Lock one byte of the lock file without changing the mailbox format."""
+        handle = self.lock_path.open("a+b")
+        try:
+            if os.name == "nt":
+                if self.lock_path.stat().st_size == 0:
+                    handle.write(b"\\0")
+                    handle.flush()
+                handle.seek(0)
+                mode = msvcrt.LK_LOCK if exclusive else msvcrt.LK_RLCK
+                msvcrt.locking(handle.fileno(), mode, 1)
+            else:
+                fcntl.flock(handle.fileno(), fcntl.LOCK_EX if exclusive else fcntl.LOCK_SH)
+            yield handle
+        finally:
+            try:
+                if os.name == "nt":
+                    handle.seek(0)
+                    msvcrt.locking(handle.fileno(), msvcrt.LK_UNLCK, 1)
+                else:
+                    fcntl.flock(handle.fileno(), fcntl.LOCK_UN)
+            finally:
+                handle.close()
 
     def send(self, arguments: dict) -> dict:
         target = str(arguments.get("target", "all"))

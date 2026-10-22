@@ -1,7 +1,11 @@
 # Codex × Antigravity local bridge
 
 This directory contains the small local MCP server used by the two desktop
-clients on this Mac.
+clients on Windows or macOS.
+
+The Windows-compatible implementation is recorded by local commit `6d0cc96`.
+It uses `msvcrt` byte-range locking on Windows and `fcntl` locking on POSIX
+systems. The MCP tools and JSONL mailbox format are unchanged.
 
 ## Transport model
 
@@ -35,3 +39,26 @@ the same server script and mailbox path.
 
 After editing either configuration, start a new session or restart the
 corresponding desktop app so its MCP tool list is rebuilt.
+
+## Validation boundary
+
+Run the existing bridge test from the repository root:
+
+```powershell
+python -m unittest local_bridge.test_bridge_server -v
+```
+
+On Windows installations where `python` is not on `PATH` and `py -3` cannot
+find an installed runtime, use the repository verification entry point. It
+prefers `CODEX_PYTHON`, then the Codex bundled Python runtime, then `py -3`
+and `python`:
+
+```powershell
+pwsh -File scripts/verify-github-handoff-windows.ps1
+```
+
+The local two-process test is PASS. It is a mailbox transport test and does not
+by itself prove runtime authentication. A separate bounded real
+Codex → MCP Bridge → Antigravity → Codex nonce probe passed on 2026-10-20;
+see the repository-level
+[`LIVE_HANDOFF_EVIDENCE_20261020.md`](../LIVE_HANDOFF_EVIDENCE_20261020.md).
