@@ -200,7 +200,8 @@ class ContractTests(unittest.TestCase):
             (root/"src").mkdir(); (root/"src"/"ok.txt").write_text("ok",encoding="utf-8")
             subprocess.run(["git","-C",str(root),"add","src/ok.txt"],check=True); subprocess.run(["git","-C",str(root),"commit","-qm","base"],check=True)
             (root/"outside.txt").write_text("bad",encoding="utf-8")
-            with self.assertRaisesRegex(SafetyError,"outside approved write scope"): validate_changed_paths(root,["src"])
+            baseline = subprocess.run(["git", "-C", str(root), "rev-parse", "HEAD"], capture_output=True, text=True, check=True).stdout.strip()
+            with self.assertRaisesRegex(SafetyError,"outside approved write scope"): validate_changed_paths(root,["src"],baseline)
     def test_ignored_untracked_path_outside_scope_rejected(self):
         with tempfile.TemporaryDirectory() as tmp:
             root=Path(tmp); subprocess.run(["git","init","-q",str(root)],check=True)
@@ -210,7 +211,23 @@ class ContractTests(unittest.TestCase):
             (root/".gitignore").write_text("ignored/\n",encoding="utf-8")
             subprocess.run(["git","-C",str(root),"add","."],check=True); subprocess.run(["git","-C",str(root),"commit","-qm","base"],check=True)
             (root/"ignored").mkdir(); (root/"ignored"/"secret.txt").write_text("bad",encoding="utf-8")
-            with self.assertRaisesRegex(SafetyError,"outside approved write scope"): validate_changed_paths(root,["src"])
+            baseline = subprocess.run(["git", "-C", str(root), "rev-parse", "HEAD"], capture_output=True, text=True, check=True).stdout.strip()
+            with self.assertRaisesRegex(SafetyError,"outside approved write scope"): validate_changed_paths(root,["src"],baseline)
+
+    def test_committed_out_of_scope_path_is_rejected_against_initial_baseline(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp); subprocess.run(["git", "init", "-q", str(root)], check=True)
+            subprocess.run(["git", "-C", str(root), "config", "user.email", "test@example.invalid"], check=True)
+            subprocess.run(["git", "-C", str(root), "config", "user.name", "Test"], check=True)
+            (root / "src").mkdir(); (root / "src" / "ok.txt").write_text("ok", encoding="utf-8")
+            subprocess.run(["git", "-C", str(root), "add", "src/ok.txt"], check=True)
+            subprocess.run(["git", "-C", str(root), "commit", "-qm", "base"], check=True)
+            baseline = subprocess.run(["git", "-C", str(root), "rev-parse", "HEAD"], capture_output=True, text=True, check=True).stdout.strip()
+            (root / "outside.txt").write_text("out of scope", encoding="utf-8")
+            subprocess.run(["git", "-C", str(root), "add", "outside.txt"], check=True)
+            subprocess.run(["git", "-C", str(root), "commit", "-qm", "agent commit"], check=True)
+            with self.assertRaisesRegex(SafetyError, "outside approved write scope"):
+                validate_changed_paths(root, ["src"], baseline)
     def test_executor_exception_is_blocked(self):
         with tempfile.TemporaryDirectory() as tmp:
             store=StateStore(Path(tmp)/"state.json"); api=MockGitHubAPI([issue()])

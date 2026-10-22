@@ -43,3 +43,13 @@ closes the prior reload boundary for the bounded read-only path.
 Unattended or cross-Repo writes remain prohibited. This evidence covers only
 the bounded read-only handshake and does not authorize task execution, file
 changes, Push, Merge, or portable-worktree operations.
+
+## Current recheck — 2026-10-22
+
+- Codex CLI login status returned `Logged in using ChatGPT`.
+- The Antigravity CLI was present, but a fresh read-only nonce probe did not
+  return before the 55-second timeout.
+- Therefore the 2026-10-20 result remains historical evidence only; current
+  runtime status is `LIVE_BLOCKED` until a fresh handshake succeeds.
+- No repository or workspace files were included in the probe, and no
+  write-capable delegation was started.

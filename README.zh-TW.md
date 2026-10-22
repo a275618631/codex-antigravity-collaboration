@@ -29,7 +29,7 @@ Codex、Antigravity 與本地模型各有不同強項。若把所有能力再包
 
 | 能力 | 狀態 |
 |---|---|
-| Codex ↔ Antigravity Bridge / smoke path | **已實作／限定 Live PASS** |
+| Codex ↔ Antigravity Bridge / smoke path | **已實作／目前 LIVE_BLOCKED**；2026-10-20 曾有歷史唯讀 nonce PASS，2026-10-22 本輪重測逾時。詳見證據紀錄。 |
 | Task / Result 協作契約 | **已實作** |
 | One-hop / bounded external delegation | **已實作** |
 | Read-only、最多兩輪 Debate | **已實作** |
@@ -140,7 +140,7 @@ Queue / State / Lease / Heartbeat / Retry
 - 目前本地驗證：53 項 GitHub handoff 測試與雙程序 local bridge 測試 PASS；compileall、JSON、canonical skills、diff check 與 Windows bundled-Python doctor 入口均 PASS。
 - Human Gate／Task 狀態流程已完成本地驗證：未核准維持 `Awaiting Approval / PENDING`；可信核准進入 `Queued / APPROVED`；無效核准或執行失敗 fail-closed 為 `Blocked`。
 - Windows 驗證入口會在 `python` 不在 `PATH` 且 `py -3` 找不到 runtime 時，自動 fallback 到 Codex bundled Python。
-- 限定範圍的真實 Codex ↔ Antigravity Runtime 接力：**PASS**（2026-10-20）；重開 Codex 後，MCP worker 已使用 High 模型完成獨立 nonce 驗證。請見 [證據](LIVE_HANDOFF_EVIDENCE_20261020.md)。
+- 歷史限定範圍的真實 Codex ↔ Antigravity Runtime 接力：**PASS**（2026-10-20）；但 2026-10-22 本輪唯讀 CLI nonce 重測於 55 秒逾時，目前狀態維持 **LIVE_BLOCKED**，直到新的接力成功。請見[證據與本輪狀態](LIVE_HANDOFF_EVIDENCE_20261020.md)。
 - portable worktree 保持獨立，既有未提交檔案視為使用者資料，不清理、不搬移、不覆寫。
 - T7 OS 級跨專案寫入強制隔離仍為 **FAIL**；禁止無人值守或跨 Repo 寫入。
 

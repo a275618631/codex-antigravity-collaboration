@@ -6,13 +6,27 @@ from pathlib import Path
 import tempfile
 import threading
 import unittest
+from unittest import mock
 from urllib.parse import parse_qs, urlparse
 
-from github_handoff.cli import ReceiverLock, build_issue_url, live_runtime_status, main, run_watch
+from github_handoff.cli import ReceiverLock, _pid_is_alive, build_issue_url, live_runtime_status, main, run_watch
 from github_handoff.core import SafetyError, StateStore
 
 
 class LifecycleTests(unittest.TestCase):
+    def test_windows_pid_liveness_uses_query_helper_not_os_kill(self):
+        with mock.patch("github_handoff.cli.os.name", "nt"), \
+             mock.patch("github_handoff.cli._windows_pid_is_alive", return_value=True) as query, \
+             mock.patch("github_handoff.cli.os.kill") as kill:
+            self.assertTrue(_pid_is_alive(1234))
+        query.assert_called_once_with(1234)
+        kill.assert_not_called()
+
+    def test_unexpected_posix_liveness_error_fails_closed(self):
+        with mock.patch("github_handoff.cli.os.name", "posix"), \
+             mock.patch("github_handoff.cli.os.kill", side_effect=OSError("unknown")):
+            self.assertTrue(_pid_is_alive(1234))
+
     def test_live_lock_cannot_be_stolen(self):
         with tempfile.TemporaryDirectory() as tmp:
             path = Path(tmp) / "receiver.lock"

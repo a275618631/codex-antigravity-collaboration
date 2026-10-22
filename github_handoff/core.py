@@ -257,6 +257,10 @@ def execute_task(task: dict[str, Any], config: dict[str, Any]) -> dict[str, Any]
     add = subprocess.run(["git", "-C", str(source), "worktree", "add", "-b", branch, str(worktree), task["Base Branch"]], capture_output=True, text=True, timeout=30)
     if add.returncode: raise SafetyError("failed to create isolated worktree: " + redact(add.stderr))
     validate_worktree(worktree, worktree_root)
+    baseline = subprocess.run(["git", "-C", str(worktree), "rev-parse", "HEAD"], capture_output=True, text=True, timeout=10)
+    if baseline.returncode or not re.fullmatch(r"[0-9a-fA-F]{40,64}", baseline.stdout.strip()):
+        raise SafetyError("failed to capture immutable worktree baseline")
+    baseline_commit = baseline.stdout.strip()
     evidence = Path(config["state_file"]).expanduser().parent / "evidence" / safe_id; evidence.mkdir(parents=True, exist_ok=True)
     output = evidence / "result.json"; schema = Path(__file__).with_name("result.schema.json")
     command = build_codex_command(worktree, schema, output, config.get("model"))
@@ -265,7 +269,7 @@ def execute_task(task: dict[str, Any], config: dict[str, Any]) -> dict[str, Any]
                         env=sanitized_child_env(str(config.get("token_env", "GH_TOKEN"))))
     if outcome["status"] != "Completed" or outcome.get("returncode") != 0: return outcome
     try:
-        outcome["changed_files"] = validate_changed_paths(worktree, task["Write Scope"])
+        outcome["changed_files"] = validate_changed_paths(worktree, task["Write Scope"], baseline_commit)
     except SafetyError as exc:
         return {**outcome, "status": "Failed", "reason": str(exc)}
     try: outcome["result_packet"] = validate_result_packet(output, task["Task ID"], task.get("_transport"))
@@ -292,11 +296,13 @@ def validate_worktree(worktree: Path, allowed_root: Path) -> None:
     if probe.returncode or probe.stdout.strip() != "true": raise SafetyError("invalid git worktree")
 
 
-def validate_changed_paths(worktree: Path, allowed_write_scope: list[str]) -> list[str]:
+def validate_changed_paths(worktree: Path, allowed_write_scope: list[str], baseline_commit: str) -> list[str]:
     if not allowed_write_scope:
         raise SafetyError("write scope must contain at least one allowlisted path")
+    if not re.fullmatch(r"[0-9a-fA-F]{40,64}", baseline_commit):
+        raise SafetyError("worktree baseline commit is invalid")
     commands = (
-        ["git", "-C", str(worktree), "diff", "--name-only", "-z", "HEAD"],
+        ["git", "-C", str(worktree), "diff", "--name-only", "-z", baseline_commit],
         ["git", "-C", str(worktree), "ls-files", "--others", "--exclude-standard", "-z"],
         # --exclude-standard normally hides ignored files; inspect them separately
         # so an out-of-scope ignored artifact cannot bypass the write boundary.
