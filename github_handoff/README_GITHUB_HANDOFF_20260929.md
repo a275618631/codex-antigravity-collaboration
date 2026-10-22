@@ -40,6 +40,13 @@ Cancel an approved task before execution with a trusted post-edit comment:
 /codex-cancel task=<Task-ID> host=<configured-host>
 ```
 
-States: Draft → Awaiting Approval → Queued → Running → Validating → Reporting → Completed. Failed, Blocked, and Cancelled are terminal states.
+Human Gate and task state are tracked separately in the local state file:
+
+- a well-formed task without a trusted approval remains `Awaiting Approval` with `human_gate=PENDING`; the executor is not called;
+- a trusted, post-edit approval moves the task through `Queued` with `human_gate=APPROVED`;
+- an invalid approval, scope failure, runtime failure, or interrupted execution is fail-closed as `Blocked` with `human_gate=BLOCKED`;
+- trusted cancellation is terminal `Cancelled` with `human_gate=CANCELLED`.
+
+States: Draft → Awaiting Approval → Queued → Running → Validating → Reporting → Completed. Failed, Blocked, and Cancelled are terminal states. This local gate does not itself perform a desktop handoff; `doctor` remains fail-closed as `LIVE_BLOCKED` when it cannot independently observe authenticated handshake evidence, even if a separately recorded bounded runtime probe has passed.
 
 No lockfile is needed because the runtime has no third-party Python dependency. The GitHub token is read only from the configured process environment variable.

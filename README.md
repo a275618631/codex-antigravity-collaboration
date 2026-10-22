@@ -106,7 +106,7 @@ See [Architecture](docs/ARCHITECTURE.md).
 
 | Capability | Status | Notes |
 |---|---|---|
-| Codex ↔ Antigravity bridge / smoke path | **Implemented** | Core bridge path has passed a read-only smoke test. |
+| Codex ↔ Antigravity bridge / smoke path | **Implemented / bounded live PASS** | A real read-only nonce probe passed on 2026-10-20 with Gemini 3.8 Flash (High). |
 | Task / Result collaboration packet | **Implemented** | Used as the common request/result contract. |
 | Bounded external delegation | **Implemented** | One-hop guard is part of the current collaboration protocol. |
 | Read-only bounded debate | **Implemented** | Maximum two rounds in the current reference workflow. |
@@ -202,13 +202,15 @@ The default is **Stage 1** for low-frequency asynchronous work. Stage 2 and Stag
 
 Traditional Chinese overview: [README.zh-TW.md](README.zh-TW.md)
 
-## Current local handoff state (2026-10-19)
+## Current local handoff state (2026-10-20)
 
 - Windows local bridge: **PASS**. Commit `6d0cc96` adds platform-specific file locking (`msvcrt` on Windows, `fcntl` elsewhere) without changing MCP tools or JSONL mailbox format.
-- Local evidence: 51 existing unit/CLI/bridge tests pass, including two bridge processes exchanging messages.
-- Real Codex ↔ Antigravity runtime handoff: **BLOCKED** until both actual desktop runtimes are available and authenticated.
+- Current local validation: 53 GitHub handoff tests and the two-process local bridge test pass; compileall, JSON parsing, canonical skill validation, diff checks, and the Windows bundled-Python doctor entry also pass.
+- Human Gate / task state flow is locally verified: unapproved tasks remain `Awaiting Approval / PENDING`; trusted approval enters `Queued / APPROVED`; invalid or failed execution is fail-closed as `Blocked`.
+- The Windows verification entry falls back to the Codex bundled Python runtime when `python` is absent from `PATH` and `py -3` has no registered runtime.
+- Bounded real Codex ↔ Antigravity runtime handoff: **PASS** on 2026-10-20; the reloaded MCP worker independently returned the High-model nonce acknowledgement. See [evidence](LIVE_HANDOFF_EVIDENCE_20261020.md).
 - Portable worktree: protected and not modified. Its pre-existing uncommitted files are not part of this branch.
-- T7 OS-level cross-project write enforcement remains **FAIL**; unattended cross-project writes are prohibited.
+- T7 OS-level cross-project write enforcement remains **FAIL**; unattended cross-project writes are prohibited. Full unattended or cross-Repo live operation is not claimed.
 
 The canonical local entry is this README → `AGENTS.md` → `PROJECT.yaml` → `local_bridge/README.md`. This repository is a reference architecture and bounded local bridge, not a new orchestration framework.
 

@@ -19,10 +19,101 @@ def load_config(path: Path) -> dict[str, Any]:
     return json.loads(path.read_text(encoding="utf-8"))
 
 
+def _windows_process_count(image_name: str) -> int | None:
+    """Return a best-effort process count without treating it as auth proof."""
+    if os.name != "nt":
+        return None
+    try:
+        import ctypes
+        from ctypes import wintypes
+
+        class PROCESSENTRY32W(ctypes.Structure):
+            _fields_ = [
+                ("dwSize", wintypes.DWORD),
+                ("cntUsage", wintypes.DWORD),
+                ("th32ProcessID", wintypes.DWORD),
+                ("th32DefaultHeapID", ctypes.c_size_t),
+                ("th32ModuleID", wintypes.DWORD),
+                ("cntThreads", wintypes.DWORD),
+                ("th32ParentProcessID", wintypes.DWORD),
+                ("pcPriClassBase", wintypes.LONG),
+                ("dwFlags", wintypes.DWORD),
+                ("szExeFile", wintypes.WCHAR * 260),
+            ]
+
+        kernel32 = ctypes.WinDLL("kernel32", use_last_error=True)
+        kernel32.CreateToolhelp32Snapshot.argtypes = [wintypes.DWORD, wintypes.DWORD]
+        kernel32.CreateToolhelp32Snapshot.restype = wintypes.HANDLE
+        kernel32.Process32FirstW.argtypes = [wintypes.HANDLE, ctypes.POINTER(PROCESSENTRY32W)]
+        kernel32.Process32FirstW.restype = wintypes.BOOL
+        kernel32.Process32NextW.argtypes = [wintypes.HANDLE, ctypes.POINTER(PROCESSENTRY32W)]
+        kernel32.Process32NextW.restype = wintypes.BOOL
+        kernel32.CloseHandle.argtypes = [wintypes.HANDLE]
+        kernel32.CloseHandle.restype = wintypes.BOOL
+
+        snapshot = kernel32.CreateToolhelp32Snapshot(0x00000002, 0)
+        invalid_handle = ctypes.c_void_p(-1).value
+        if snapshot in (-1, invalid_handle):
+            return None
+        try:
+            entry = PROCESSENTRY32W()
+            entry.dwSize = ctypes.sizeof(PROCESSENTRY32W)
+            if not kernel32.Process32FirstW(snapshot, ctypes.byref(entry)):
+                return None
+            target = image_name.casefold()
+            count = 0
+            while True:
+                if entry.szExeFile.casefold() == target:
+                    count += 1
+                if not kernel32.Process32NextW(snapshot, ctypes.byref(entry)):
+                    break
+            return count
+        finally:
+            kernel32.CloseHandle(snapshot)
+    except (AttributeError, OSError, TypeError, ValueError):
+        return None
+
+
+def live_runtime_status(config: dict[str, Any]) -> dict[str, Any]:
+    """Describe local runtime evidence while failing closed on live handoff."""
+    codex_cli = shutil.which("codex")
+    gemini_cli = shutil.which("gemini")
+    antigravity_cli = shutil.which("agy") or shutil.which("antigravity")
+    antigravity_config = Path(config.get("antigravity_mcp_config", str(Path.home() / ".gemini" / "config" / "mcp_config.json"))).expanduser()
+    antigravity_processes = _windows_process_count("Antigravity.exe")
+    return {
+        "state": "LIVE_BLOCKED",
+        "ready": False,
+        "codex": {
+            "cli_present": bool(codex_cli),
+            "cli_path": codex_cli,
+            "authentication": "unverified",
+        },
+        "gemini": {
+            "cli_present": bool(gemini_cli),
+            "cli_path": gemini_cli,
+            "authentication": "unverified",
+        },
+        "antigravity": {
+            "cli_present": bool(antigravity_cli),
+            "cli_path": antigravity_cli,
+            "desktop_processes": antigravity_processes,
+            "mcp_config_present": antigravity_config.is_file(),
+            "authentication": "unverified",
+        },
+        "reasons": [
+            "authenticated Codex ↔ Antigravity desktop handshake evidence is unavailable",
+            "process/config presence is not sufficient proof for a Live handoff",
+            "T7 OS-level cross-project write isolation is FAIL; unattended cross-project writes are prohibited",
+        ],
+    }
+
+
 def doctor(config: dict[str, Any]) -> dict[str, Any]:
     return {"python": sys.version.split()[0], "codex": shutil.which("codex"), "git": shutil.which("git"),
         "token_configured": bool(os.environ.get(config.get("token_env", "GH_TOKEN"))),
-        "host_id": config.get("host_id"), "allowed_repos": sorted(config.get("allowed_repos", {}))}
+        "host_id": config.get("host_id"), "allowed_repos": sorted(config.get("allowed_repos", {})),
+        "live_handoff": live_runtime_status(config)}
 
 
 def _pid_is_alive(pid: int) -> bool:

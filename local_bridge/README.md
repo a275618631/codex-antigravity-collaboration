@@ -48,6 +48,17 @@ Run the existing bridge test from the repository root:
 python -m unittest local_bridge.test_bridge_server -v
 ```
 
-The local two-process test is PASS. It does not prove that a real Codex desktop
-session and a real Antigravity desktop session are both authenticated and
-connected; that Live handoff remains BLOCKED until those runtimes are present.
+On Windows installations where `python` is not on `PATH` and `py -3` cannot
+find an installed runtime, use the repository verification entry point. It
+prefers `CODEX_PYTHON`, then the Codex bundled Python runtime, then `py -3`
+and `python`:
+
+```powershell
+pwsh -File scripts/verify-github-handoff-windows.ps1
+```
+
+The local two-process test is PASS. It is a mailbox transport test and does not
+by itself prove runtime authentication. A separate bounded real
+Codex → MCP Bridge → Antigravity → Codex nonce probe passed on 2026-10-20;
+see the repository-level
+[`LIVE_HANDOFF_EVIDENCE_20261020.md`](../LIVE_HANDOFF_EVIDENCE_20261020.md).

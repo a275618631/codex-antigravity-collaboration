@@ -45,6 +45,10 @@ class SafetyError(RuntimeError):
     pass
 
 
+class ApprovalPending(SafetyError):
+    """The task is well-formed but is still waiting for the human gate."""
+
+
 def utcnow() -> str:
     return dt.datetime.now(dt.timezone.utc).isoformat(timespec="seconds")
 
@@ -151,7 +155,7 @@ def verify_approval(issue: dict[str, Any], task: dict[str, Any], config: dict[st
     for comment in issue.get("comments", []):
         match = APPROVAL_RE.fullmatch(comment.get("body", "").strip())
         if match and comment.get("author") in config["allowed_approvers"]: approvals.append((comment, match.groupdict()))
-    if not approvals: raise SafetyError("valid approval comment not found")
+    if not approvals: raise ApprovalPending("valid approval comment not found")
     comment, approval = approvals[-1]
     if approval["digest"] != digest or approval["host"] != config["host_id"]: raise SafetyError("approval invalidated by task content or host change")
     if approval["nonce"] in state.get("used_nonces", []) and approval["nonce"] != allow_used_nonce:
@@ -452,7 +456,7 @@ class MockGitHubAPI:
 
 
 def progress_summary(record: dict[str, Any]) -> str:
-    safe = {k: record.get(k) for k in ("task_id", "state", "updated_at", "tests", "pr_url") if record.get(k) is not None}
+    safe = {k: record.get(k) for k in ("task_id", "state", "human_gate", "updated_at", "tests", "pr_url") if record.get(k) is not None}
     outcome = record.get("result") or {}
     if outcome:
         safe["execution"] = {k: outcome.get(k) for k in
@@ -509,17 +513,32 @@ def process_once(api: Any, config: dict[str, Any], store: StateStore, dry_run: b
             cancellation = find_cancellation(issue, task, config)
             if cancellation:
                 record = store.transition(task_id, "Cancelled", digest=digest, issue_number=issue["number"],
-                    cancellation_actor=cancellation["actor"])
+                    human_gate="CANCELLED", cancellation_actor=cancellation["actor"])
                 report(task_id, issue, record)
                 results.append({"task_id": task_id, "state": "Cancelled"})
                 continue
-            approval = verify_approval(issue, task, config, data,
-                allow_used_nonce=(existing or {}).get("approval_nonce"))
+            if not dry_run and (not existing or existing.get("state") == "Draft"):
+                store.transition(task_id, "Awaiting Approval", digest=digest, issue_number=issue["number"],
+                    revision=task.get("Revision", 1), parent_task_id=task.get("Parent Task ID"),
+                    human_gate="PENDING")
+            try:
+                approval = verify_approval(issue, task, config, data,
+                    allow_used_nonce=(existing or {}).get("approval_nonce"))
+            except ApprovalPending as exc:
+                if not dry_run:
+                    store.transition(task_id, "Awaiting Approval", human_gate="PENDING", reason=str(exc))
+                results.append({"task_id": task_id, "state": "Awaiting Approval", "human_gate": "PENDING",
+                    "reason": str(exc), **({"dry_run": True} if dry_run else {})})
+                continue
             if dry_run: results.append({"task_id": task_id, "state": "Queued", "dry_run": True}); continue
             if not existing:
-                store.transition(task_id, "Awaiting Approval", digest=digest, issue_number=issue["number"],
-                    revision=task.get("Revision", 1), parent_task_id=task.get("Parent Task ID"))
-                store.transition(task_id, "Queued", approval_actor=approval["actor"], approval_nonce=approval["nonce"])
+                # The task was admitted to Awaiting Approval above; this transition
+                # records the trusted human gate without ever skipping it.
+                store.transition(task_id, "Queued", human_gate="APPROVED", approval_actor=approval["actor"],
+                    approval_nonce=approval["nonce"])
+            else:
+                store.transition(task_id, "Queued", human_gate="APPROVED", approval_actor=approval["actor"],
+                    approval_nonce=approval["nonce"])
             report(task_id, issue, store.load()["tasks"][task_id])
             latest = api.get_task(issue["number"])
             if latest.get("state", "open") != "open": raise SafetyError("issue closed before execution claim")
@@ -549,6 +568,6 @@ def process_once(api: Any, config: dict[str, Any], store: StateStore, dry_run: b
             if task_id:
                 current = store.load()["tasks"].get(task_id)
                 if current and current.get("state") in {"Awaiting Approval", "Queued"}:
-                    store.transition(task_id, "Blocked", reason=str(exc))
+                    store.transition(task_id, "Blocked", human_gate="BLOCKED", reason=str(exc))
             results.append({"issue_number": issue.get("number"), "state": "Rejected", "reason": str(exc)})
     return results

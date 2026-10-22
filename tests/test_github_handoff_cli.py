@@ -8,7 +8,7 @@ import threading
 import unittest
 from urllib.parse import parse_qs, urlparse
 
-from github_handoff.cli import ReceiverLock, build_issue_url, main, run_watch
+from github_handoff.cli import ReceiverLock, build_issue_url, live_runtime_status, main, run_watch
 from github_handoff.core import SafetyError, StateStore
 
 
@@ -103,6 +103,16 @@ class LifecycleTests(unittest.TestCase):
                 self.assertEqual(code, 0); self.assertIn("https://github.com/O/R/issues/new?", output.getvalue())
             finally:
                 if previous is not None: os.environ["GH_TOKEN"] = previous
+
+    def test_live_runtime_status_fails_closed_without_handshake_proof(self):
+        status = live_runtime_status({})
+        self.assertEqual(status["state"], "LIVE_BLOCKED")
+        self.assertFalse(status["ready"])
+        self.assertEqual(status["codex"]["authentication"], "unverified")
+        self.assertEqual(status["gemini"]["authentication"], "unverified")
+        self.assertIn("cli_present", status["antigravity"])
+        self.assertEqual(status["antigravity"]["authentication"], "unverified")
+        self.assertTrue(status["reasons"])
 
     def test_watch_backoff_is_bounded_and_resets_after_success(self):
         with tempfile.TemporaryDirectory() as tmp:

@@ -92,10 +92,31 @@ class ContractTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as tmp:
             store=StateStore(Path(tmp)/"state.json"); result=process_once(MockGitHubAPI([issue()]), config(Path(tmp)/"state.json"), store, dry_run=True)
             self.assertTrue(result[0]["dry_run"]); self.assertEqual(store.load()["tasks"], {})
+    def test_unapproved_task_is_recorded_at_human_gate(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            candidate = issue(); candidate["comments"] = []
+            store = StateStore(Path(tmp) / "state.json"); calls = []
+            result = process_once(MockGitHubAPI([candidate]), config(Path(tmp) / "state.json"), store,
+                executor=lambda task: calls.append(task))
+            self.assertEqual(result[0]["state"], "Awaiting Approval")
+            self.assertEqual(result[0]["human_gate"], "PENDING")
+            self.assertEqual(store.load()["tasks"]["GH-1"]["state"], "Awaiting Approval")
+            self.assertEqual(store.load()["tasks"]["GH-1"]["human_gate"], "PENDING")
+            self.assertEqual(calls, [])
+    def test_invalid_human_gate_blocks_before_executor(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            store = StateStore(Path(tmp) / "state.json"); calls = []
+            result = process_once(MockGitHubAPI([issue(actor="intruder")]), config(Path(tmp) / "state.json"), store,
+                executor=lambda task: calls.append(task))
+            self.assertEqual(result[0]["state"], "Rejected")
+            self.assertEqual(store.load()["tasks"]["GH-1"]["state"], "Blocked")
+            self.assertEqual(store.load()["tasks"]["GH-1"]["human_gate"], "BLOCKED")
+            self.assertEqual(calls, [])
     def test_complete_and_deduplicate(self):
         with tempfile.TemporaryDirectory() as tmp:
             store=StateStore(Path(tmp)/"state.json"); api=MockGitHubAPI([issue()]); executor=lambda task:{"status":"Completed","tests":"PASS"}
             self.assertEqual(process_once(api, config(Path(tmp)/"state.json"), store, executor=executor)[0]["state"], "Completed")
+            self.assertEqual(store.load()["tasks"]["GH-1"]["human_gate"], "APPROVED")
             self.assertEqual(process_once(api, config(Path(tmp)/"state.json"), store, executor=executor), [])
     def test_restart_reconciliation(self):
         with tempfile.TemporaryDirectory() as tmp:
