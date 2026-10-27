@@ -44,8 +44,9 @@ Human Gate and task state are tracked separately in the local state file:
 
 - a well-formed task without a trusted approval remains `Awaiting Approval` with `human_gate=PENDING`; the executor is not called;
 - a trusted, post-edit approval moves the task through `Queued` with `human_gate=APPROVED`;
-- an invalid approval, scope failure, runtime failure, or interrupted execution is fail-closed as `Blocked` with `human_gate=BLOCKED`;
-- trusted cancellation is terminal `Cancelled` with `human_gate=CANCELLED`.
+- a `Completed` executor outcome is accepted only with a strict-schema Result Packet whose transport matches the approved task; a missing, malformed, mismatched, or non-success packet is fail-closed as `Blocked`;
+- an invalid approval, scope failure, runtime failure, malformed executor outcome, or interrupted execution is fail-closed with `human_gate=BLOCKED` and a terminal `Failed` or `Blocked` execution state;
+- trusted cancellation is terminal `Cancelled` with `human_gate=CANCELLED`, including cancellation after approval but before executor start.
 
 States: Draft → Awaiting Approval → Queued → Running → Validating → Reporting → Completed. Failed, Blocked, and Cancelled are terminal states. This local gate does not itself perform a desktop handoff; `doctor` remains fail-closed as `LIVE_BLOCKED` when it cannot independently observe authenticated handshake evidence, even if a separately recorded bounded runtime probe has passed.
 

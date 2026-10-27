@@ -77,3 +77,22 @@ the local receiver must remain fail-closed for unattended cross-project work.
 The timeout above and this later success are both retained as chronological
 evidence. The successful CLI probe supersedes the earlier timeout only for the
 specific CLI route; it does not clear the broader `LIVE_BLOCKED` safety gate.
+
+## Recheck in this development session — 2026-10-22
+
+- The local health check found Codex CLI `0.150.1`, Gemini CLI `0.53.1`, and
+  Antigravity CLI `1.4.5`. Binary presence/version is not authentication proof.
+- A first fresh read-only Antigravity CLI consultation using `Gemini 3.8 Flash
+  (High)` timed out after the 40-second outer limit without a response.
+- A retry with a 60-second CLI timeout returned the exact nonce acknowledgement
+  `AGY_ACK B-SESSION-20261022-R2` in 38.58 seconds (CLI status `SUCCESS`, exit
+  code `0`). This is a bounded Codex → Antigravity CLI → Codex read-only round
+  trip for this attempt.
+- Both consultations used an empty temporary workspace and requested no
+  command, repository inspection, or file changes. No write-capable delegation
+  was run.
+- The later response confirms that the Antigravity CLI route could respond at
+  that time. It does not verify the desktop MCP mailbox path or prove that the
+  desktop GUI alone is sufficient. The MVP remains `LIVE_BLOCKED` because T7
+  OS-level cross-project write isolation remains **FAIL**; unattended or
+  cross-Repo writes remain prohibited.

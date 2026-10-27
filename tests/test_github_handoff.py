@@ -47,6 +47,14 @@ def issue(body=BODY, actor="owner", nonce="nonce-123456"):
     return {"number":1,"body":body,"author":actor,"body_updated_at":"2026-01-01T00:00:00Z",
         "comments":[{"author":"owner","created_at":"2026-01-01T00:00:01Z","body":f"/codex-approve digest={digest} nonce={nonce} host=host-a"}]}
 
+def completed_outcome():
+    packet = {"task_id":"GH-1", "responder":"Codex", "status":"SUCCESS", "summary":"done",
+        "changes":[], "evidence":[], "validation_results":[], "risks_and_limitations":[],
+        "remaining_work":[], "recommendation":"none", "transport":{
+            "issue":1, "task_digest":task_digest(parse_task(BODY)), "host":"host-a",
+            "approval_actor":"owner", "approval_nonce":"nonce-123456", "state":"Running"}}
+    return {"status":"Completed", "tests":"PASS", "result_packet":{"result_packet":packet}}
+
 class ContractTests(unittest.TestCase):
     def test_parse_and_digest_stable(self): self.assertEqual(task_digest(parse_task(BODY)), task_digest(parse_task(BODY)))
     def test_missing_field_rejected(self):
@@ -129,14 +137,17 @@ class ContractTests(unittest.TestCase):
             self.assertEqual(calls, [])
     def test_complete_and_deduplicate(self):
         with tempfile.TemporaryDirectory() as tmp:
-            store=StateStore(Path(tmp)/"state.json"); api=MockGitHubAPI([issue()]); executor=lambda task:{"status":"Completed","tests":"PASS"}
+            store=StateStore(Path(tmp)/"state.json"); api=MockGitHubAPI([issue()]); executor=lambda task:completed_outcome()
             self.assertEqual(process_once(api, config(Path(tmp)/"state.json"), store, executor=executor)[0]["state"], "Completed")
             self.assertEqual(store.load()["tasks"]["GH-1"]["human_gate"], "APPROVED")
             self.assertEqual(process_once(api, config(Path(tmp)/"state.json"), store, executor=executor), [])
     def test_restart_reconciliation(self):
         with tempfile.TemporaryDirectory() as tmp:
-            store=StateStore(Path(tmp)/"state.json"); data=store.load(); data["tasks"]["x"]={"state":"Running","updated_at":"2020-01-01T00:00:00+00:00"}; store.save(data)
-            self.assertEqual(reconcile(store, 1), 1); self.assertEqual(store.load()["tasks"]["x"]["state"], "Blocked")
+            store=StateStore(Path(tmp)/"state.json"); data=store.load(); data["tasks"]["x"]={
+                "state":"Running", "human_gate":"APPROVED", "updated_at":"2020-01-01T00:00:00+00:00"}; store.save(data)
+            self.assertEqual(reconcile(store, 1), 1)
+            self.assertEqual(store.load()["tasks"]["x"]["state"], "Blocked")
+            self.assertEqual(store.load()["tasks"]["x"]["human_gate"], "BLOCKED")
     def test_safe_command(self):
         command=build_codex_command(Path("worktree"),Path("schema"),Path("out")); self.assertIn("workspace-write", command); self.assertNotIn("--dangerously-bypass-approvals-and-sandbox", command)
     def test_unsafe_model_rejected(self):
@@ -269,12 +280,65 @@ class ContractTests(unittest.TestCase):
             store=StateStore(Path(tmp)/"state.json"); api=MockGitHubAPI([issue()])
             result=process_once(api, config(Path(tmp)/"state.json"), store, executor=lambda task: (_ for _ in ()).throw(RuntimeError("boom")))
             self.assertEqual(result[0]["state"], "Blocked"); self.assertEqual(store.load()["tasks"]["GH-1"]["state"], "Blocked")
+            self.assertEqual(store.load()["tasks"]["GH-1"]["human_gate"], "BLOCKED")
+
+    def test_invalid_executor_outcome_is_blocked_without_sticking_in_running(self):
+        for outcome in (None, {}, {"status": "Running"}, {"status": []}, {"status": {"state": "Completed"}}):
+            with self.subTest(outcome=outcome), tempfile.TemporaryDirectory() as tmp:
+                store = StateStore(Path(tmp) / "state.json")
+                result = process_once(MockGitHubAPI([issue()]), config(Path(tmp) / "state.json"), store,
+                    executor=lambda task: outcome)
+                record = store.load()["tasks"]["GH-1"]
+                self.assertEqual(result[0]["state"], "Blocked")
+                self.assertEqual(record["state"], "Blocked")
+                self.assertEqual(record["human_gate"], "BLOCKED")
+
+    def test_executor_failure_and_cancellation_close_human_gate(self):
+        for status, expected_gate in (("Failed", "BLOCKED"), ("Blocked", "BLOCKED"),
+                                      ("Cancelled", "CANCELLED")):
+            with self.subTest(status=status), tempfile.TemporaryDirectory() as tmp:
+                store = StateStore(Path(tmp) / "state.json")
+                result = process_once(MockGitHubAPI([issue()]), config(Path(tmp) / "state.json"), store,
+                    executor=lambda task: {"status": status})
+                record = store.load()["tasks"]["GH-1"]
+                self.assertEqual(result[0]["state"], status)
+                self.assertEqual(record["state"], status)
+                self.assertEqual(record["human_gate"], expected_gate)
+
+    def test_completed_executor_with_invalid_result_packet_is_blocked_before_validation(self):
+        malformed_outcomes = (
+            {"status": "Completed"},
+            {"status": "Completed", "result_packet": None},
+            {"status": "Completed", "result_packet": []},
+            {"status": "Completed", "result_packet": {"result_packet": []}},
+            {"status": "Completed", "result_packet": {"result_packet": {"status": []}}},
+            {"status": "Completed", "result_packet": {"result_packet": {"status": "FAILED"}}},
+        )
+        for outcome in malformed_outcomes:
+            with self.subTest(outcome=outcome), tempfile.TemporaryDirectory() as tmp:
+                store = StateStore(Path(tmp) / "state.json")
+                api = MockGitHubAPI([issue()])
+                result = process_once(api, config(Path(tmp) / "state.json"), store,
+                    executor=lambda task: outcome)
+                record = store.load()["tasks"]["GH-1"]
+                self.assertEqual(result[0]["state"], "Blocked")
+                self.assertEqual(record["state"], "Blocked")
+                self.assertEqual(record["human_gate"], "BLOCKED")
+                reported_states = [json.loads(body.split("```json\n", 1)[1].rsplit("\n```", 1)[0])["state"]
+                    for _, _, body in api.calls]
+                self.assertEqual(reported_states, ["Queued", "Running", "Blocked"])
+
+    def test_progress_summary_ignores_malformed_executor_packet(self):
+        summary = progress_summary({"task_id": "GH-1", "state": "Completed", "result": {
+            "status": "Completed", "result_packet": {"result_packet": []}}})
+        self.assertIn('"state": "Completed"', summary)
+        self.assertNotIn('"result_packet":', summary)
 
     def test_progress_uses_one_comment_and_updates_each_phase(self):
         with tempfile.TemporaryDirectory() as tmp:
             store = StateStore(Path(tmp) / "state.json"); api = MockGitHubAPI([issue()])
             result = process_once(api, config(Path(tmp) / "state.json"), store,
-                executor=lambda task: {"status": "Completed", "tests": "PASS"})
+                executor=lambda task: completed_outcome())
             self.assertEqual(result[0]["state"], "Completed")
             self.assertEqual(sum(call[0] is None for call in api.calls), 1)
             states = []
@@ -287,10 +351,10 @@ class ContractTests(unittest.TestCase):
     def test_same_task_id_with_new_digest_is_rejected_as_new_revision(self):
         with tempfile.TemporaryDirectory() as tmp:
             path = Path(tmp) / "state.json"; store = StateStore(path); api = MockGitHubAPI([issue()])
-            process_once(api, config(path), store, executor=lambda task: {"status": "Completed"})
+            process_once(api, config(path), store, executor=lambda task: completed_outcome())
             changed = BODY.replace("Update docs", "Update code")
             api.issues = [issue(changed)]
-            result = process_once(api, config(path), store, executor=lambda task: {"status": "Completed"})
+            result = process_once(api, config(path), store, executor=lambda task: completed_outcome())
             self.assertEqual(result[0]["state"], "Rejected")
             self.assertIn("child task/revision", result[0]["reason"])
 
@@ -305,6 +369,7 @@ class ContractTests(unittest.TestCase):
             self.assertEqual(result[0]["state"], "Cancelled")
             self.assertEqual(calls, [])
             self.assertEqual(store.load()["tasks"]["GH-1"]["cancellation_actor"], "owner")
+            self.assertEqual(store.load()["tasks"]["GH-1"]["human_gate"], "CANCELLED")
 
     def test_untrusted_cancel_is_ignored(self):
         with tempfile.TemporaryDirectory() as tmp:
@@ -312,7 +377,7 @@ class ContractTests(unittest.TestCase):
             candidate["comments"].append({"author": "intruder", "created_at": "2026-01-01T00:00:02Z",
                 "body": "/codex-cancel task=GH-1 host=host-a"})
             result = process_once(MockGitHubAPI([candidate]), config(Path(tmp) / "state.json"), store,
-                executor=lambda task: {"status": "Completed"})
+                executor=lambda task: completed_outcome())
             self.assertEqual(result[0]["state"], "Completed")
 
     def test_claim_revalidation_rejects_last_moment_edit(self):
@@ -332,7 +397,7 @@ class ContractTests(unittest.TestCase):
             candidate["comments"].append({"id":777,"author":"receiver","created_at":"2026-01-01T00:00:02Z","body":"<!-- codex-handoff-progress -->\n{}"})
             data=store.load(); data["tasks"]["GH-1"]={"state":"Queued","digest":task_digest(parse_task(BODY)),"issue_number":1,
                 "approval_actor":"owner","approval_nonce":"nonce-123456","revision":1,"updated_at":"2026-01-01T00:00:02+00:00"}; store.save(data)
-            api=MockGitHubAPI([candidate]); result=process_once(api,config(path),store,executor=lambda task:{"status":"Completed"})
+            api=MockGitHubAPI([candidate]); result=process_once(api,config(path),store,executor=lambda task:completed_outcome())
             self.assertEqual(result[0]["state"],"Completed"); self.assertEqual(api.calls[0][0],777)
 
     def test_child_lineage_requires_parent_and_next_revision(self):

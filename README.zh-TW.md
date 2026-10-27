@@ -134,11 +134,11 @@ Queue / State / Lease / Heartbeat / Retry
 
 ## 本機雙向 MCP Bridge（已驗證）
 
-### Windows 現況（2026-10-20）
+### Windows 現況（2026-10-27）
 
 - 本機 Windows Bridge：**PASS**；本機 commit `6d0cc96` 已將 `fcntl` 改為 Windows `msvcrt`／其他平台 `fcntl` 的跨平台鎖定，未改變 MCP Tools 或 JSONL mailbox 格式。
-- 目前本地驗證：58 項 GitHub handoff／CLI 測試與 1 項雙程序 local bridge 測試 PASS（共 59 項）；compileall、JSON、canonical skills、diff check 與 Windows bundled-Python doctor 入口均 PASS。
-- Human Gate／Task 狀態流程已完成本地驗證：未核准維持 `Awaiting Approval / PENDING`；可信核准進入 `Queued / APPROVED`；無效核准或執行失敗 fail-closed 為 `Blocked`。
+- 目前本地驗證：62 項 GitHub handoff／CLI 測試與 1 項雙程序 local bridge 測試 PASS（共 63 項）；compileall、JSON、canonical skills、diff check 與 Windows bundled-Python doctor 入口均 PASS。
+- Human Gate／Task 狀態流程已完成本地驗證：未核准維持 `Awaiting Approval / PENDING`；可信核准進入 `Queued / APPROVED`；`Completed` 必須附帶嚴格驗證且 transport 相符的成功 Result Packet；無效或失敗會 fail-closed 為 `Blocked`，取消則關閉 gate 為 `CANCELLED`。
 - Windows 驗證入口會在 `python` 不在 `PATH` 且 `py -3` 找不到 runtime 時，自動 fallback 到 Codex bundled Python。
 - 限定範圍的真實 Codex → Antigravity CLI → Codex 唯讀 nonce 接力：**PASS**（2026-10-22；同日先前一次探測曾逾時）。直接桌面 MCP mailbox 路徑尚未重新驗收；此結果不授權任務執行或寫入。請見[證據與本輪狀態](LIVE_HANDOFF_EVIDENCE_20261020.md)。
 - portable worktree 保持獨立，既有未提交檔案視為使用者資料，不清理、不搬移、不覆寫。
