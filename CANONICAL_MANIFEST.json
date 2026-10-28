@@ -1,7 +1,7 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "format_version": "3.3.0",
-  "generated_at": "2026-09-14T00:00:00+08:00",
+  "generated_at": "2026-10-28T00:00:00+08:00",
   "description": "Authoritative Single Canonical Registry for Codex, Antigravity, and Shared .agents configuration.",
   "canonical_repository": "a275618631/codex-antigravity-collaboration",
   "artifacts": [
@@ -9,8 +9,8 @@
       "artifact": "shared-collaboration-protocol-v3.md",
       "canonical_repo": "a275618631/codex-antigravity-collaboration",
       "canonical_path": "shared/rules/shared-collaboration-protocol-v3.md",
-      "version": "3.3.0",
-      "sha256": "aebd0172fe47e6859f93e7510cfbda8c3e6f8a5784c495d3495a2dc48ef5c2b6",
+      "version": "3.3.1",
+      "sha256": "0e6f44b35b66484016fdead0303c130203269e54978108d8bfec207cb246c486",
       "runtime": "shared",
       "scope": "global",
       "source_of_truth": "canonical_repo",
