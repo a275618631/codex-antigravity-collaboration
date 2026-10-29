@@ -202,13 +202,13 @@ The default is **Stage 1** for low-frequency asynchronous work. Stage 2 and Stag
 
 Traditional Chinese overview: [README.zh-TW.md](README.zh-TW.md)
 
-## Current local handoff state (2026-10-27)
+## Current local handoff state (2026-10-29)
 
 - Windows local bridge: **PASS**. Commit `6d0cc96` adds platform-specific file locking (`msvcrt` on Windows, `fcntl` elsewhere) without changing MCP tools or JSONL mailbox format.
 - Current local validation: 62 GitHub handoff/CLI tests and 1 two-process local bridge test pass (63 total); compileall, JSON parsing, canonical skill validation, diff checks, and the Windows bundled-Python doctor entry also pass.
 - Human Gate / task state flow is locally verified: unapproved tasks remain `Awaiting Approval / PENDING`; trusted approval enters `Queued / APPROVED`; `Completed` requires a strict, transport-matched successful Result Packet; invalid or failed execution is fail-closed as `Blocked`, and cancellation closes the gate as `CANCELLED`.
 - The Windows verification entry falls back to the Codex bundled Python runtime when `python` is absent from `PATH` and `py -3` has no registered runtime.
-- Bounded real Codex → Antigravity CLI → Codex read-only nonce handoff: **PASS** on 2026-10-22 after an earlier probe timed out. The direct desktop MCP mailbox path is not freshly verified, and this does not authorize task execution or writes. See [evidence](LIVE_HANDOFF_EVIDENCE_20261020.md).
+- Bounded real Codex → Antigravity CLI → Codex read-only nonce handoff: **PASS** on 2026-10-28 after the user restarted Codex (`AGY_ACK B-RESTART-20261028-R2`; Gemini 3.8 Flash (High), 46.17 seconds, exit code 0). This verifies the CLI consultation route only. The desktop MCP mailbox path remains **UNVERIFIED**: no `bridge_*` mailbox tools were exposed in the active Codex session, and this probe did not send a mailbox message. It does not authorize task execution or writes. See [evidence](LIVE_HANDOFF_EVIDENCE_20261020.md).
 - Portable worktree: protected and not modified. Its pre-existing uncommitted files are not part of this branch.
 - T7 OS-level cross-project write enforcement remains **FAIL**; unattended cross-project writes are prohibited. Full unattended or cross-Repo live operation is not claimed.
 

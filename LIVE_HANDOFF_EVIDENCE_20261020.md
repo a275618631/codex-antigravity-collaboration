@@ -96,3 +96,21 @@ specific CLI route; it does not clear the broader `LIVE_BLOCKED` safety gate.
   desktop GUI alone is sufficient. The MVP remains `LIVE_BLOCKED` because T7
   OS-level cross-project write isolation remains **FAIL**; unattended or
   cross-Repo writes remain prohibited.
+
+## Recheck after Codex restart — 2026-10-28
+
+- The user restarted Codex and requested a fresh, read-only nonce probe.
+- The official Antigravity CLI was invoked through the one-hop consultation
+  tool with `Gemini 3.8 Flash (High)` and an empty temporary workspace.
+- Nonce: `B-RESTART-20261028-R2`.
+- Exact response: `AGY_ACK B-RESTART-20261028-R2`.
+- Result: `SUCCESS`, exit code `0`, duration `46.17` seconds, no stderr.
+- Scope: the probe requested only an acknowledgement and did not access or
+  modify a repository, mailbox, file, credential, or other external state.
+- This verifies the real Antigravity CLI request/response route. It does not
+  verify the separately configured desktop MCP JSONL mailbox: no
+  `bridge_ping`, `bridge_status`, `bridge_send`, or `bridge_receive` tools were
+  exposed in the active Codex session, and no mailbox message was sent.
+- T7 OS-level cross-project write isolation remains **FAIL**. The MVP remains
+  `LIVE_BLOCKED` for desktop MCP handoff, unattended execution, and cross-Repo
+  writes.
