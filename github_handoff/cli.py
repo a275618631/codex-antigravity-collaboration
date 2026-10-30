@@ -324,11 +324,10 @@ def main(argv: list[str] | None = None) -> int:
         except (OSError, SafetyError) as exc:
             print(redact(str(exc)), file=sys.stderr); return 4
 
-    state = StateStore(Path(config["state_file"]).expanduser())
-
     token = os.environ.get(config.get("token_env", "GH_TOKEN"), "")
     if not token:
         print("GitHub token is not configured", file=sys.stderr); return 2
+    state = StateStore(Path(config["state_file"]).expanduser())
     api = GitHubAPI(config["inbox_repo"], token, config.get("api_base", "https://api.github.com"))
     execute = None if args.command == "dry-run" else lambda task: execute_task(task, config)
     try:

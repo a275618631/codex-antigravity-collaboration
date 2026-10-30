@@ -1,37 +1,93 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "type": "object",
-  "additionalProperties": false,
-  "required": ["result_packet"],
-  "properties": {
-    "result_packet": {
+  "oneOf": [{"$ref": "#/$defs/v1"}, {"$ref": "#/$defs/v2"}],
+  "$defs": {
+    "v1": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["task_id", "responder", "status", "summary", "changes", "evidence", "validation_results", "risks_and_limitations", "remaining_work", "recommendation", "transport"],
+      "required": ["result_packet"],
       "properties": {
-        "task_id": {"type": "string"},
-        "responder": {"type": "string", "enum": ["Codex"]},
-        "status": {"type": "string", "enum": ["SUCCESS", "PARTIAL", "FAILED", "BLOCKED"]},
-        "summary": {"type": "string"},
-        "changes": {"type": "array", "items": {"type": "string"}},
-        "evidence": {"type": "array", "items": {"type": "string"}},
-        "validation_results": {"type": "array", "items": {"type": "string"}},
-        "risks_and_limitations": {"type": "array", "items": {"type": "string"}},
-        "remaining_work": {"type": "array", "items": {"type": "string"}},
-        "recommendation": {"type": "string"},
-        "transport": {
+        "result_packet": {
           "type": "object",
           "additionalProperties": false,
-          "required": ["issue", "task_digest", "host", "approval_actor", "approval_nonce", "state"],
+          "required": ["task_id", "responder", "status", "summary", "changes", "evidence", "validation_results", "risks_and_limitations", "remaining_work", "recommendation", "transport"],
           "properties": {
-            "issue": {"type": "integer"},
-            "task_digest": {"type": "string", "pattern": "^[a-f0-9]{64}$"},
-            "host": {"type": "string"},
-            "approval_actor": {"type": "string"},
-            "approval_nonce": {"type": "string"},
-            "state": {"type": "string", "enum": ["Draft", "Awaiting Approval", "Queued", "Running", "Validating", "Reporting", "Completed", "Failed", "Blocked", "Cancelled"]}
+            "task_id": {"type": "string"},
+            "responder": {"type": "string", "enum": ["Codex"]},
+            "status": {"type": "string", "enum": ["SUCCESS", "PARTIAL", "FAILED", "BLOCKED"]},
+            "summary": {"type": "string"},
+            "changes": {"type": "array", "items": {"type": "string"}},
+            "evidence": {"type": "array", "items": {"type": "string"}},
+            "validation_results": {"type": "array", "items": {"type": "string"}},
+            "risks_and_limitations": {"type": "array", "items": {"type": "string"}},
+            "remaining_work": {"type": "array", "items": {"type": "string"}},
+            "recommendation": {"type": "string"},
+            "transport": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": ["issue", "task_digest", "host", "approval_actor", "approval_nonce", "state"],
+              "properties": {
+                "issue": {"type": "integer"},
+                "task_digest": {"type": "string", "pattern": "^[a-f0-9]{64}$"},
+                "host": {"type": "string"},
+                "approval_actor": {"type": "string"},
+                "approval_nonce": {"type": "string"},
+                "state": {"type": "string", "enum": ["Draft", "Awaiting Approval", "Queued", "Running", "Validating", "Reporting", "Completed", "Failed", "Blocked", "Cancelled"]}
+              }
+            }
           }
         }
+      }
+    },
+    "v2": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["schema_version", "goal_id", "task_id", "attempt_id", "delivery_id", "approved_plan_digest", "task_digest", "repo", "base_sha", "status", "summary", "artifacts_changed", "tests_run", "acceptance", "unresolved", "newly_discovered_work", "recommended_next", "risks"],
+      "properties": {
+        "schema_version": {"const": 2},
+        "goal_id": {"type": "string", "minLength": 1},
+        "task_id": {"type": "string", "minLength": 1},
+        "attempt_id": {"type": "string", "minLength": 1},
+        "delivery_id": {"type": "string", "minLength": 1},
+        "approved_plan_digest": {"type": "string", "pattern": "^[a-f0-9]{64}$"},
+        "task_digest": {"type": "string", "pattern": "^[a-f0-9]{64}$"},
+        "repo": {"type": "string", "minLength": 1},
+        "base_sha": {"type": "string", "minLength": 7},
+        "status": {"type": "string", "enum": ["SUCCESS", "PARTIAL", "FAILED", "BLOCKED"]},
+        "summary": {"type": "string"},
+        "artifacts_changed": {"type": "array", "items": {"type": "string"}},
+        "tests_run": {"type": "array", "items": {"$ref": "#/$defs/evidence_item"}},
+        "acceptance": {"type": "array", "items": {"$ref": "#/$defs/acceptance_item"}},
+        "unresolved": {"type": "array", "items": {"type": "string"}},
+        "newly_discovered_work": {"type": "array", "items": {"$ref": "#/$defs/discovered_work"}},
+        "recommended_next": {"type": "string"},
+        "risks": {"type": "array", "items": {"type": "string"}}
+      }
+    },
+    "evidence_item": {
+      "type": "object", "additionalProperties": false,
+      "required": ["name", "status", "evidence_ref"],
+      "properties": {"name": {"type": "string"}, "status": {"type": "string", "enum": ["PASS", "FAIL", "UNVERIFIED"]}, "evidence_ref": {"type": "string"}}
+    },
+    "acceptance_item": {
+      "type": "object", "additionalProperties": false,
+      "required": ["criterion_id", "status", "evidence_ref"],
+      "properties": {"criterion_id": {"type": "string"}, "status": {"type": "string", "enum": ["PASS", "FAIL", "UNVERIFIED"]}, "evidence_ref": {"type": "string"}}
+    },
+    "discovered_work": {
+      "type": "object", "additionalProperties": false,
+      "required": ["id", "objective"],
+      "properties": {
+        "id": {"type": "string", "minLength": 1},
+        "objective": {"type": "string", "minLength": 1},
+        "owner_agent": {"type": "string", "minLength": 1},
+        "dependencies": {"type": "array", "items": {"type": "string"}},
+        "write_scope": {"type": "array", "items": {"type": "string"}},
+        "operation_type": {"type": "string", "enum": ["read", "write"]},
+        "acceptance_criteria": {"type": "array", "items": {"type": "string"}},
+        "required": {"type": "boolean"},
+        "integration": {"type": "boolean"},
+        "human_gate_reason": {"type": ["string", "null"]}
       }
     }
   }

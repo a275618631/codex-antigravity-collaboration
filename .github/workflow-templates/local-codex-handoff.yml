@@ -1,0 +1,25 @@
+name: Local Codex Handoff
+
+on:
+  workflow_dispatch:
+
+# Template only. Install this workflow in a dedicated private inbox repository.
+# Do not add pull_request, issue_comment, schedule, or public-repository triggers.
+permissions:
+  contents: read
+  issues: read
+
+jobs:
+  receive-approved-task:
+    runs-on: [self-hosted, windows, codex-handoff]
+    environment: local-agent-execution
+    steps:
+      - name: Run the pre-approved private-inbox receiver once
+        shell: pwsh
+        env:
+          # Local absolute path supplied by the protected runner environment;
+          # never put tokens, task content, or paths in workflow inputs/logs.
+          GH_HANDOFF_CONFIG: ${{ vars.GH_HANDOFF_CONFIG }}
+        run: |
+          if ([string]::IsNullOrWhiteSpace($env:GH_HANDOFF_CONFIG)) { throw 'Protected runner config path is not set.' }
+          python -m github_handoff --config $env:GH_HANDOFF_CONFIG once
