@@ -1,10 +1,12 @@
 # Codex × Antigravity Collaboration
 
-> A practical reference architecture for coordinating native agent runtimes without introducing another orchestration framework.
+> A documented way to hand work between Codex and Antigravity, with explicit limits on what each runtime can do.
 
 [Architecture website](https://a275618631.github.io/codex-antigravity-collaboration/) · [Traditional Chinese README](README.zh-TW.md)
 
-This repository documents a **working collaboration pattern** built around Codex and Google Antigravity, with a path toward local models, privacy-aware routing, and multi-host execution.
+I wanted two AI development tools to share work without losing track of task ownership, overwriting each other's files, or quietly treating an unverified result as complete. This repository records the local handoff approach, the tests I ran, and the points that still need work.
+
+It uses Codex and Google Antigravity as the concrete example. Local models, privacy-aware routing and multi-host coordination are possible extensions, **not current production capabilities**.
 
 It is intentionally **not** a new agent framework, scheduler, message bus, or enterprise security product.
 
@@ -202,17 +204,15 @@ The default is **Stage 1** for low-frequency asynchronous work. Stage 2 and Stag
 
 Traditional Chinese overview: [README.zh-TW.md](README.zh-TW.md)
 
-## Current local handoff state (2026-10-20)
+## What the local tests actually established
 
-- Windows local bridge: **PASS**. Commit `6d0cc96` adds platform-specific file locking (`msvcrt` on Windows, `fcntl` elsewhere) without changing MCP tools or JSONL mailbox format.
-- Current local validation: 53 GitHub handoff tests and the two-process local bridge test pass; compileall, JSON parsing, canonical skill validation, diff checks, and the Windows bundled-Python doctor entry also pass.
-- Human Gate / task state flow is locally verified: unapproved tasks remain `Awaiting Approval / PENDING`; trusted approval enters `Queued / APPROVED`; invalid or failed execution is fail-closed as `Blocked`.
-- The Windows verification entry falls back to the Codex bundled Python runtime when `python` is absent from `PATH` and `py -3` has no registered runtime.
-- Historical bounded real Codex ↔ Antigravity runtime handoff: **PASS** on 2026-10-20; the 2026-10-22 read-only CLI nonce recheck timed out after 55 seconds, so current runtime status remains **LIVE_BLOCKED** until a fresh handshake succeeds. See [evidence](LIVE_HANDOFF_EVIDENCE_20261020.md).
-- Portable worktree: protected and not modified. Its pre-existing uncommitted files are not part of this branch.
-- T7 OS-level cross-project write enforcement remains **FAIL**; unattended cross-project writes are prohibited. Full unattended or cross-Repo live operation is not claimed.
+The Windows bridge was exercised with two local processes, a bounded JSONL mailbox, file-locking, and human approval states. Its transport and approval-flow regression tests passed in the dated local run; the [evidence report](LIVE_HANDOFF_EVIDENCE_20261020.md) records the exact conditions.
 
-The canonical local entry is this README → `AGENTS.md` → `PROJECT.yaml` → `local_bridge/README.md`. This repository is a reference architecture and bounded local bridge, not a new orchestration framework.
+A real Codex ↔ Antigravity read-only nonce handoff passed on **2026-10-20**, but the **2026-10-22** follow-up timed out. The current live external-runtime route therefore stays **LIVE_BLOCKED** until it passes a fresh recheck. Local mailbox tests cannot be substituted for a successful live cross-runtime handoff.
+
+OS-level cross-project write isolation (T7) remains **FAIL**; unattended cross-repository writes are not allowed. This is a local engineering case study, not a continuously running enterprise orchestration service.
+
+For the reproducible entry points, see [the local bridge README](local_bridge/README.md), [status and roadmap](docs/STATUS_AND_ROADMAP.md), and [the runbook](RUNBOOK_GITHUB_HANDOFF_20260929.md).
 
 ## Project maturity
 
