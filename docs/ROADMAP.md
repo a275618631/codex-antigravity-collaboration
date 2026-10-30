@@ -1,5 +1,8 @@
 # Roadmap
 
+> Historical 2026-10-15 snapshot. Use the project Drive CURRENT entry and the
+> 2026-10-30 design handoff for the current development sequence.
+
 ## 1. Validate the private transport
 
 - Register one Windows self-hosted runner in a dedicated private operational inbox repository.

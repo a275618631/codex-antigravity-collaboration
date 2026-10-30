@@ -1,5 +1,7 @@
 # 本地多 Agent 協作系統目前索引
 
+> 2026-10-15 歷史索引；目前進度請以專案 Drive CURRENT 與 2026-10-30 交接文件為準。
+
 這個索引對應 canonical Drive folder `1CZ3N6T8BlvcL2ocybv3Op8oUF7EgTc4s` 與 canonical repository `a275618631/codex-antigravity-collaboration`。GitHub 是工程狀態來源；這個 Drive 索引只保留人可讀的關係、現況與交接資訊。
 
 ## 模組

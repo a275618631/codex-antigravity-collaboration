@@ -1,5 +1,8 @@
 # Consolidation Result
 
+> Historical 2026-10-15 report. Its status and test counts are not a current
+> verification of the 2026-10-30 integration.
+
 The repository now models one stable system with modules rather than competing projects. The canonical repository remains `a275618631/codex-antigravity-collaboration`; GitHub engineering state remains primary, while Drive is limited to a human-readable index, archive, and handoff role.
 
 ## Minimal diff applied

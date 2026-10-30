@@ -1,5 +1,8 @@
 # Local Multi Agent Collaboration System Project Tree
 
+> Historical 2026-10-15 snapshot. For the integration baseline and outstanding
+> verification, see `DEVELOPMENT_ALIGNMENT_20261030.md` and the Drive CURRENT entry.
+
 ## Root system
 
 **System ID:** `local-multi-agent-collaboration`
