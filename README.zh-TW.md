@@ -1,8 +1,10 @@
 # Codex × Antigravity 協作架構
 
-> 一份以「平台原生能力優先」為核心的 Agent 協作參考架構；目標是在不新增另一套重型 orchestration framework 的前提下，讓不同 Agent runtime 分工合作。
+> 記錄 Codex 和 Antigravity 如何在本機交換任務、保留人工核准，以及遇到問題時為何要停止。
 
-這個專案目前以 **Codex + Google Antigravity** 為已實作案例，並保留往 **本地模型、隱私分級、跨主機協作** 演進的設計路線。
+我遇到的問題是：兩個 AI 工具都能協助開發，但如果任務、結果與寫入責任不清楚，容易重複工作，甚至互相覆寫檔案。這份專案記錄我用 Codex 和 Google Antigravity 嘗試的本機協作方式、實測證據與目前限制。
+
+本地模型、隱私分級和跨主機協作是後續設計方向，不能當成目前已完成的功能。
 
 它**不是**新的 Agent Framework、Scheduler、Message Bus，也不是企業級資安產品。
 
@@ -132,27 +134,15 @@ Queue / State / Lease / Heartbeat / Retry
 - [Status and Roadmap](docs/STATUS_AND_ROADMAP.md)
 - [References](docs/REFERENCES.md)
 
-## 本機雙向 MCP Bridge（已驗證）
+## 本機驗證與尚未解決的問題
 
-### Windows 現況（2026-10-20）
+已在 Windows 本機驗證雙程序 Bridge、JSONL mailbox、檔案鎖定與人工核准狀態流程；詳細測試條件請見[證據紀錄](LIVE_HANDOFF_EVIDENCE_20261020.md)。
 
-- 本機 Windows Bridge：**PASS**；本機 commit `6d0cc96` 已將 `fcntl` 改為 Windows `msvcrt`／其他平台 `fcntl` 的跨平台鎖定，未改變 MCP Tools 或 JSONL mailbox 格式。
-- 目前本地驗證：53 項 GitHub handoff 測試與雙程序 local bridge 測試 PASS；compileall、JSON、canonical skills、diff check 與 Windows bundled-Python doctor 入口均 PASS。
-- Human Gate／Task 狀態流程已完成本地驗證：未核准維持 `Awaiting Approval / PENDING`；可信核准進入 `Queued / APPROVED`；無效核准或執行失敗 fail-closed 為 `Blocked`。
-- Windows 驗證入口會在 `python` 不在 `PATH` 且 `py -3` 找不到 runtime 時，自動 fallback 到 Codex bundled Python。
-- 歷史限定範圍的真實 Codex ↔ Antigravity Runtime 接力：**PASS**（2026-10-20）；但 2026-10-22 本輪唯讀 CLI nonce 重測於 55 秒逾時，目前狀態維持 **LIVE_BLOCKED**，直到新的接力成功。請見[證據與本輪狀態](LIVE_HANDOFF_EVIDENCE_20261020.md)。
-- portable worktree 保持獨立，既有未提交檔案視為使用者資料，不清理、不搬移、不覆寫。
-- T7 OS 級跨專案寫入強制隔離仍為 **FAIL**；禁止無人值守或跨 Repo 寫入。
+**2026-10-20** 曾完成限定範圍的真實 Codex ↔ Antigravity 唯讀交接；**2026-10-22** 的重新測試逾時，因此最新即時跨平台狀態仍標記 **LIVE_BLOCKED**。本地傳輸測試 PASS 不能取代真實跨 Runtime 的重新驗證。
 
-本專案現在包含一個僅限本機使用的 Codex × Antigravity MCP bridge：
+另外，T7 的作業系統層級跨專案寫入隔離尚未完成（**FAIL**），所以不能允許無人值守的跨 Repository 寫入。這是本機協作案例，不是企業正式部署的 Agent 平台。
 
-- [Bridge 程式與測試](local_bridge/)
-- 兩個桌面 runtime 各自以 stdio 啟動 bridge process。
-- 兩端透過同一個鎖定的 JSONL mailbox 傳遞 bounded text message。
-- bridge 不執行訊息中的指令，也不包含 OAuth、PAT 或其他憑證。
-- 這是 pull-based transport；模型需要呼叫 `bridge_receive`，不會自動插入另一個已執行中的回合。
-
-本輪已取得實際 Codex → MCP Bridge → Antigravity → Codex nonce 證據；雙程序 local bridge 測試仍是獨立的 mailbox transport 驗證。完整的本機設定與安全邊界請見 [local bridge README](local_bridge/README.md)。
+詳細操作請見 [Local Bridge README](local_bridge/README.md)、[狀態與 Roadmap](docs/STATUS_AND_ROADMAP.md)，以及 [Runbook](RUNBOOK_GITHUB_HANDOFF_20260929.md)。
 
 ## 定位
 
