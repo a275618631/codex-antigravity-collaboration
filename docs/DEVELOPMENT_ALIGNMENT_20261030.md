@@ -13,20 +13,41 @@ CURRENT entry: https://drive.google.com/drive/folders/1CZ3N6T8BlvcL2ocybv3Op8oUF
 - PR #8, #10, #12 and #13 remain separate open pull requests. The prior
   checkout's uncommitted PR #12 changes were not used or modified.
 
-## Evidence and next work
+## B1–B5 implementation status
 
-The B1–B5 uncommitted changes and the prior 115/4/1 test run reported in Drive
-were not found in the available worktrees. The control plane here is the older
-`be3ba65` implementation; passing its mock tests does not establish the B1–B5
-safety properties. Do not run it for unattended or cross-repository writes.
+The control-plane implementation and its tests now cover the handoff acceptance
+cases:
 
-Continue with the acceptance cases in the project handoff:
-https://docs.google.com/document/d/1vMTLbeRmlv2-YXn_4b1M6akg9VY1nG_gLCtDIfCiH2I/edit.
-Implement and verify approval-bound scope and fail-closed policy, versioned
-result packets, atomic idempotent ingestion and locking, evidence-based Parent
-completion, and interrupted-runtime reconciliation. Investigate the four
-historical mac-health failures when the original logs and matching source are
-available; their cause is unverified in this checkout.
+- **B1 — approval-bound plan:** the approval digest binds goal, repository,
+  base SHA, operation type, exact write-set, and approved tasks. Empty scopes
+  are read-only; unsafe relative paths and resolved paths outside the repo are
+  rejected. Writes fail closed when policy is absent, and DENY precedes routing.
+- **B2 — result contract:** v2 packets bind goal/task/attempt/delivery IDs,
+  approved plan/task digests, repository, and base SHA. The adapter requires
+  matching trusted transport identity. The v1 adapter remains available but
+  treats acceptance as UNVERIFIED; a legacy boolean cannot establish PASS.
+- **B3 — ingestion and discovered work:** state writes use a cross-process lock
+  and revision counter. Delivery IDs are idempotent only for the same digest;
+  changed content is rejected. Newly discovered work is validated as a whole
+  for duplicate IDs, dependencies/cycles, and parent plus approved write scope
+  before any task is committed.
+- **B4 — Parent completion:** all required tasks, an integration task, every
+  Parent acceptance criterion with evidence, and zero unresolved blockers are
+  required. FAILED, all-cancelled, and incomplete states do not complete.
+- **B5 — recovery:** stale in-flight work and unknown runtime side effects move
+  to `NEEDS_RECONCILIATION`; recovery inspects known external IDs and never
+  blindly resubmits an uncertain operation.
+
+Verification on this branch: `python -m unittest discover -s tests -v` — **79
+passed**; JSON Schema parsing and `git diff --check` passed. The historical
+115/4/1 report in Drive still cannot be tied to source and logs in this checkout,
+so it remains unverified. The four historical mac-health failures likewise
+need their original logs and matching source for diagnosis.
+
+These results verify local control-plane behavior with tests and mock adapters.
+They do not prove a live Parent Goal round trip, desktop mailbox, Antigravity
+runtime integration, OS isolation, or authorization for unattended or
+cross-repository writes. Keep those gates closed until independently verified.
 
 The GitHub inbox/runner and OS isolation gates remain separate from this local
 integration. Read-only CLI evidence does not establish a desktop mailbox or a
