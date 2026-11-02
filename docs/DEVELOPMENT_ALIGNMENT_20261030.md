@@ -52,3 +52,33 @@ cross-repository writes. Keep those gates closed until independently verified.
 The GitHub inbox/runner and OS isolation gates remain separate from this local
 integration. Read-only CLI evidence does not establish a desktop mailbox or a
 full live Parent Goal round trip.
+
+## Independent PR review follow-up — 2026-11-02
+
+The independent review's six P1 findings were addressed in the PR #15 branch:
+
+- The GitHub handoff receiver schema is v1-only again; the control-plane schema
+  separately accepts flat control-plane v1, legacy nested GitHub v1, and v2.
+- Legacy v1 test claims cannot complete a task. Evidence and write artifacts
+  require configured verifiers; write results fail closed when artifact
+  verification is unavailable.
+- Newly discovered tasks stay in `PENDING_REVIEW` until a trusted approver
+  approves a revised, re-digested plan. Existing task evidence is reset for
+  rerun against that revision.
+- Active tasks with overlapping write scopes are serialized, including
+  case-insensitive path overlap on Windows.
+- Cancellation of active work remains pending until the external runtime
+  confirms a terminal cancellation; unknown status requires reconciliation.
+- Parent acceptance is recorded only from verifier-approved evidence returned
+  by a completed integration task for the matching attempt and plan digest.
+
+Three P2 findings were also addressed: policy callbacks receive repository,
+base, plan/task digests and actor context; snapshots reload the persisted state;
+and migrated legacy delivery IDs without a digest require reconciliation before
+reuse.
+
+Verification on 2026-11-02: `python -m unittest discover -s tests -v` — **93
+passed**. This validates local state-machine behavior with test verifiers and
+mock runtimes. Production evidence/artifact verifiers, desktop mailbox, live
+Antigravity transport, and OS isolation are still unconfigured or unverified;
+the PR remains Draft and unattended or cross-repository writes stay disabled.

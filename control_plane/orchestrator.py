@@ -36,6 +36,8 @@ class TaskState(str, Enum):
     VALIDATING = "VALIDATING"
     BLOCKED = "BLOCKED"
     HUMAN_GATE = "HUMAN_GATE"
+    PENDING_REVIEW = "PENDING_REVIEW"
+    CANCEL_REQUESTED = "CANCEL_REQUESTED"
     COMPLETED = "COMPLETED"
     FAILED = "FAILED"
     CANCELLED = "CANCELLED"
@@ -259,10 +261,13 @@ class AntigravityAdapter(PassiveAdapter):
 class ControlPlane:
     """Persistent task graph with policy-first dispatch and automatic result ingestion."""
 
-    def __init__(self, state_file: Path | str, policy: Callable[[Mapping[str, Any]], PolicyDecision] | None = None, *, repo_root: Path | str | None = None):
+    def __init__(self, state_file: Path | str, policy: Callable[[Mapping[str, Any]], PolicyDecision] | None = None, *, repo_root: Path | str | None = None, evidence_verifier: Callable[[Mapping[str, Any]], bool] | None = None, approval_verifier: Callable[[Mapping[str, Any]], bool] | None = None, artifact_verifier: Callable[[Mapping[str, Any]], bool] | None = None):
         self.state_file = Path(state_file)
         self.policy = policy
         self.repo_root = Path(repo_root).resolve() if repo_root is not None else None
+        self.evidence_verifier = evidence_verifier
+        self.approval_verifier = approval_verifier
+        self.artifact_verifier = artifact_verifier
         self._thread_lock = threading.RLock()
         self.state = self._load()
 
@@ -298,7 +303,9 @@ class ControlPlane:
         if data.get("schema_version") not in {1, 2} or not isinstance(data.get("goals"), dict):
             raise ValueError("unsupported or corrupt control-plane state")
         if isinstance(data.get("deliveries"), list):
-            data["deliveries"] = {item: "legacy" for item in data["deliveries"]}
+            # Old states stored only delivery IDs, not packet digests. Preserve
+            # the IDs but mark them unverifiable so they cannot hide conflicts.
+            data["deliveries"] = {item: None for item in data["deliveries"]}
         data["schema_version"] = 2
         data.setdefault("revision", 0)
         data.setdefault("deliveries", {})
@@ -347,7 +354,7 @@ class ControlPlane:
         payload = {
             "goal_id": goal["id"], "objective": goal["objective"], "repo": goal["repo"],
             "base_sha": goal["base_sha"], "write_set": goal.get("approved_write_set", []),
-            "operation_type": goal.get("operation_type"),
+            "operation_type": goal.get("operation_type"), "plan_revision": goal.get("plan_revision", 1),
             "acceptance_criteria": goal["acceptance_criteria"],
             "tasks": [{key: goal["tasks"][task_id][key] for key in ("id", "objective", "owner_agent", "dependencies", "write_scope", "acceptance_criteria", "operation_type", "required", "integration")}
                       for task_id in sorted(goal.get("approved_task_ids", goal["tasks"]))],
@@ -436,6 +443,7 @@ class ControlPlane:
         goal["approved_write_set"] = approved_scope
         goal["operation_type"] = operation_type
         goal["approved_task_ids"] = sorted(goal["tasks"])
+        goal["plan_revision"] = 1
         goal["approved_plan_digest"] = self._plan_digest(goal)
         goal["plan_approved"] = True
         for task in goal["tasks"].values():
@@ -449,7 +457,9 @@ class ControlPlane:
     @_serialized_mutation
     def next_task(self, goal_id: str) -> dict[str, Any] | None:
         goal = self._goal(goal_id)
-        if goal["state"] in {TaskState.HUMAN_GATE.value, TaskState.BLOCKED.value, TaskState.COMPLETED.value, TaskState.FAILED.value}:
+        if goal["state"] in {TaskState.HUMAN_GATE.value, TaskState.PENDING_REVIEW.value,
+                              TaskState.CANCEL_REQUESTED.value,
+                              TaskState.BLOCKED.value, TaskState.COMPLETED.value, TaskState.FAILED.value}:
             return None
         if any(task["state"] == TaskState.NEEDS_RECONCILIATION.value for task in goal["tasks"].values()):
             goal["state"] = TaskState.NEEDS_RECONCILIATION.value
@@ -462,11 +472,14 @@ class ControlPlane:
             return None
         self._refresh_readiness(goal)
         ready = sorted((task for task in goal["tasks"].values() if task["state"] == TaskState.READY.value), key=lambda item: item["id"])
-        if not ready:
+        active = [task for task in goal["tasks"].values() if task["state"] in {
+            TaskState.RUNNING.value, TaskState.DELEGATED.value, TaskState.WAITING_FOR_AGENT.value,
+            TaskState.INTEGRATING_RESULT.value, TaskState.VALIDATING.value, TaskState.CANCEL_REQUESTED.value}]
+        task = next((candidate for candidate in ready if not self._write_conflicts(candidate, active)), None)
+        if task is None:
             self._update_goal_terminal_state(goal)
             self._save()
             return None
-        task = ready[0]
         operation_type = task["operation_type"]
         if not goal.get("repo") or not goal.get("base_sha") or (operation_type == "write" and any(not self._path_resolves_inside_repo(path) for path in task["write_scope"])):
             task.update(state=TaskState.BLOCKED.value, policy_decision=PolicyDecision.DENY.value, updated_at=utcnow())
@@ -477,7 +490,13 @@ class ControlPlane:
             decision = PolicyDecision.DENY
         else:
             try:
-                decision = self.policy(task) if self.policy else PolicyDecision.ALLOW
+                policy_context = copy.deepcopy(task)
+                policy_context.update(goal_id=goal_id, repo=goal["repo"], base_sha=goal["base_sha"],
+                                     approved_plan_digest=goal["approved_plan_digest"],
+                                     approved_write_set=copy.deepcopy(goal["approved_write_set"]),
+                                     task_digest=task["task_digest"], operation_type=operation_type,
+                                     execution_actor=task["owner_agent"])
+                decision = self.policy(policy_context) if self.policy else PolicyDecision.ALLOW
             except Exception:
                 decision = PolicyDecision.DENY
         if not isinstance(decision, PolicyDecision):
@@ -537,34 +556,73 @@ class ControlPlane:
             trusted_fields = ("goal_id", "task_id", "attempt_id", "delivery_id", "approved_plan_digest", "task_digest", "repo", "base_sha")
             if any(trusted_context.get(field) != result[field] for field in trusted_fields):
                 raise ResultPacketError("result packet identity does not match trusted transport")
-        prior_digest = self.state["deliveries"].get(delivery_id)
-        if prior_digest is not None:
-            if prior_digest not in {"legacy", packet_digest}:
+        if delivery_id in self.state["deliveries"]:
+            prior_digest = self.state["deliveries"][delivery_id]
+            if prior_digest is None:
+                raise ResultPacketError("legacy delivery digest is unavailable; reconciliation is required")
+            if prior_digest != packet_digest:
                 raise ResultPacketError("delivery_id was reused with a different packet digest")
             return {"duplicate": True, "goal": copy.deepcopy(goal)}
         if task["state"] not in {TaskState.RUNNING.value, TaskState.WAITING_FOR_AGENT.value, TaskState.DELEGATED.value}:
             raise ValueError("result is not expected for this task state")
         self._validate_write_scope(task, result["artifacts_changed"])
+        artifacts_verified = self._verify_artifacts(goal, task, result)
+        task["artifact_verification"] = {
+            "verified": artifacts_verified, "verifier_configured": self.artifact_verifier is not None,
+            "base_sha": goal["base_sha"], "plan_digest": goal["approved_plan_digest"],
+            "reported_changed_paths": copy.deepcopy(result["artifacts_changed"]),
+        }
         allowed_criteria = set(goal.get("acceptance_criteria", [])) | set(task.get("acceptance_criteria", []))
         if any(item["criterion_id"] not in allowed_criteria for item in result["acceptance"]):
             raise ResultPacketError("result contains an unknown acceptance criterion")
+        is_integration = task.get("integration") or task["id"].lower() == "integration"
+        verified_criteria: set[str] = set()
+        acceptance_audit: list[dict[str, Any]] = []
         for evidence in result["acceptance"]:
-            if evidence["status"] == "PASS":
-                goal.setdefault("acceptance_results", {})[evidence["criterion_id"]] = {
-                    "status": "PASS", "evidence_ref": evidence["evidence_ref"], "task_id": task["id"]}
+            if evidence["status"] != "PASS":
+                continue
+            criterion = evidence["criterion_id"]
+            verified = self._verify_evidence(goal, task, result, kind="acceptance",
+                                             evidence_ref=evidence.get("evidence_ref", ""), name=criterion)
+            acceptance_audit.append({"criterion_id": criterion, "evidence_ref": evidence.get("evidence_ref"),
+                                     "verified": verified, "verifier_configured": self.evidence_verifier is not None})
+            if verified and criterion in task.get("acceptance_criteria", []):
+                verified_criteria.add(criterion)
+            if verified and is_integration and criterion in goal.get("acceptance_criteria", []):
+                goal.setdefault("acceptance_results", {})[criterion] = {
+                    "status": "VERIFIED_PASS", "evidence_ref": evidence["evidence_ref"],
+                    "task_id": task["id"], "attempt_id": result.get("attempt_id"),
+                    "approved_plan_digest": goal["approved_plan_digest"]}
         self._transition(task, TaskState.INTEGRATING_RESULT.value)
         task["result"] = result
         self._transition(task, TaskState.VALIDATING.value)
         required_criteria = set(task.get("acceptance_criteria", []))
         acceptance_by_id = {item["criterion_id"]: item["status"] for item in result["acceptance"]}
-        criteria_passed = (all(acceptance_by_id.get(item) == "PASS" for item in required_criteria)
-                           if required_criteria else bool(result["tests_run"]) and all(
-                               isinstance(test, Mapping) and test.get("status") == "PASS" and test.get("evidence_ref")
-                               for test in result["tests_run"]))
-        legacy_passed = result["schema_version"] == 1 and result["acceptance_passed"] and not result["legacy_acceptance_unverified"]
+        test_audit: list[dict[str, Any]] = []
+        for test in result["tests_run"]:
+            verified = (isinstance(test, Mapping) and test.get("status") == "PASS" and
+                        self._verify_evidence(goal, task, result, kind="test",
+                                             evidence_ref=test.get("evidence_ref", ""), name=test.get("name", "")))
+            test_audit.append({"name": test.get("name") if isinstance(test, Mapping) else None,
+                               "evidence_ref": test.get("evidence_ref") if isinstance(test, Mapping) else None,
+                               "status": test.get("status") if isinstance(test, Mapping) else "INVALID",
+                               "verifier_configured": self.evidence_verifier is not None, "verified": verified})
+        tests_verified = bool(test_audit) and all(item["verified"] for item in test_audit)
+        task["evidence_verification"] = {
+            "acceptance": acceptance_audit,
+            "tests": test_audit,
+            "plan_digest": goal["approved_plan_digest"],
+        }
+        criteria_passed = (all(acceptance_by_id.get(item) == "PASS" and item in verified_criteria
+                               for item in required_criteria)
+                           if required_criteria else tests_verified)
+        # Legacy packets cannot satisfy completion through their self-reported
+        # booleans or tests; they remain UNVERIFIED until an explicit re-run.
+        if result["schema_version"] == 1:
+            criteria_passed = False
         if result["status"] == "FAILED" or any(item["status"] == "FAIL" for item in result["acceptance"]):
             self._transition(task, TaskState.FAILED.value)
-        elif result["status"] == "SUCCESS" and (criteria_passed or legacy_passed) and not result["unresolved"]:
+        elif result["schema_version"] == 2 and result["status"] == "SUCCESS" and artifacts_verified and criteria_passed and not result["unresolved"]:
             self._transition(task, TaskState.COMPLETED.value)
         else:
             self._transition(task, TaskState.BLOCKED.value)
@@ -589,12 +647,89 @@ class ControlPlane:
         self._save()
 
     @_serialized_mutation
-    def cancel_task(self, goal_id: str, task_id: str) -> None:
+    def approve_discovered_task(self, goal_id: str, task_id: str, *, approver: str) -> str:
+        """Approve one discovered task as a new, digest-bound plan revision."""
+        goal = self._goal(goal_id)
+        task = self._task(goal_id, task_id)
+        if task["state"] != TaskState.PENDING_REVIEW.value or not task.get("discovered_under"):
+            raise ValueError("task is not newly discovered work awaiting review")
+        if not isinstance(approver, str) or not approver.strip():
+            raise ValueError("an approver identity is required")
+        approval_context = {"goal_id": goal_id, "task_id": task_id, "approver": approver.strip(),
+                            "repo": goal["repo"], "base_sha": goal["base_sha"],
+                            "approved_plan_digest": goal.get("approved_plan_digest"),
+                            "task_digest": task.get("task_digest"), "plan_revision": goal.get("plan_revision", 1)}
+        if self.approval_verifier is None:
+            raise ValueError("trusted approval verifier is required for discovered work")
+        try:
+            approved = self.approval_verifier(approval_context) is True
+        except Exception:
+            approved = False
+        if not approved:
+            raise ValueError("discovered work approval could not be verified")
+        active = {TaskState.RUNNING.value, TaskState.DELEGATED.value, TaskState.WAITING_FOR_AGENT.value,
+                  TaskState.INTEGRATING_RESULT.value, TaskState.VALIDATING.value, TaskState.CANCEL_REQUESTED.value}
+        if any(item["state"] in active for item in goal["tasks"].values()):
+            raise ValueError("discovered work can only be approved when no task is active")
+        if self._plan_digest(goal) != goal.get("approved_plan_digest"):
+            raise ValueError("current approved plan digest is invalid")
+        goal["plan_revision"] = int(goal.get("plan_revision", 1)) + 1
+        goal["approved_task_ids"] = sorted(set(goal.get("approved_task_ids", [])) | {task_id})
+        goal["approved_plan_digest"] = self._plan_digest(goal)
+        for approved_task in goal["tasks"].values():
+            approved_task["task_digest"] = self._task_digest(goal, approved_task)
+        # A new approved revision invalidates previous execution evidence. Re-run
+        # every approved task against the new plan digest before Parent can pass.
+        approved_ids = set(goal["approved_task_ids"])
+        for approved_id in approved_ids:
+            approved_task = goal["tasks"][approved_id]
+            approved_task["result"] = None
+            for field in ("attempt_id", "external_id", "delegated_to", "submission_pending"):
+                approved_task.pop(field, None)
+            if approved_id == task_id:
+                approved_task["approved_by"] = approver.strip()
+                approved_task["human_gate_reason"] = None
+            self._transition(approved_task, TaskState.CREATED.value)
+        goal["acceptance_results"] = {}
+        goal["state"] = TaskState.READY.value
+        self._refresh_readiness(goal)
+        self._update_goal_terminal_state(goal)
+        goal["updated_at"] = utcnow()
+        self._save()
+        return goal["approved_plan_digest"]
+
+    @_serialized_mutation
+    def cancel_task(self, goal_id: str, task_id: str, *, adapters: Mapping[str, AgentAdapter] | None = None) -> None:
         task = self._task(goal_id, task_id)
         if task["state"] in TERMINAL:
             raise ValueError("terminal task cannot be cancelled")
-        self._transition(task, TaskState.CANCELLED.value)
         goal = self._goal(goal_id)
+        active = {TaskState.RUNNING.value, TaskState.DELEGATED.value, TaskState.WAITING_FOR_AGENT.value,
+                  TaskState.INTEGRATING_RESULT.value, TaskState.VALIDATING.value, TaskState.CANCEL_REQUESTED.value}
+        if task["state"] in active:
+            adapter = (adapters or {}).get(task.get("delegated_to") or task["owner_agent"])
+            external_id = task.get("external_id")
+            if adapter is None or not external_id:
+                self._transition(task, TaskState.NEEDS_RECONCILIATION.value)
+                task["reconciliation_reason"] = "cancel requested but external execution cannot be confirmed"
+            else:
+                try:
+                    response = adapter.cancel(external_id)
+                    status = adapter.status(external_id)
+                    runtime_state = str(status.get("state", "UNKNOWN")).upper()
+                    if runtime_state in {"CANCELLED", "CANCELED", "STOPPED", "TERMINATED"}:
+                        self._transition(task, TaskState.CANCELLED.value)
+                    elif response.get("cancelled") is True and runtime_state in {"RUNNING", "QUEUED", "WAITING"}:
+                        self._transition(task, TaskState.CANCEL_REQUESTED.value)
+                    else:
+                        self._transition(task, TaskState.NEEDS_RECONCILIATION.value)
+                        task["reconciliation_reason"] = "runtime did not confirm cancellation or continued execution state is unknown"
+                    task["observed_runtime_state"] = runtime_state
+                except Exception:
+                    self._transition(task, TaskState.NEEDS_RECONCILIATION.value)
+                    task["reconciliation_reason"] = "runtime cancellation status could not be confirmed"
+        else:
+            self._transition(task, TaskState.CANCELLED.value)
         self._refresh_readiness(goal)
         self._update_goal_terminal_state(goal)
         goal["updated_at"] = utcnow()
@@ -607,7 +742,8 @@ class ControlPlane:
             for task in goal["tasks"].values():
                 changed_at = datetime.fromisoformat(task["updated_at"])
                 if task["state"] in {TaskState.RUNNING.value, TaskState.DELEGATED.value, TaskState.WAITING_FOR_AGENT.value,
-                                      TaskState.INTEGRATING_RESULT.value, TaskState.VALIDATING.value} and changed_at < stale_before:
+                                      TaskState.INTEGRATING_RESULT.value, TaskState.VALIDATING.value,
+                                      TaskState.CANCEL_REQUESTED.value} and changed_at < stale_before:
                     task.update(state=TaskState.NEEDS_RECONCILIATION.value, stale_recovery=True, updated_at=utcnow())
                     recovered.append(task["id"])
                     goal["state"] = TaskState.NEEDS_RECONCILIATION.value
@@ -620,7 +756,7 @@ class ControlPlane:
         """Inspect in-flight work without retrying unknown side effects."""
         changed: list[str] = []
         active = {TaskState.RUNNING.value, TaskState.DELEGATED.value, TaskState.WAITING_FOR_AGENT.value,
-                  TaskState.INTEGRATING_RESULT.value, TaskState.VALIDATING.value}
+                  TaskState.INTEGRATING_RESULT.value, TaskState.VALIDATING.value, TaskState.CANCEL_REQUESTED.value}
         for goal in self.state["goals"].values():
             for task in goal["tasks"].values():
                 if task["state"] not in active:
@@ -633,6 +769,21 @@ class ControlPlane:
                     except Exception:
                         status = {"state": "UNKNOWN"}
                 runtime_state = str(status.get("state", "UNKNOWN")).upper()
+                if task["state"] == TaskState.CANCEL_REQUESTED.value:
+                    if runtime_state in {"CANCELLED", "CANCELED", "STOPPED", "TERMINATED"}:
+                        self._transition(task, TaskState.CANCELLED.value)
+                        changed.append(task["id"])
+                    elif runtime_state in {"RUNNING", "QUEUED", "WAITING"}:
+                        continue
+                    else:
+                        task.update(state=TaskState.NEEDS_RECONCILIATION.value,
+                                    reconciliation_reason="cancel request has no confirmed terminal runtime state",
+                                    observed_runtime_state=runtime_state, updated_at=utcnow())
+                        task.setdefault("state_history", []).append({"state": TaskState.NEEDS_RECONCILIATION.value, "at": task["updated_at"]})
+                        changed.append(task["id"])
+                    goal["state"] = task["state"]
+                    goal["updated_at"] = task["updated_at"]
+                    continue
                 if task["state"] == TaskState.WAITING_FOR_AGENT.value and runtime_state in {"RUNNING", "QUEUED", "WAITING"}:
                     continue
                 task.update(state=TaskState.NEEDS_RECONCILIATION.value,
@@ -647,6 +798,9 @@ class ControlPlane:
         return changed
 
     def snapshot(self, goal_id: str) -> dict[str, Any]:
+        # State files are replaced atomically under the writer lock, so a fresh
+        # read observes a complete revision without trusting a stale instance.
+        self.state = self._load()
         return copy.deepcopy(self._goal(goal_id))
 
     def _goal(self, goal_id: str) -> dict[str, Any]:
@@ -672,10 +826,61 @@ class ControlPlane:
         allowed = [self._validate_repo_path(item) for item in task.get("write_scope", [])]
         for path in changed:
             normalized = self._validate_repo_path(path)
-            if not allowed or not any(normalized == root or normalized.startswith(root.rstrip("/") + "/") for root in allowed):
+            if not allowed or not any(self._scope_contains(root, normalized) for root in allowed):
                 raise ResultPacketError(f"changed path outside approved write scope: {path}")
             if not self._path_resolves_inside_repo(normalized):
                 raise ResultPacketError(f"changed path resolves outside the repository: {path}")
+
+    @staticmethod
+    def _write_conflicts(candidate: Mapping[str, Any], active: list[Mapping[str, Any]]) -> bool:
+        candidate_scope = candidate.get("write_scope", [])
+        if not candidate_scope:
+            return False
+        for task in active:
+            for left in candidate_scope:
+                for right in task.get("write_scope", []):
+                    if ControlPlane._scope_contains(left, right) or ControlPlane._scope_contains(right, left):
+                        return True
+        return False
+
+    @staticmethod
+    def _scope_contains(root: str, candidate: str) -> bool:
+        if os.name == "nt":
+            root, candidate = root.casefold(), candidate.casefold()
+        return candidate == root or candidate.startswith(root.rstrip("/") + "/")
+
+    def _verify_evidence(self, goal: Mapping[str, Any], task: Mapping[str, Any], result: Mapping[str, Any], *, kind: str, evidence_ref: str, name: str) -> bool:
+        if self.evidence_verifier is None:
+            return False
+        context = {
+            "kind": kind, "name": name, "evidence_ref": evidence_ref,
+            "goal_id": goal["id"], "repo": goal["repo"], "base_sha": goal["base_sha"],
+            "approved_plan_digest": goal["approved_plan_digest"],
+            "task_id": task["id"], "task_digest": task["task_digest"],
+            "attempt_id": task.get("attempt_id"), "result": copy.deepcopy(result),
+        }
+        try:
+            return self.evidence_verifier(context) is True
+        except Exception:
+            return False
+
+    def _verify_artifacts(self, goal: Mapping[str, Any], task: Mapping[str, Any], result: Mapping[str, Any]) -> bool:
+        if task.get("operation_type") == "read":
+            return not result["artifacts_changed"]
+        if self.artifact_verifier is None:
+            return False
+        context = {
+            "repo": goal["repo"], "repo_root": str(self.repo_root) if self.repo_root else None,
+            "base_sha": goal["base_sha"], "approved_plan_digest": goal["approved_plan_digest"],
+            "task_id": task["id"], "task_digest": task["task_digest"],
+            "attempt_id": task.get("attempt_id"), "write_scope": copy.deepcopy(task["write_scope"]),
+            "reported_changed_paths": copy.deepcopy(result["artifacts_changed"]),
+            "result": copy.deepcopy(result),
+        }
+        try:
+            return self.artifact_verifier(context) is True
+        except Exception:
+            return False
 
     def _validate_discovered_work(self, goal: Mapping[str, Any], parent: Mapping[str, Any], items: list[Any]) -> list[dict[str, Any]]:
         if not isinstance(items, list):
@@ -694,8 +899,8 @@ class ControlPlane:
             if not isinstance(objective, str) or not objective.strip():
                 raise ResultPacketError("newly discovered task objective is required")
             scope = [self._validate_repo_path(path) for path in item.get("write_scope", [])]
-            if any(not any(candidate == root or candidate.startswith(root.rstrip("/") + "/") for root in allowed)
-                   for candidate in scope for allowed in (approved_scope, parent_scope)):
+            if any(not all(any(self._scope_contains(root, candidate) for root in allowed)
+                           for allowed in (approved_scope, parent_scope)) for candidate in scope):
                 raise ResultPacketError("newly discovered work exceeds its parent approved scope")
             operation = item.get("operation_type", "write" if scope else "read")
             if operation not in {"read", "write"} or (operation == "write") != bool(scope):
@@ -709,8 +914,8 @@ class ControlPlane:
                 "acceptance_criteria": list(item.get("acceptance_criteria", [])),
                 "operation_type": operation, "required": bool(item.get("required", True)),
                 "integration": bool(item.get("integration", False)),
-                "human_gate_reason": item.get("human_gate_reason"), "state": TaskState.CREATED.value,
-                "state_history": [{"state": TaskState.CREATED.value, "at": utcnow()}],
+                "human_gate_reason": "newly discovered work requires plan approval", "state": TaskState.PENDING_REVIEW.value,
+                "state_history": [{"state": TaskState.PENDING_REVIEW.value, "at": utcnow()}],
                 "result": None, "updated_at": utcnow(), "discovered_under": parent["id"]}
             pending[task_id]["task_digest"] = self._task_digest(goal, pending[task_id])
         known = existing_ids | set(pending)
@@ -748,10 +953,14 @@ class ControlPlane:
         states = [task["state"] for task in goal["tasks"].values()]
         if any(state == TaskState.NEEDS_RECONCILIATION.value for state in states):
             goal["state"] = TaskState.NEEDS_RECONCILIATION.value
+        elif any(state == TaskState.CANCEL_REQUESTED.value for state in states):
+            goal["state"] = TaskState.CANCEL_REQUESTED.value
         elif any(state == TaskState.FAILED.value for state in states):
             goal["state"] = TaskState.FAILED.value
         elif any(state == TaskState.BLOCKED.value for state in states):
             goal["state"] = TaskState.BLOCKED.value
+        elif any(state == TaskState.PENDING_REVIEW.value for state in states):
+            goal["state"] = TaskState.PENDING_REVIEW.value
         elif any(state == TaskState.HUMAN_GATE.value for state in states):
             goal["state"] = TaskState.HUMAN_GATE.value
         elif any(state == TaskState.FAILED.value for state in states) or (states and all(state == TaskState.CANCELLED.value for state in states)):
@@ -760,13 +969,19 @@ class ControlPlane:
             required = [task for task in goal["tasks"].values() if task.get("required", True)]
             if not required or not all(task["state"] == TaskState.COMPLETED.value for task in required):
                 return
+            integration_tasks = [task for task in required
+                                 if task.get("integration") or task["id"].lower() == "integration"]
             integration_ok = not goal.get("integration_required", True) or any(
-                task.get("integration") or task["id"].lower() == "integration"
-                for task in required if task["state"] == TaskState.COMPLETED.value)
+                task["state"] == TaskState.COMPLETED.value for task in integration_tasks)
             parent_criteria = goal.get("acceptance_criteria", [])
             acceptance = goal.get("acceptance_results", {})
             criteria_ok = bool(parent_criteria) and all(
-                acceptance.get(criterion, {}).get("status") == "PASS" and acceptance.get(criterion, {}).get("evidence_ref")
+                acceptance.get(criterion, {}).get("status") == "VERIFIED_PASS" and acceptance.get(criterion, {}).get("evidence_ref")
+                and acceptance.get(criterion, {}).get("approved_plan_digest") == goal.get("approved_plan_digest")
+                and any(task["id"] == acceptance.get(criterion, {}).get("task_id")
+                        and task["state"] == TaskState.COMPLETED.value
+                        and task.get("result", {}).get("attempt_id") == acceptance.get(criterion, {}).get("attempt_id")
+                        for task in integration_tasks)
                 for criterion in parent_criteria)
             no_unresolved = all(not task.get("result", {}).get("unresolved") for task in required)
             if integration_ok and criteria_ok and no_unresolved:
