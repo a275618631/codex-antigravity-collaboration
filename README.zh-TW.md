@@ -1,169 +1,56 @@
-# Codex × Antigravity 協作架構
+# Codex × Antigravity｜架構設計與實作紀錄
 
-> 一份以「平台原生能力優先」為核心的 Agent 協作參考架構；目標是在不新增另一套重型 orchestration framework 的前提下，讓不同 Agent runtime 分工合作。
+這個專案研究兩套 AI 開發環境如何合作完成工程任務。目標是讓任務可以清楚分工、結果能夠驗證，且不同 Agent 不會在同一個工作區互相覆寫。
 
-這個專案目前以 **Codex + Google Antigravity** 為已實作案例，並保留往 **本地模型、隱私分級、跨主機協作** 演進的設計路線。
+與其替 Codex、Antigravity 重寫另一套 Agent Runtime，我選擇用共同契約、本地橋接和 Git 工作流程連接既有能力。
 
-它**不是**新的 Agent Framework、Scheduler、Message Bus，也不是企業級資安產品。
+## 技術組成
 
-> **Repo 類型：**這是一份以文件為主的 Reference Architecture + Case Study，整理已運作私人環境中的架構模式、協作契約、狀態與設計決策。它**不是可一鍵安裝的套件**，目前也不提供獨立 runtime。
+| 元件 | 負責什麼 |
+| --- | --- |
+| **Task／Result 契約** | 記錄目標、讀寫範圍、驗收方式、實際輸出與剩餘工作 |
+| **能力導向委派** | 將工作送給有相應工具的 Runtime；跨 Runtime 委派有次數限制 |
+| **Shared Skills** | 通用的工作方法只維護一套，平台差異交由薄 Adapter 處理 |
+| **MCP Bridge** | 以本地 JSONL mailbox 交換任務與狀態；使用 Windows／POSIX 對應的檔案鎖 |
+| **Git 工作隔離** | 使用 branch、worktree、diff、PR 與審查處理平行變更 |
+| **人工核准** | 工具執行與寫入遵守允許範圍；尚未授權的任務保持待核准 |
 
-核心原則只有一句：
+## 實作情境
 
-> **先用平台原生能力；只有需求真的出現時，才增加協調基礎設施。**
+假設一個專案需要修改 API、補測試，並讓另一套 Agent 查看結果：
 
-## 為什麼這樣設計
+1. 先寫出 Task，包含修改範圍和成功條件。
+2. 指定合適的 Runtime 在獨立工作區處理。
+3. 執行完成後，回傳 Result，附上變更、測試與阻礙。
+4. 檢查 Git diff 與測試證據，再決定是否合併。
 
-Codex、Antigravity 與本地模型各有不同強項。若把所有能力再包進一個新的大型框架，容易增加重複的 runtime、context、權限設定與維護成本。
+最重要的是**讓結果可接續、讓修改可追溯**；不需要把每一個簡單工作都升級成多 Agent 交互通訊。
 
-因此本架構採：
+## 已完成的實作與測試
 
-- **能力導向分工**：依工作類型選 runtime，而不是所有模型都跑一次。
-- **有限外部委派**：平台內部可以平行 fan-out；跨平台則限制 hop，避免遞迴爆炸。
-- **共用 Skills、薄 Adapter**：可攜方法只維護一份；平台差異才另外適配。
-- **漸進式協調**：簡單工作先用 GitHub / Drive；明確 Agent-to-Agent 才升級 MCP / A2A；真的需要 queue / lease / retry 才加入 broker。
-- **分散式寫入所有權**：多人可讀、可分析、可 review；衝突 write-set 同一時間只有一個 owner。**目前這是協作政策，不是分散式鎖服務**；Git 類工作依靠 branch/worktree 隔離、optimistic concurrency 與 PR/review/merge gate 處理衝突。
-- **隱私導向 routing**：Restricted 資料留本地；可上雲資料只傳最小必要 context。
+- 本地 MCP Bridge、Task／Result 合約與有限委派邏輯已建置。
+- 2026-10-20 Windows 本地橋接完成雙程序測試，相關 GitHub handoff 測試曾記錄 **53 項通過**。
+- 2026-10-20 的跨 Runtime 受限唯讀交接有成功紀錄；2026-10-22 的再次測試逾時。這兩次結果說明本地協作機制可用，但完整桌面端交互仍需穩定性驗證。
+- Git branch／worktree 與人工審查可管理程式修改；尚未完成 T7 的作業系統層級跨專案寫入隔離，因此不將無人值守跨倉寫入當作已驗收功能。
 
-## 現況
+[跨 Runtime 測試證據](LIVE_HANDOFF_EVIDENCE_20261020.md) · [操作手冊](GitHub本地Codex自動交接_使用手冊_20260929.md)
 
-| 能力 | 狀態 |
-|---|---|
-| Codex ↔ Antigravity Bridge / smoke path | **已實作／目前 LIVE_BLOCKED**；2026-10-20 曾有歷史唯讀 nonce PASS，2026-10-22 本輪重測逾時。詳見證據紀錄。 |
-| Task / Result 協作契約 | **已實作** |
-| One-hop / bounded external delegation | **已實作** |
-| Read-only、最多兩輪 Debate | **已實作** |
-| Codex / Antigravity 原生平行 Agent | **使用平台原生能力** |
-| Shared Skills | **部分完成**：canonical source 尚未完全驗證 |
-| 本地模型 Bridge | **實驗性** |
-| Privacy-aware routing | **規劃中** |
-| Multi-host coordination | **探索中** |
-| Broker / lease / heartbeat / retry | **探索中，刻意延後** |
+## 核心設計原則
 
-公開文件使用保守口徑：**Roadmap 不等於已完成。**
+**優先用平台原生能力。** Codex 和 Antigravity 已有自己的工具、平行執行及任務管理能力，不必再複製一套。
 
-## Agent Topology
+**跨 Runtime 合作保持簡單。** 先使用 GitHub 與共同工作格式；需要本地直接交換訊息時再用 MCP Bridge。佇列、心跳與多主機協調應隨實際需求增加。
 
-一台 PC 或一個平台不是一個 Agent，而是一個可能包含多層 Agent 的 runtime：
+**保留人工決策位置。** Agent 可以整理、撰寫和測試，但未授權的高風險修改不能自動擴大工作範圍。
 
-```text
-Host
-└─ Agent Runtime
-   ├─ Coordinator
-   ├─ Vertical Workers
-   ├─ Native Parallel Agents
-   └─ External Runtime Delegation
-```
+**敏感資料先分類。** 在本機研究 Local／Cloud 分流與去識別方法，正式隱私路由 Gateway 尚不是目前可用的產品功能。
 
-因此協作分四種：
+## 程式與相關文件
 
-1. **Runtime 內平行**：平台原生多 Agent / Subagents。
-2. **Runtime 內垂直分工**：Coordinator → 專門 Worker。
-3. **跨 Runtime 委派**：Codex ↔ Antigravity。
-4. **跨 Host 委派**：未來延伸到不同電腦或本地 GPU 節點。
+- [本地 MCP Bridge](local_bridge/README.md)
+- [GitHub 本地 Codex 接單技術文件](github_handoff/README_GITHUB_HANDOFF_20260929.md)
+- [整體架構](docs/ARCHITECTURE.md)
+- [隱私設計](docs/PRIVACY_AND_TRUST.md)
+- [功能狀態與路線](docs/STATUS_AND_ROADMAP.md)
 
-平台內部可以複雜；跨 Runtime 的委派保持有界。
-
-## 隱私擴展方向
-
-資料依風險分四級：
-
-| 等級 | 預設處理 |
-|---|---|
-| **Public** | 直接使用 Cloud |
-| **Internal** | 本地去識別／最小化後，依政策決定是否上雲 |
-| **Sensitive** | 可逆假名化後，依政策決定是否上雲；結果回本地還原 |
-| **Restricted** | 只在本地處理 |
-
-這不是「加密後讓 LLM 看密文」。比較精確的概念是：
-
-> **Reversible pseudonymization + local vault**
-
-[Presidio](https://github.com/data-privacy-stack/presidio) 這類成熟專案可作為敏感資訊辨識基礎；本地模型可補充企業特有語意，但不應單獨決定是否允許資料離開本機。
-
-**去敏只能降低暴露，不代表零風險，也不等於企業合規。**
-
-## 協調機制的演進
-
-```text
-Stage 1
-GitHub / Drive
-Shared Workspace
-
-        ↓
-
-Stage 2
-MCP / A2A
-Explicit Coordination
-
-        ↓
-
-Stage 3
-Thin Broker
-Queue / State / Lease / Heartbeat / Retry
-```
-
-最重要的不是做到 Stage 3，而是：
-
-> **沒有需要，就不要升級。**
-
-## 本專案不打算做什麼
-
-- 不重新實作 Codex / Antigravity 已有的 multi-agent runtime。
-- 不為了架構漂亮就新增 Gateway、DB、Vector DB 或 Broker。
-- 不允許 Agent 無限制跨平台互相遞迴委派。
-- 不宣稱「全自動」、「零風險」或「企業級安全」。
-- 不把尚未實作的 Privacy / Multi-host roadmap 寫成現成功能。
-
-## 文件
-
-- [GitHub 本地 Codex 自動交接使用手冊（2026-09-29）](GitHub本地Codex自動交接_使用手冊_20260929.md)
-- [GitHub 本地交接 Receiver 技術入口](github_handoff/README_GITHUB_HANDOFF_20260929.md)
-- [GitHub 本地交接安全與威脅模型](SECURITY_GITHUB_HANDOFF_20260929.md)
-- [GitHub 本地交接維運 Runbook](RUNBOOK_GITHUB_HANDOFF_20260929.md)
-- [GitHub 本地交接最終驗收報告](FINAL_REPORT_GITHUB_HANDOFF_20260929.md)
-- [ChatGPT Plus／Gemini AI Pro 本地交接完整規劃（2026-10-06）](ChatGPTPlus_GeminiPro本地交接_完整任務規劃_2026-10-06.md)
-- [Chat App 本地交接操作手冊（2026-10-06）](ChatApp本地交接_操作手冊_2026-10-06.md)
-- [本輪工作日誌與驗收清單](ChatGPTPlus_GeminiPro本地交接_工作日誌_2026-10-06.md)
-
-- [Architecture](docs/ARCHITECTURE.md)
-- [Design Principles](docs/DESIGN_PRINCIPLES.md)
-- [Privacy and Trust](docs/PRIVACY_AND_TRUST.md)
-- [Status and Roadmap](docs/STATUS_AND_ROADMAP.md)
-- [References](docs/REFERENCES.md)
-
-## 本機雙向 MCP Bridge（已驗證）
-
-### Windows 現況（2026-10-20）
-
-- 本機 Windows Bridge：**PASS**；本機 commit `6d0cc96` 已將 `fcntl` 改為 Windows `msvcrt`／其他平台 `fcntl` 的跨平台鎖定，未改變 MCP Tools 或 JSONL mailbox 格式。
-- 目前本地驗證：53 項 GitHub handoff 測試與雙程序 local bridge 測試 PASS；compileall、JSON、canonical skills、diff check 與 Windows bundled-Python doctor 入口均 PASS。
-- Human Gate／Task 狀態流程已完成本地驗證：未核准維持 `Awaiting Approval / PENDING`；可信核准進入 `Queued / APPROVED`；無效核准或執行失敗 fail-closed 為 `Blocked`。
-- Windows 驗證入口會在 `python` 不在 `PATH` 且 `py -3` 找不到 runtime 時，自動 fallback 到 Codex bundled Python。
-- 歷史限定範圍的真實 Codex ↔ Antigravity Runtime 接力：**PASS**（2026-10-20）；但 2026-10-22 本輪唯讀 CLI nonce 重測於 55 秒逾時，目前狀態維持 **LIVE_BLOCKED**，直到新的接力成功。請見[證據與本輪狀態](LIVE_HANDOFF_EVIDENCE_20261020.md)。
-- portable worktree 保持獨立，既有未提交檔案視為使用者資料，不清理、不搬移、不覆寫。
-- T7 OS 級跨專案寫入強制隔離仍為 **FAIL**；禁止無人值守或跨 Repo 寫入。
-
-本專案現在包含一個僅限本機使用的 Codex × Antigravity MCP bridge：
-
-- [Bridge 程式與測試](local_bridge/)
-- 兩個桌面 runtime 各自以 stdio 啟動 bridge process。
-- 兩端透過同一個鎖定的 JSONL mailbox 傳遞 bounded text message。
-- bridge 不執行訊息中的指令，也不包含 OAuth、PAT 或其他憑證。
-- 這是 pull-based transport；模型需要呼叫 `bridge_receive`，不會自動插入另一個已執行中的回合。
-
-本輪已取得實際 Codex → MCP Bridge → Antigravity → Codex nonce 證據；雙程序 local bridge 測試仍是獨立的 mailbox transport 驗證。完整的本機設定與安全邊界請見 [local bridge README](local_bridge/README.md)。
-
-## 定位
-
-這個專案最適合被理解為：
-
-> **Reference architecture + working two-runtime case study**
-
-它的價值不在發明一個新 Agent Framework，而在說明：
-
-> **如何把今天已存在的 Agent runtime、Skills、Bridge 與共享工作區，用較少的額外複雜度組合起來。**
-
-## License
-
-MIT License，詳見 [LICENSE](LICENSE)。
+這個作品最適合用來理解如何設計**低耦合的多 Agent 協作機制**，也可以單獨採用其中的任務契約、本地 Bridge 或 Git 交付方式。
