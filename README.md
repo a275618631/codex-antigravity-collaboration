@@ -1,53 +1,47 @@
-# Codex × Antigravity｜跨 AI 開發環境協作
+# Codex × Antigravity｜讓兩個 AI 開發環境有條理地協作
 
-如果同一個專案同時使用 Codex 和 Antigravity，怎麼分配工作，才能避免兩邊重複處理、互相修改同一份程式碼，或在交接時漏掉重要背景？
+Codex 和 Antigravity 都能協助寫程式，但當兩套工具一起處理同一個專案，真正需要解決的是：**誰負責哪件事、可以修改哪些檔案、完成後要怎麼交接與驗收？**
 
-我把這個問題拆成幾個可實作的部分：任務與結果的共同格式、跨平台委派的限制、Git 修改範圍的管理，以及一個使用 MCP 的本地訊息橋接工具。這套做法盡量沿用 Codex、Antigravity 和 GitHub 已有的能力，不為了多 Agent 協作再架一套大型框架。
+我以這兩個開發環境建立一套輕量協作方式：共用 Task／Result 契約、限制跨平台委派次數，透過 Git 分支與 worktree 分開修改，並實作本地 MCP Bridge 傳送訊息。重點是保留工具本身的能力，不另外建一套龐大的多 Agent 管理框架。
 
-[繁體中文架構與技術細節](README.zh-TW.md) · [架構網站](https://a275618631.github.io/codex-antigravity-collaboration/)
+[繁體中文技術說明](README.zh-TW.md) · [架構展示網站](https://a275618631.github.io/codex-antigravity-collaboration/)
 
-## 解決的問題
+## 核心設計
 
-多個 Agent 可以平行寫程式，但真正麻煩的是協作過程：誰接下哪件工作？哪些檔案可以修改？完成後如何讓另一個 Agent 確認結果？任務失敗時，怎麼避免一再轉交？
+- **任務格式統一**：工作目標、讀寫範圍、驗收條件和結果使用同一套 Task／Result 格式。
+- **依能力分工**：Codex 與 Antigravity 各自使用原生工具，只把需要的工作交給對方。
+- **委派有限次數**：限制跨 Runtime 反覆轉交，避免 Agent 之間無止盡地互相呼叫。
+- **協作時不互相覆寫**：以 branch、worktree 和 PR 分離修改，再交由人員檢查。
+- **本地 MCP Bridge**：使用 JSONL mailbox 與跨平台檔案鎖，在 Windows 與其他系統交換訊息。
+- **必要的人工核准**：高風險寫入由明確的審核流程決定，不把 Prompt 當作系統權限。
 
-本專案建立共同的 Task / Result 格式，讓工作目標、修改範圍、驗證結果與剩餘事項有一致的表達方式，再搭配 Git 分支與 worktree 管理修改。
-
-## 主要設計
-
-- **依能力分工**：每個平台保留自己的 Agent 與工具，根據工作需求決定由誰執行。
-- **有限次跨平台委派**：跨 Runtime 的工作交接有明確上限，避免無止境的互相轉派。
-- **共用 Skills**：常用的工程方法維護一份，只有平台專屬的操作才另外適配。
-- **Git 修改範圍管理**：用分支、worktree、PR 和人工審查處理多個 Agent 之間的寫入衝突。
-- **本地 MCP Bridge**：不同客戶端透過同一個本地 JSONL mailbox 傳送與讀取訊息；Windows 和 POSIX 採用對應的檔案鎖。
-- **可檢查的交付結果**：任務完成後回傳實際修改、測試結果、風險與剩餘工作，方便接續開發。
-
-## 一個工作怎麼交接
+## 一次工作怎麼進行
 
 ```text
-整理需求與允許的修改範圍
-        ↓
-選擇適合的 Agent Runtime
-        ↓
-在獨立工作區修改、測試
-        ↓
-回傳 Task / Result 與驗證資料
-        ↓
-檢查變更，決定是否合併
+提出需求與驗收條件
+          ↓
+指定合適的 Agent Runtime
+          ↓
+在限定的工作區執行、測試
+          ↓
+回傳修改結果與驗證紀錄
+          ↓
+人工審查 Git diff / PR
 ```
 
-跨平台交接的目的，是讓工程工作更清楚、更容易延續，而不是讓所有任務都變成自動化串接。
+## 做過哪些驗證
 
-## 程式和操作文件
+- 已實作 Task／Result 契約、有限委派與本地橋接程式。
+- Windows 本地 Bridge 曾通過雙程序與相關自動化測試；2026-10-20 有一次受限的跨 Runtime 唯讀交接通過紀錄。
+- 2026-10-22 的跨 Runtime 重測逾時；桌面端完整即時雙向交接尚未列為穩定可用功能。跨專案無人值守寫入也還不具備作業系統層級的完整隔離。
 
-- [系統架構](docs/ARCHITECTURE.md)：角色、工作流程與協作方式。
-- [本地 MCP Bridge](local_bridge/README.md)：訊息格式、工具與本地測試。
-- [GitHub → 本地 Codex 使用手冊](GitHub本地Codex自動交接_使用手冊_20260929.md)：從 Issue、授權到本機執行與回報。
-- [架構與功能狀態](README.zh-TW.md)：各項功能、測試與設計進度。
+以上差異可在[測試證據](LIVE_HANDOFF_EVIDENCE_20261020.md)與[技術說明](README.zh-TW.md)核對。
 
-## 已完成的驗證與使用範圍
+## 從程式與文件開始
 
-Task / Result 契約、委派上限、本地橋接與相關測試都有實作紀錄。Windows 本地 Bridge 通過雙程序測試；Codex 與 Antigravity 之間也曾完成受限的唯讀交接測試。
+- [本地 MCP Bridge](local_bridge/README.md)：訊息格式、啟動方式與本地測試。
+- [GitHub → 本地 Codex 接單工具](github_handoff/README_GITHUB_HANDOFF_20260929.md)：Issue 讀取、核准與本機執行。
+- [架構設計](docs/ARCHITECTURE.md)：角色分工、邊界與協作方式。
+- [本機操作手冊](GitHub本地Codex自動交接_使用手冊_20260929.md)：從 Issue 到工作結果的流程。
 
-桌面客戶端的完整即時雙向協作、無人值守的跨專案寫入與正式權限隔離，仍需要進一步驗證。這些差異保留在技術文件內，方便直接核對目前可以使用的部分。
-
-本專案適合用來研究多 Agent 工作分工、跨平台任務交接與工程協作架構，也可以只挑選需要的契約或本地橋接元件使用。
+MIT License。
