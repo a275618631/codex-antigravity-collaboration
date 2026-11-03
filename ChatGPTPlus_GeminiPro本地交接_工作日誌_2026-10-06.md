@@ -6,13 +6,13 @@
 - Relationship：`continuation`
 - Working branch：`codex/github-local-handoff-mvp-20260929`
 - Existing Draft PR：<https://github.com/a275618631/codex-antigravity-collaboration/pull/8>
-- 實際工作目錄：本 repo 根目錄（位於使用者既有 Drive 同步工作區）
+- 實際工作目錄：本 repo 根目錄（位於既有同步工作區）
 
 ## 執行紀錄
 
 ### 2026-10-06｜啟動與範圍收斂
 
-- 使用者指定只支援個人版 ChatGPT Plus 與 Google AI Pro 的 Gemini，入口為 Web／Mobile。
+- 此版本支援個人版 ChatGPT Plus 與 Google AI Pro 的 Gemini，入口為 Web／Mobile。
 - 排除 Business、Enterprise、Cloud Work、任意網站入口與瀏覽器 DOM 自動化。
 - 官方資料確認：目前無法在上述兩個個人方案及台灣使用情境下，以同一穩定官方寫入介面完成全自動雙向回灌。
 - 決策：採「對話產生 Task Brief → 人工確認 GitHub Issue → 本機自動執行與回報 → 帶回原對話續談」。
@@ -80,7 +80,7 @@
 
 ## 待完成
 
-- 新增流程的真實 GitHub E2E 尚未執行；若執行，需使用者於本機安全輸入短期 fine-grained Token，不得貼在聊天。
+- 新增流程的真實 GitHub E2E 尚未執行；若執行，需操作者於本機安全輸入短期 fine-grained Token，不得貼在聊天。
 - ChatGPT Plus Web/Mobile、Gemini AI Pro Web/Mobile 需真人帳號逐項操作，現在均為 `NOT VERIFIED`。
 - macOS 與 Scheduled Task／常駐服務仍為 `NOT VERIFIED`，且本輪沒有啟用。
 - 本輪程式與文件已建立本機 commit `499c51d`；尚未 push。不得默默使用廣權限 OAuth，需另以 repo-scoped delivery credential 完成。
