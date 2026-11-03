@@ -45,13 +45,15 @@ so it remains unverified. The four historical mac-health failures likewise
 need their original logs and matching source for diagnosis.
 
 These results verify local control-plane behavior with tests and mock adapters.
-They do not prove a live Parent Goal round trip, desktop mailbox, Antigravity
-runtime integration, OS isolation, or authorization for unattended or
-cross-repository writes. Keep those gates closed until independently verified.
+They do not prove a live Parent Goal round trip, Antigravity runtime
+integration, OS isolation, or authorization for unattended or cross-repository
+writes. Keep those gates closed until independently verified.
 
-The GitHub inbox/runner and OS isolation gates remain separate from this local
-integration. Read-only CLI evidence does not establish a desktop mailbox or a
-full live Parent Goal round trip.
+The selected task-exchange design uses GitHub Issues as the task, approval, and
+status ledger. The desktop MCP mailbox is a separate local transport and is not
+required for the GitHub path. Live GitHub validation still needs a configured
+private operational inbox and least-privilege runner; OS isolation is a separate
+gate for unattended or cross-repository writes.
 
 ## Independent PR review follow-up — 2026-11-02
 
@@ -79,6 +81,8 @@ reuse.
 
 Verification on 2026-11-02: `python -m unittest discover -s tests -v` — **93
 passed**. This validates local state-machine behavior with test verifiers and
-mock runtimes. Production evidence/artifact verifiers, desktop mailbox, live
-Antigravity transport, and OS isolation are still unconfigured or unverified;
-the PR remains Draft and unattended or cross-repository writes stay disabled.
+mock runtimes. Production evidence/artifact verifiers, the private GitHub inbox
+and least-privilege runner, live Antigravity transport, and OS isolation are
+still unconfigured or unverified. Desktop MCP mailbox validation is optional
+for the GitHub Issue exchange path. The PR remains Draft; unattended or
+cross-repository writes stay disabled until their applicable gates pass.
