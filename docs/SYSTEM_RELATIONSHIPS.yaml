@@ -1,0 +1,40 @@
+schema_version: 1
+system:
+  id: local-multi-agent-collaboration
+  canonical_repo: https://github.com/a275618631/codex-antigravity-collaboration
+  canonical_drive_folder_id: 1CZ3N6T8BlvcL2ocybv3Op8oUF7EgTc4s
+relations:
+  - type: CONTAINS
+    source: local-multi-agent-collaboration
+    target: core-collaboration
+  - type: CONTAINS
+    source: local-multi-agent-collaboration
+    target: github-local-handoff
+  - type: IMPLEMENTS
+    source: github-local-handoff
+    target: github-pr-8
+  - type: CONTAINS
+    source: local-multi-agent-collaboration
+    target: agent-orchestration
+  - type: CONTAINS
+    source: local-multi-agent-collaboration
+    target: agent-adapters
+  - type: CONTAINS
+    source: local-multi-agent-collaboration
+    target: routing
+  - type: EXTERNAL_SAFETY_COMPONENT
+    source: local-multi-agent-collaboration
+    target: agent-tool-policy-engine
+  - type: EXPERIMENT_OF
+    source: system-one-router
+    target: routing
+  - type: HISTORICAL_OF
+    source: local-bridge-macos-readme
+    target: core-collaboration
+evidence:
+  last_verified_at: '2026-10-15T00:00:00+08:00'
+  sources:
+    - CANONICAL_MANIFEST.json
+    - PROJECT.yaml
+    - GitHub PR #8
+    - Drive folder metadata

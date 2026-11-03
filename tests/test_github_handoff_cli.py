@@ -89,6 +89,16 @@ class LifecycleTests(unittest.TestCase):
             finally:
                 if previous is not None: os.environ["GH_TOKEN"]=previous
 
+    def test_dry_run_without_token_does_not_create_state_directory(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp); config_path = root / "config.json"
+            state_path = root / "not-created" / "state.json"
+            config_path.write_text(json.dumps({"state_file": str(state_path),
+                "token_env": "TEST_MISSING_HANDOFF_TOKEN"}), encoding="utf-8")
+            with mock.patch.dict(os.environ, {}, clear=True), contextlib.redirect_stderr(io.StringIO()):
+                self.assertEqual(main(["--config", str(config_path), "dry-run"]), 2)
+            self.assertFalse(state_path.parent.exists())
+
     def test_issue_link_encodes_task_without_token(self):
         config = {"inbox_repo": "OWNER/private-inbox", "max_issue_body_chars": 6000}
         url = build_issue_url(config, "## Goal\n修正 docs & tests", "[Codex Task] 測試")

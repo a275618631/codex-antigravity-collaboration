@@ -1,0 +1,18 @@
+{
+  "schema_version": 1,
+  "agents": {
+    "codex": {
+      "can_coordinate": true,
+      "roles": ["lead", "coding", "tests", "integration", "review"],
+      "adapter": "CodexAdapter"
+    },
+    "antigravity": {
+      "can_coordinate": true,
+      "roles": ["browser", "google", "local_execution", "independent_review"],
+      "adapter": "AntigravityAdapter"
+    },
+    "future": {
+      "plugin_contract": "AgentAdapter"
+    }
+  }
+}

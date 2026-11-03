@@ -1,0 +1,6 @@
+{
+  "name": "Local Codex Handoff",
+  "description": "Run a pre-approved private-inbox receiver on a labeled self-hosted Windows runner.",
+  "iconName": "terminal",
+  "categories": ["Automation"]
+}
