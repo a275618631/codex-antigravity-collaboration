@@ -62,4 +62,4 @@
 - Branch：`codex/github-local-handoff-mvp-20260929`
 - Existing Draft PR：<https://github.com/a275618631/codex-antigravity-collaboration/pull/8>
 - 本輪 Git 狀態：已建立本機 commit `499c51d`；尚未 push，因此 PR #8 尚未包含本輪變更。
-- Google Drive metadata／parent ID：本工作階段無 Drive connector，未驗證；檔案已保存在使用者指定的本機 Drive／repo 工作區。
+- Google Drive metadata／parent ID：本工作階段無 Drive connector，未驗證；檔案已保存在預先指定的本機同步工作區。
