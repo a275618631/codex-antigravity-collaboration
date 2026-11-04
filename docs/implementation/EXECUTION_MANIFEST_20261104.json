@@ -1,0 +1,305 @@
+{
+  "plan_id": "local-multi-agent-collaboration-execution-20261104",
+  "schema_version": "1.0",
+  "plan_version": "2026-11-04-v2",
+  "created_at": "2026-11-04 Asia/Taipei",
+  "identity": {
+    "project_id": "codex-antigravity-collaboration",
+    "system_id": "local-multi-agent-collaboration",
+    "repository": "a275618631/codex-antigravity-collaboration",
+    "planning_branch": "plan/codex-antigravity-execution-20261104",
+    "planning_base_sha": "b2488912f32ed4fc45bcfac967f185f871d5ca9f",
+    "planning_base_pr": 15,
+    "drive_folder_id": "1CZ3N6T8BlvcL2ocybv3Op8oUF7EgTc4s",
+    "drive_current_file_id": "1pnrxGpRQnaXTVQh4QRkEmQl0E_R2JJZC"
+  },
+  "source_of_truth": {
+    "code_tests": "github",
+    "human_plan_progress": "google_drive",
+    "this_manifest": "execution_index_not_live_status"
+  },
+  "execution_policy": {
+    "stages": [
+      "I",
+      "II"
+    ],
+    "default_run_state": "NOT_RUN",
+    "permitted_automatic_actions": [
+      "read source",
+      "create isolated local worktree after path check and approval",
+      "implement/test in approved work branch",
+      "run local unit and synthetic tests",
+      "collect redacted logs",
+      "prepare PR and CURRENT update drafts"
+    ],
+    "human_gate_actions": [
+      "account login",
+      "credential creation or access",
+      "GitHub new private repository",
+      "runner registration or permission changes",
+      "real Issue/Comment publishing",
+      "host ACL or security-policy changes",
+      "push or PR update",
+      "merge to main",
+      "drive CURRENT overwrite",
+      "production deploy",
+      "destructive cleanup"
+    ],
+    "blocked_external_behavior": "continue independent tasks; report single consolidated human setup packet",
+    "unknown_side_effect_behavior": "NEEDS_RECONCILIATION and never blindly retry",
+    "unattended_write": "DISABLED until separately approved and T7 OS gate verified"
+  },
+  "success_gates": {
+    "STAGE_I": "W0,W1,W2,W3,W4_PREP,W6_DESIGN PASS; local test logs linked",
+    "MVP_L": "W4_LIVE,W5 E0-E6 all verified PASS; real Parent completion; real writeback",
+    "T7_OS": "separately approved and kernel level DENY verified; not required for supervised MVP-L",
+    "PR_READY": "W7 artifacts and credible evidence complete; main merge remains human gate"
+  },
+  "work_packages": [
+    {
+      "id": "W0",
+      "stage": "I",
+      "depends_on": [],
+      "purpose": "基線/dirty worktree/PR依賴/來源查核",
+      "status": "NOT_RUN",
+      "owner": "Codex",
+      "known_source_commands": [
+        "git status --short",
+        "git branch --show-current",
+        "git rev-parse HEAD",
+        "git remote -v"
+      ],
+      "evidence_expected": [
+        "evidence/baseline/manifest.json",
+        "repo/PR/branch identity"
+      ],
+      "hard_stop": "Do not touch dirty/portable worktree",
+      "full_spec": "docs/implementation/EXECUTION_PLAN_20261104.md#w0"
+    },
+    {
+      "id": "W1",
+      "stage": "I",
+      "depends_on": [
+        "W0"
+      ],
+      "purpose": "B1-B5 regression and targeted repairs",
+      "status": "NOT_RUN",
+      "owner": "Codex",
+      "known_source_commands": [
+        "python -m unittest discover -s tests -v",
+        "git diff --check"
+      ],
+      "evidence_expected": [
+        "test log and pass/fail counts",
+        "B1-B5 gate regression evidence"
+      ],
+      "hard_stop": "Do not rebuild B1-B5",
+      "full_spec": "docs/implementation/EXECUTION_PLAN_20261104.md#w1"
+    },
+    {
+      "id": "W2",
+      "stage": "I",
+      "depends_on": [
+        "W1"
+      ],
+      "purpose": "Production verification of evidence, artifacts, approvals",
+      "status": "NOT_RUN",
+      "owner": "Codex",
+      "known_source_commands": [],
+      "evidence_expected": [
+        "trusted verifier callbacks",
+        "reject-fixture test logs"
+      ],
+      "hard_stop": "Unknown proof or unconfigured verifier fail closed",
+      "full_spec": "docs/implementation/EXECUTION_PLAN_20261104.md#w2"
+    },
+    {
+      "id": "W3",
+      "stage": "I",
+      "depends_on": [
+        "W2"
+      ],
+      "purpose": "Codex/Antigravity thin real CLI adapters + tests",
+      "status": "NOT_RUN",
+      "owner": "Codex",
+      "known_source_commands": [],
+      "evidence_expected": [
+        "health/submit/status/cancel/collect_result",
+        "verified identity, timeout, reconciliation logs"
+      ],
+      "hard_stop": "Unknown side effects block retry",
+      "full_spec": "docs/implementation/EXECUTION_PLAN_20261104.md#w3"
+    },
+    {
+      "id": "W4_PREP",
+      "stage": "I",
+      "depends_on": [
+        "W1"
+      ],
+      "purpose": "Private Inbox workflow/config templates and unit tests only",
+      "status": "NOT_RUN",
+      "owner": "Codex",
+      "known_source_commands": [
+        "python -m github_handoff --help"
+      ],
+      "evidence_expected": [
+        "reviewed workflow_dispatch template",
+        "no secret config or registered runner"
+      ],
+      "hard_stop": "No background daemon/unsafe public Issue trigger",
+      "full_spec": "docs/implementation/EXECUTION_PLAN_20261104.md#w4_prep"
+    },
+    {
+      "id": "W6_DESIGN",
+      "stage": "I",
+      "depends_on": [
+        "W0"
+      ],
+      "purpose": "T7 threat model and host-specific OS isolation plan",
+      "status": "NOT_RUN",
+      "owner": "Codex",
+      "known_source_commands": [],
+      "evidence_expected": [
+        "T7 design, kernel denial matrix, backup & rollback plan"
+      ],
+      "hard_stop": "No ACL changes before a separate human approval",
+      "full_spec": "docs/implementation/EXECUTION_PLAN_20261104.md#w6_design"
+    },
+    {
+      "id": "G1_HUMAN_SETUP",
+      "stage": "II",
+      "depends_on": [
+        "W3",
+        "W4_PREP"
+      ],
+      "purpose": "Batch user-only auth/Private Inbox/runner/environment/allowed synthetic scope",
+      "status": "NOT_RUN",
+      "owner": "Human",
+      "known_source_commands": [],
+      "evidence_expected": [
+        "nonsecret checklist confirmations",
+        "authenticated runtime and runner health"
+      ],
+      "hard_stop": "Human-only IAM/credential actions",
+      "full_spec": "docs/implementation/EXECUTION_PLAN_20261104.md#g1_human_setup"
+    },
+    {
+      "id": "W4_LIVE",
+      "stage": "II",
+      "depends_on": [
+        "G1_HUMAN_SETUP"
+      ],
+      "purpose": "Real private inbox doctor/dry-run/once + writeback",
+      "status": "NOT_RUN",
+      "owner": "Codex",
+      "known_source_commands": [
+        "python -m github_handoff --config <safe-local-config-path> doctor",
+        "python -m github_handoff --config <safe-local-config-path> dry-run",
+        "python -m github_handoff --config <safe-local-config-path> once"
+      ],
+      "evidence_expected": [
+        "synthetic Issue/workflow run URL",
+        "reply readback and nonce dedup"
+      ],
+      "hard_stop": "Never use mock evidence as GitHub live success",
+      "full_spec": "docs/implementation/EXECUTION_PLAN_20261104.md#w4_live"
+    },
+    {
+      "id": "W5",
+      "stage": "II",
+      "depends_on": [
+        "W4_LIVE",
+        "W2",
+        "W3"
+      ],
+      "purpose": "E0-E6 bounded true cross-runtime parent goal E2E",
+      "status": "NOT_RUN",
+      "owner": "Codex",
+      "known_source_commands": [],
+      "evidence_expected": [
+        "E0-E6 run evidence",
+        "verified Parent Goal + GitHub writeback"
+      ],
+      "hard_stop": "Single disposable repo supervised; T7 not thereby passed",
+      "full_spec": "docs/implementation/EXECUTION_PLAN_20261104.md#w5"
+    },
+    {
+      "id": "W6_OS_GATE",
+      "stage": "II",
+      "depends_on": [
+        "W6_DESIGN"
+      ],
+      "purpose": "Separate, optional kernel enforced isolation UAT for unattended writes",
+      "status": "NOT_RUN",
+      "owner": "Codex with Human Gate",
+      "known_source_commands": [],
+      "evidence_expected": [
+        "native access denied under restricted OS identity",
+        "persistent OS isolation and recovery proof"
+      ],
+      "hard_stop": "No host change without separate human approval; not prerequisite for supervised MVP-L",
+      "full_spec": "docs/implementation/EXECUTION_PLAN_20261104.md#w6_os_gate"
+    },
+    {
+      "id": "W7",
+      "stage": "II",
+      "depends_on": [
+        "W5",
+        "W1"
+      ],
+      "purpose": "Review-ready code PR and provenance-aligned CURRENT update proposal",
+      "status": "NOT_RUN",
+      "owner": "Codex",
+      "known_source_commands": [
+        "git diff --check"
+      ],
+      "evidence_expected": [
+        "review-ready PR materials",
+        "docs/status evidence matrix"
+      ],
+      "hard_stop": "Actual push/PR edits/Drive CURRENT updates need approval; never merge main",
+      "full_spec": "docs/implementation/EXECUTION_PLAN_20261104.md#w7"
+    }
+  ],
+  "test_matrix": {
+    "required_ids": [
+      "T01",
+      "T02",
+      "T03",
+      "T04",
+      "T05",
+      "T06",
+      "T07",
+      "T08",
+      "T09",
+      "T10",
+      "T11",
+      "T12",
+      "T13",
+      "T14",
+      "T15",
+      "T16",
+      "T17",
+      "T18",
+      "T19",
+      "T20",
+      "T21",
+      "T22",
+      "T23",
+      "T24",
+      "T25"
+    ],
+    "source": "EXECUTION_PLAN_20261104.md section 5",
+    "initial_status": "NOT_RUN"
+  },
+  "non_goals": [
+    "Desktop MCP mailbox",
+    "broker",
+    "custom daemon",
+    "multi-host",
+    "local-model lane",
+    "privacy-aware production router",
+    "System One",
+    "unattended or cross-repo writes before T7"
+  ]
+}
