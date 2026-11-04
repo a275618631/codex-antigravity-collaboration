@@ -26,3 +26,17 @@
 ## 3. 回應媒介選擇
 
 只有在視覺化能實質改善理解時才使用圖表、流程圖或其他視覺形式；簡單回答不加圖。
+## 4. Project Status & SSOT Resolution
+
+When a user asks for project status or next steps, or an Agent resumes project work:
+
+1. Identify the project from its Project ID, Drive Folder ID, repository, and Project Local Policy. Do not infer identity from a similar name alone.
+2. Resolve the existing Canonical / Current status entry through its registered identity and authority. Do not rank candidates by filename date, search order, or document length.
+3. Verify the current Git branch, commit, pull request, tests, and delivery evidence that apply. Distinguish completed work, committed but unmerged work, pending work, and work awaiting approval.
+4. Treat historical TODOs, old handoffs, and archived reports as historical evidence. They cannot override a verified current state.
+5. Keep the status document date, verification date, evidence date, and folder Meaningful Activity Date distinct. A governance-only update does not by itself change the folder's Meaningful Activity Date.
+6. Report `CONFLICT` when authoritative sources disagree and `UNVERIFIED` when the current state cannot be confirmed. Do not guess or claim completion without evidence.
+7. Continue using the project's existing Current / README / SSOT identity. Do not require a same-named file or create a parallel authority.
+8. When sharing project status with an external AI, provide only authorized information and traceable source links; include access limitations and unverified claims.
+
+For Codex-specific loading conditions, see the Codex adapter's `AGENTS.md`. For Drive identity, scope, and date governance, apply V3.6 Stable and the existing Project Local Policy / Canonical Override module (95).
