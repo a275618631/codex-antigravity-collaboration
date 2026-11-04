@@ -26,3 +26,12 @@
 ## 3. 回應媒介選擇
 
 只有在視覺化能實質改善理解時才使用圖表、流程圖或其他視覺形式；簡單回答不加圖。
+
+## 4. GitHub Update and Pull Request Workflow
+
+「更新 repo」（含同義）預設＝向核實的 GitHub Repo 開 PR；不直推 base、不部署，例外依當次指示。
+1. 核對 Repo root、remote、`project_id`、Drive ID、GitHub Repo，勿憑名猜；`PROJECT.yaml` 僅置 Repo root。
+2. 自 base 建 `<agent>/<work>` 分支（Codex：`codex/`）。本機 diff 審查與測試通過後，只提交核准範圍、Push、建/更 PR（「只 Push」除外）。
+3. 查 staged/unstaged/untracked；排除無關檔與 secrets（Token/Key/Password/Cookie/OAuth/`.env`），勿洩漏。
+4. 對應不明、權限不足、分歧、命中 secrets 或測試失敗即停步回報。新 Repo 須授權、預設 Private；不自建 Drive 資料夾。
+5. 禁 force-push、改寫歷史、自動 merge。回報 Repo、Base/Head、PR 連結、Commit SHA、驗證摘要。
