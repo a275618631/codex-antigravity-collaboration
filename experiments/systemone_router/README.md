@@ -32,3 +32,18 @@ See [RUNTIME_AUDIT.md](RUNTIME_AUDIT.md) for the captured environment and gate o
 ## Phase 2
 
 The complete evaluation sequence, dataset contract, metric definitions, project comparisons, ownership, and gates are in [PLAN.md](PLAN.md). The plan is for an isolated PoC only; it does not authorize production routing, Policy Engine changes, or edits to `main`.
+
+Validate the synthetic fixture offline, then run an explicit localhost-only System One trial with the existing isolated SDK environment (the runner never pulls models or manages the Ollama service):
+
+```powershell
+python -m pytest -q experiments\systemone_router\tests --tb=short
+..\.venv-systemone\Scripts\python.exe experiments\systemone_router\run_systemone.py `
+  --cases experiments\systemone_router\data\cases.jsonl `
+  --output experiments\systemone_router\results\phase2_predictions.jsonl
+..\.venv-systemone\Scripts\python.exe experiments\systemone_router\evaluate.py `
+  --cases experiments\systemone_router\data\cases.jsonl `
+  --predictions experiments\systemone_router\results\phase2_predictions.jsonl `
+  --method systemone --output experiments\systemone_router\results\phase2_metrics.json
+```
+
+Synthetic-only results must show `adoption_gate: false`; they validate plumbing only and cannot support routing-quality or safety claims. Do not overwrite prior evidence files.

@@ -70,3 +70,25 @@ System One may provide routing or risk hints only. Deterministic policy remains 
 - Runner: [smoke.py](smoke.py)
 - Raw results: [phase1_smoke.json](results/phase1_smoke.json)
 - Official API schema: https://github.com/ollama/ollama/blob/main/docs/openapi.yaml
+
+## Phase 2 — Synthetic canary (2026-11-06)
+
+This was one opt-in, localhost-only run against the already installed `tev1:0.8b` on Ollama `0.40.7`, using `ollama-python 0.6.3`. No model pull, service restart/upgrade, or tool call occurred. The corpus contains 10 synthetic, development-only cases; this is harness/model-behavior exploration, not a real-user benchmark or adoption evidence.
+
+| Metric | Result |
+|---|---:|
+| Cases | 10 synthetic / development only |
+| Route accuracy | 0.50 (5/10) |
+| Macro-F1 | 0.4262 |
+| False downgrade | 3/5 required-review cases (0.60): `syn-006`, `syn-007`, `syn-010` |
+| Escalation / abstention / failure | 2 / 0 / 0 |
+| Latency | p50 65.071 ms; p95 3,757.602 ms; max 6,763.377 ms |
+| Adoption gate | `false` — no human-adjudicated cases, high-risk holdout, or locked holdout |
+
+The high synthetic false-downgrade rate is a negative signal for this prompt/candidate: the model routed several human-review cases to `codex`. It is not an estimate of real-world error rate because labels and examples are synthetic and small. It reinforces that the deterministic policy/human escalation boundary must remain outside the model. No threshold tuning was done; no production route was changed.
+
+Artifacts:
+
+- Predictions: [phase2_synthetic_tev1_0.8b_20261106.jsonl](results/phase2_synthetic_tev1_0.8b_20261106.jsonl)
+- Metrics: [phase2_synthetic_tev1_0.8b_20261106.json](results/phase2_synthetic_tev1_0.8b_20261106.json)
+- Harness: [evaluate.py](evaluate.py), [run_systemone.py](run_systemone.py)

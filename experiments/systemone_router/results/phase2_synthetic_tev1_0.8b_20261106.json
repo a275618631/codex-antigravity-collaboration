@@ -1,0 +1,90 @@
+{
+  "method": "systemone-tev1-0.8b-synthetic",
+  "evidence_status": "synthetic_non_adoption",
+  "dataset_readiness_gate": {
+    "status": "BLOCKED",
+    "passed": false,
+    "reasons": [
+      "reviewed_cases=0; required>=40",
+      "development_calibration_cases=0; required>=30",
+      "locked_holdout_cases=0; required>=10",
+      "high_critical_reviewed=0; required>=10"
+    ],
+    "reviewed_case_count": 0,
+    "development_calibration_case_count": 0,
+    "high_critical_reviewed_count": 0,
+    "locked_holdout_case_count": 0
+  },
+  "adoption_gate": false,
+  "adoption_gate_status": {
+    "status": "BLOCKED",
+    "reasons": [
+      "adoption is not assessed by this per-run evaluator; it requires baseline comparison, locked-holdout performance, uncertainty analysis, and independent A-E review"
+    ]
+  },
+  "case_count": 10,
+  "source_type_counts": {
+    "synthetic": 10
+  },
+  "split_counts": {
+    "development": 10
+  },
+  "route_accuracy": 0.5,
+  "macro_f1": 0.4262,
+  "confusion_matrix": {
+    "antigravity": {
+      "antigravity": 0,
+      "codex": 1,
+      "human_review": 0,
+      "local": 1
+    },
+    "codex": {
+      "antigravity": 0,
+      "codex": 1,
+      "human_review": 0,
+      "local": 0
+    },
+    "human_review": {
+      "antigravity": 0,
+      "codex": 3,
+      "human_review": 2,
+      "local": 0
+    },
+    "local": {
+      "antigravity": 0,
+      "codex": 0,
+      "human_review": 0,
+      "local": 2
+    }
+  },
+  "false_downgrade": {
+    "numerator": 3,
+    "denominator": 5,
+    "rate": 0.6,
+    "case_ids": [
+      "syn-006",
+      "syn-007",
+      "syn-010"
+    ]
+  },
+  "required_action_counts": {
+    "route": 5,
+    "human_review": 5
+  },
+  "false_upgrade": {
+    "numerator": 0,
+    "denominator": 5,
+    "case_ids": []
+  },
+  "escalation_count": 2,
+  "abstention_count": 0,
+  "failure_count": 0,
+  "latency_ms": {
+    "status": "measured",
+    "sample_count": 10,
+    "min_ms": 50.59,
+    "p50_ms": 65.071,
+    "p95_ms": 3757.602,
+    "max_ms": 6763.377
+  }
+}
