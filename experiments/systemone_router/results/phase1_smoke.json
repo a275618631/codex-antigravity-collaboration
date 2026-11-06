@@ -1,0 +1,339 @@
+{
+  "date": "2026-11-06T08:08:53.454395+08:00",
+  "os": "Windows-11-10.0.26200-SP0",
+  "python": "3.12.14",
+  "ollama_python": "0.6.3",
+  "sdk_has_systemone": true,
+  "server_version": "0.40.7",
+  "model": "tev1:0.8b",
+  "model_metadata": {
+    "name": "tev1:0.8b",
+    "model": "tev1:0.8b",
+    "modified_at": "2026-11-06T08:06:56.0912637+08:00",
+    "size": 833606657,
+    "digest": "abc31fdb0bf52506cc47091145ac19c4cfb509b73a6841789324f9e32200c099",
+    "details": {
+      "parent_model": "tev1:0.8b-q8_0",
+      "format": "gguf",
+      "family": "qwen35",
+      "families": [
+        "qwen35"
+      ],
+      "parameter_size": "772.85M",
+      "quantization_level": "Q8_0",
+      "context_length": 262144,
+      "embedding_length": 1024,
+      "runner": "llamacpp"
+    },
+    "capabilities": [
+      "decision"
+    ]
+  },
+  "model_was_loaded_before_smoke": false,
+  "cold_latency_ms": 39048.92,
+  "warm_latency_ms": [
+    189.425,
+    167.414,
+    291.991,
+    196.896,
+    364.153,
+    350.562,
+    113.487,
+    72.784
+  ],
+  "smoke": {
+    "choice": {
+      "status": "PASS",
+      "attempts": [
+        {
+          "attempt": 1,
+          "latency_ms": 39048.92,
+          "temperature": "cold",
+          "response": {
+            "model": "tev1:0.8b",
+            "answers": {
+              "choice": {
+                "type": "choice",
+                "choice": "codex",
+                "probabilities": {
+                  "codex": 0.7466347146784,
+                  "antigravity": 0.0016491022702360954,
+                  "local": 0.00550923064827368,
+                  "human_review": 0.2462069524030902
+                },
+                "confidence": 0.6621796195712001
+              }
+            },
+            "usage": {
+              "input_tokens": 174,
+              "output_tokens": 0
+            }
+          }
+        },
+        {
+          "attempt": 2,
+          "latency_ms": 189.425,
+          "temperature": "warm",
+          "response": {
+            "model": "tev1:0.8b",
+            "answers": {
+              "choice": {
+                "type": "choice",
+                "choice": "codex",
+                "probabilities": {
+                  "codex": 0.7466347146784,
+                  "antigravity": 0.0016491022702360954,
+                  "local": 0.00550923064827368,
+                  "human_review": 0.2462069524030902
+                },
+                "confidence": 0.6621796195712001
+              }
+            },
+            "usage": {
+              "input_tokens": 174,
+              "output_tokens": 0
+            }
+          }
+        },
+        {
+          "attempt": 3,
+          "latency_ms": 167.414,
+          "temperature": "warm",
+          "response": {
+            "model": "tev1:0.8b",
+            "answers": {
+              "choice": {
+                "type": "choice",
+                "choice": "codex",
+                "probabilities": {
+                  "codex": 0.7466347146784,
+                  "antigravity": 0.0016491022702360954,
+                  "local": 0.00550923064827368,
+                  "human_review": 0.2462069524030902
+                },
+                "confidence": 0.6621796195712001
+              }
+            },
+            "usage": {
+              "input_tokens": 174,
+              "output_tokens": 0
+            }
+          }
+        }
+      ]
+    },
+    "noul": {
+      "status": "PASS",
+      "attempts": [
+        {
+          "attempt": 1,
+          "latency_ms": 291.991,
+          "temperature": "warm",
+          "response": {
+            "model": "tev1:0.8b",
+            "answers": {
+              "noul": {
+                "type": "noul",
+                "noul": 0.5030483821815506
+              }
+            },
+            "usage": {
+              "input_tokens": 110,
+              "output_tokens": 0
+            }
+          }
+        },
+        {
+          "attempt": 2,
+          "latency_ms": 196.896,
+          "temperature": "warm",
+          "response": {
+            "model": "tev1:0.8b",
+            "answers": {
+              "noul": {
+                "type": "noul",
+                "noul": 0.5030483821815506
+              }
+            },
+            "usage": {
+              "input_tokens": 110,
+              "output_tokens": 0
+            }
+          }
+        },
+        {
+          "attempt": 3,
+          "latency_ms": 364.153,
+          "temperature": "warm",
+          "response": {
+            "model": "tev1:0.8b",
+            "answers": {
+              "noul": {
+                "type": "noul",
+                "noul": 0.5030483821815506
+              }
+            },
+            "usage": {
+              "input_tokens": 110,
+              "output_tokens": 0
+            }
+          }
+        }
+      ]
+    },
+    "score": {
+      "status": "PASS",
+      "attempts": [
+        {
+          "attempt": 1,
+          "latency_ms": 350.562,
+          "temperature": "warm",
+          "response": {
+            "model": "tev1:0.8b",
+            "answers": {
+              "score": {
+                "type": "score",
+                "score": 1.7908815617304588,
+                "legend": {
+                  "0": "Low risk",
+                  "1": "Review recommended",
+                  "2": "Approval required",
+                  "3": "Deny"
+                },
+                "probabilities": {
+                  "0": 0.06586244310434564,
+                  "1": 0.204617011748277,
+                  "2": 0.6022970854599506,
+                  "3": 0.12722345968742677
+                },
+                "confidence": 0.536434642355605
+              }
+            },
+            "usage": {
+              "input_tokens": 155,
+              "output_tokens": 0
+            }
+          }
+        },
+        {
+          "attempt": 2,
+          "latency_ms": 113.487,
+          "temperature": "warm",
+          "response": {
+            "model": "tev1:0.8b",
+            "answers": {
+              "score": {
+                "type": "score",
+                "score": 1.7908815617304588,
+                "legend": {
+                  "0": "Low risk",
+                  "1": "Review recommended",
+                  "2": "Approval required",
+                  "3": "Deny"
+                },
+                "probabilities": {
+                  "0": 0.06586244310434564,
+                  "1": 0.204617011748277,
+                  "2": 0.6022970854599506,
+                  "3": 0.12722345968742677
+                },
+                "confidence": 0.536434642355605
+              }
+            },
+            "usage": {
+              "input_tokens": 155,
+              "output_tokens": 0
+            }
+          }
+        },
+        {
+          "attempt": 3,
+          "latency_ms": 72.784,
+          "temperature": "warm",
+          "response": {
+            "model": "tev1:0.8b",
+            "answers": {
+              "score": {
+                "type": "score",
+                "score": 1.7908815617304588,
+                "legend": {
+                  "0": "Low risk",
+                  "1": "Review recommended",
+                  "2": "Approval required",
+                  "3": "Deny"
+                },
+                "probabilities": {
+                  "0": 0.06586244310434564,
+                  "1": 0.204617011748277,
+                  "2": 0.6022970854599506,
+                  "3": 0.12722345968742677
+                },
+                "confidence": 0.536434642355605
+              }
+            },
+            "usage": {
+              "input_tokens": 155,
+              "output_tokens": 0
+            }
+          }
+        }
+      ]
+    }
+  },
+  "failures": {
+    "missing_model": {
+      "status": "PASS",
+      "fallback_required": true,
+      "error_type": "ResponseError",
+      "message": "model 'systemone-model-does-not-exist' not found (status code: 404)"
+    },
+    "bad_schema": {
+      "status": "PASS",
+      "fallback_required": true,
+      "error_type": "ValidationError",
+      "message": "1 validation error for SystemOneRequest\nquestions.route.choice.criteria.a\n  Input should be a valid string [type=string_type, input_value={'nested': 'unsupported'}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.13/v/string_type"
+    },
+    "server_down": {
+      "status": "PASS",
+      "fallback_required": true,
+      "error_type": "ConnectTimeout",
+      "message": "timed out"
+    },
+    "timeout": {
+      "status": "PASS",
+      "fallback_required": true,
+      "error_type": "ReadTimeout",
+      "message": "timed out"
+    },
+    "invalid_numeric": {
+      "status": "PASS",
+      "cases": {
+        "nan": {
+          "status": "PASS",
+          "fallback_required": true,
+          "error_type": "ValueError",
+          "message": "noul is non-finite"
+        },
+        "positive_infinity": {
+          "status": "PASS",
+          "fallback_required": true,
+          "error_type": "ValueError",
+          "message": "noul is non-finite"
+        },
+        "negative_infinity": {
+          "status": "PASS",
+          "fallback_required": true,
+          "error_type": "ValueError",
+          "message": "noul is non-finite"
+        },
+        "out_of_range": {
+          "status": "PASS",
+          "fallback_required": true,
+          "error_type": "ValueError",
+          "message": "noul is outside [0, 1]"
+        }
+      }
+    }
+  },
+  "phase1_gate": "PHASE1_SMOKE_PASS"
+}
