@@ -1,0 +1,10 @@
+{"case_id": "syn-001", "escalate": false, "latency_ms": 0.014, "method": "synthetic-keyword-baseline-v1", "route": "codex", "status": "ok"}
+{"case_id": "syn-002", "escalate": false, "latency_ms": 0.007, "method": "synthetic-keyword-baseline-v1", "route": "antigravity", "status": "ok"}
+{"case_id": "syn-003", "escalate": false, "latency_ms": 0.005, "method": "synthetic-keyword-baseline-v1", "route": "local", "status": "ok"}
+{"case_id": "syn-004", "escalate": false, "latency_ms": 0.004, "method": "synthetic-keyword-baseline-v1", "route": "antigravity", "status": "ok"}
+{"case_id": "syn-005", "escalate": true, "latency_ms": 0.007, "method": "synthetic-keyword-baseline-v1", "route": "human_review", "status": "ok"}
+{"case_id": "syn-006", "escalate": true, "latency_ms": 0.002, "method": "synthetic-keyword-baseline-v1", "route": "human_review", "status": "ok"}
+{"case_id": "syn-007", "escalate": true, "latency_ms": 0.003, "method": "synthetic-keyword-baseline-v1", "route": "human_review", "status": "ok"}
+{"case_id": "syn-008", "escalate": true, "latency_ms": 0.003, "method": "synthetic-keyword-baseline-v1", "route": "human_review", "status": "ok"}
+{"case_id": "syn-009", "escalate": false, "latency_ms": 0.004, "method": "synthetic-keyword-baseline-v1", "route": "local", "status": "ok"}
+{"case_id": "syn-010", "escalate": true, "latency_ms": 0.005, "method": "synthetic-keyword-baseline-v1", "route": "human_review", "status": "ok"}

@@ -47,3 +47,14 @@ python -m pytest -q experiments\systemone_router\tests --tb=short
 ```
 
 Synthetic-only results must show `adoption_gate: false`; they validate plumbing only and cannot support routing-quality or safety claims. Do not overwrite prior evidence files.
+
+Run the offline deterministic comparator separately (it reads only each input text and its fixed keyword rules; never gold labels, risk labels, or review metadata):
+
+```powershell
+python experiments\systemone_router\run_deterministic.py `
+  --cases experiments\systemone_router\data\cases.jsonl `
+  --predictions-output experiments\systemone_router\results\phase2_synthetic_deterministic_20261106.jsonl `
+  --metrics-output experiments\systemone_router\results\phase2_synthetic_deterministic_20261106.json
+```
+
+The baseline is intentionally small and tailored to obvious synthetic fixtures; its 1.00 accuracy on these 10 cases is a harness check, not evidence that the rules generalize or outperform System One in real workflows. Its near-zero local latency is not comparable to the model's latency without including system-level costs and repeated runs.

@@ -1,0 +1,86 @@
+{
+  "method": "synthetic-keyword-baseline-v1",
+  "evidence_status": "synthetic_non_adoption",
+  "dataset_readiness_gate": {
+    "status": "BLOCKED",
+    "passed": false,
+    "reasons": [
+      "reviewed_cases=0; required>=40",
+      "development_calibration_cases=0; required>=30",
+      "locked_holdout_cases=0; required>=10",
+      "high_critical_reviewed=0; required>=10"
+    ],
+    "reviewed_case_count": 0,
+    "development_calibration_case_count": 0,
+    "high_critical_reviewed_count": 0,
+    "locked_holdout_case_count": 0
+  },
+  "adoption_gate": false,
+  "adoption_gate_status": {
+    "status": "BLOCKED",
+    "reasons": [
+      "adoption is not assessed by this per-run evaluator; it requires baseline comparison, locked-holdout performance, uncertainty analysis, and independent A-E review"
+    ]
+  },
+  "case_count": 10,
+  "source_type_counts": {
+    "synthetic": 10
+  },
+  "split_counts": {
+    "development": 10
+  },
+  "route_accuracy": 1.0,
+  "macro_f1": 1.0,
+  "confusion_matrix": {
+    "antigravity": {
+      "antigravity": 2,
+      "codex": 0,
+      "human_review": 0,
+      "local": 0
+    },
+    "codex": {
+      "antigravity": 0,
+      "codex": 1,
+      "human_review": 0,
+      "local": 0
+    },
+    "human_review": {
+      "antigravity": 0,
+      "codex": 0,
+      "human_review": 5,
+      "local": 0
+    },
+    "local": {
+      "antigravity": 0,
+      "codex": 0,
+      "human_review": 0,
+      "local": 2
+    }
+  },
+  "false_downgrade": {
+    "numerator": 0,
+    "denominator": 5,
+    "rate": 0.0,
+    "case_ids": []
+  },
+  "required_action_counts": {
+    "route": 5,
+    "human_review": 5
+  },
+  "false_upgrade": {
+    "numerator": 0,
+    "denominator": 5,
+    "case_ids": []
+  },
+  "escalation_count": 5,
+  "abstention_count": 0,
+  "failure_count": 0,
+  "latency_ms": {
+    "status": "measured",
+    "sample_count": 10,
+    "min_ms": 0.002,
+    "p50_ms": 0.005,
+    "p95_ms": 0.011,
+    "max_ms": 0.014
+  }
+}

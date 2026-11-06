@@ -87,8 +87,11 @@ This was one opt-in, localhost-only run against the already installed `tev1:0.8b
 
 The high synthetic false-downgrade rate is a negative signal for this prompt/candidate: the model routed several human-review cases to `codex`. It is not an estimate of real-world error rate because labels and examples are synthetic and small. It reinforces that the deterministic policy/human escalation boundary must remain outside the model. No threshold tuning was done; no production route was changed.
 
+An offline `synthetic-keyword-baseline-v1` was then run on the exact same 10 cases. It achieved 1.00 route accuracy and 0/5 false downgrades, with measured per-rule p50 0.005 ms / p95 0.011 ms. This baseline intentionally uses fixed keyword rules matching this tiny synthetic fixture; therefore the result validates the comparison pipeline only and is not generalizable evidence or a fair real-world superiority claim. The baseline did not read gold labels, risk tiers, review status, or expected actions.
+
 Artifacts:
 
 - Predictions: [phase2_synthetic_tev1_0.8b_20261106.jsonl](results/phase2_synthetic_tev1_0.8b_20261106.jsonl)
 - Metrics: [phase2_synthetic_tev1_0.8b_20261106.json](results/phase2_synthetic_tev1_0.8b_20261106.json)
+- Deterministic baseline metrics/predictions: [phase2_synthetic_deterministic_20261106.json](results/phase2_synthetic_deterministic_20261106.json), [phase2_synthetic_deterministic_20261106.jsonl](results/phase2_synthetic_deterministic_20261106.jsonl)
 - Harness: [evaluate.py](evaluate.py), [run_systemone.py](run_systemone.py)

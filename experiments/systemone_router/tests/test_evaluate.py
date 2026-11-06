@@ -11,6 +11,7 @@ from experiments.systemone_router.evaluate import (
     validate_cases,
     validate_predictions,
 )
+from experiments.systemone_router.run_deterministic import RULE_VERSION, predict
 
 
 CASES_PATH = Path(__file__).parents[1] / "data" / "cases.jsonl"
@@ -45,6 +46,18 @@ def test_perfect_normalized_predictions_and_latency() -> None:
     assert result["adoption_gate"] is False
     assert result["latency_ms"]["status"] == "measured"
     assert result["latency_ms"]["sample_count"] == 10
+
+
+def test_deterministic_baseline_uses_input_rules_and_respects_minimum_safe_routes() -> None:
+    cases = load_cases()
+    predictions = validate_predictions(predict(cases), cases)
+    result = evaluate(cases, predictions, RULE_VERSION)
+
+    assert result["route_accuracy"] == 1.0
+    assert result["false_downgrade"]["numerator"] == 0
+    assert result["false_downgrade"]["denominator"] == 5
+    assert result["evidence_status"] == "synthetic_non_adoption"
+    assert result["adoption_gate"] is False
 
 
 def test_typed_systemone_response_and_bad_high_risk_route_are_counted() -> None:

@@ -39,9 +39,9 @@ low-risk route.
 
 The evaluator's `false_downgrade` metric checks membership in
 `minimum_safe_routes`; an `escalate: true` flag alone cannot make a lower route
-safe. Synthetic-only output is marked `evidence_status:
-synthetic_non_adoption` and `adoption_gate: false`. The adoption gate remains
-`false`/`BLOCKED` unless there are at least 30 `user_approved_redacted` cases
-with `human_adjudicated` or `locked_holdout` status, at least 10 high/critical
-reviewed cases, and at least one locked holdout case; source type alone never
-implies adjudication. Failed criteria are listed in `adoption_gate_status`.
+safe. The dataset readiness gate requires 40 reviewed `user_approved_redacted`
+cases (30 development/calibration and 10 locked holdout), including at least 10
+high/critical reviewed cases. Readiness does not imply adoption: every per-run
+result keeps `adoption_gate: false`/`BLOCKED`; adoption requires a separate
+baseline comparison, locked-holdout analysis, uncertainty review, and
+independent A-E decision. Source type alone never implies adjudication.
