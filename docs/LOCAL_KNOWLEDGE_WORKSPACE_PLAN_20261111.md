@@ -229,8 +229,9 @@ merge has been created.
 - Data directory: `C:\Users\Y6T2\AppData\Roaming\trilium-data`; a new database was
   created on first launch. No pre-existing Trilium install/data directory was
   found before installation.
-- First launch reached the native `Getting Started - Trilium Notes` window. The
-  process is running; screenshot capture was not available in this execution.
+- First launch reached the native `Getting Started - Trilium Notes` window; the
+  current desktop window is `Journal - Trilium Notes` and Trilium processes remain
+  running. Screenshot capture was not available in this execution.
 - This confirms installation and startup only. KB-01 still must verify actual
   browse/search tasks, offline behavior, safe import, backup/restore, and the
   Traditional Chinese user guide. Upgrade/rollback acceptance was added to
