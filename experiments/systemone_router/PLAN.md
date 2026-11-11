@@ -95,4 +95,9 @@ Sources to recheck before any runtime/model upgrade:
 
 ## Current execution checkpoint
 
+Related UI work: [Local knowledge workspace plan](../../docs/LOCAL_KNOWLEDGE_WORKSPACE_PLAN_20261111.md)
+defines native Trilium presentation as a separate workstream. Existing experiment
+results may be projected read-only; no UI framework/database integration is added
+to this experiment by that plan.
+
 Phase 0/1: `PASS` (V3 runtime/smoke). Phase 2 plan and Repo/Drive writeback: `PASS`. Offline harness: `24 tests PASS`. One live localhost-only synthetic canary ran against the already-installed `tev1:0.8b`: route accuracy `0.50`, false downgrade `3/5` required-review cases (`0.60`), p95 `3,757.602 ms`; this is a small synthetic-only negative signal, not a real-world rate or adoption result. The transparent keyword baseline scores `1.00` accuracy and `0/5` false downgrades on the same 10 synthetic cases; because its rules were written against this deliberately tiny fixture, this is a plumbing check, not a generalizable comparison or claim of superiority. Dataset readiness is a separate gate (40 reviewed total, 30 development/calibration, 10 locked holdout, including 10 high/critical); even passing it cannot set adoption `PASS` in the per-run evaluator. Adoption requires baseline comparison, locked-holdout performance, uncertainty analysis, and independent A–E review. The real-workflow corpus is not present in the repo and must not be fabricated from private project data. Next: independently review rule coverage and evaluator, then use only human-approved redacted cases for any adoption evaluation; verify whether a comparable generative baseline exists before making comparative claims.

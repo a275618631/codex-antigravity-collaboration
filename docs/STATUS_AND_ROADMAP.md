@@ -4,6 +4,15 @@ Checked against the private reference environment on **2026-08-29**.
 
 This file is intentionally conservative. If two implementation reports disagree, the lower-confidence status is used until the discrepancy is resolved.
 
+## Local knowledge workspace planning (2026-11-11)
+
+The [Trilium adoption and minimal-integration plan](LOCAL_KNOWLEDGE_WORKSPACE_PLAN_20261111.md)
+defines a separate local-UI workstream. Reuse the existing desktop UI, search,
+document editing and maps; custom work is conditional on demonstrated integration
+gaps. Desktop/offline/restore acceptance is NOT RUN. Current planning/task state is
+linked from that plan to the registered Drive Current and GitHub issues; this note
+does not revise the historical implementation evidence below.
+
 ## Status definitions
 
 - **Implemented** — exercised in the current reference environment with direct evidence.

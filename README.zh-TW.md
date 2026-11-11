@@ -52,5 +52,6 @@
 - [整體架構](docs/ARCHITECTURE.md)
 - [隱私設計](docs/PRIVACY_AND_TRUST.md)
 - [功能狀態與路線](docs/STATUS_AND_ROADMAP.md)
+- [本機知識庫工作台：Trilium 採用與最小整合規劃](docs/LOCAL_KNOWLEDGE_WORKSPACE_PLAN_20261111.md)（規劃與工單；尚未本機部署驗收）
 
 這個作品最適合用來理解如何設計**低耦合的多 Agent 協作機制**，也可以單獨採用其中的任務契約、本地 Bridge 或 Git 交付方式。
