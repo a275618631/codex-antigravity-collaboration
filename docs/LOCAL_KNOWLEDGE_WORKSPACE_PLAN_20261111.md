@@ -213,6 +213,26 @@ document or an upstream screenshot is not local deployment proof.
 ## Planning delivery boundary
 
 This work produces an agent plan, linked planning issues, and a human-readable
-Drive plan. It does not install Trilium, migrate a knowledge base, or dispatch an
-unattended receiver. Existing PoC code and raw results are unchanged. Any branch
-push/PR is a separate delivery action; this planning branch is currently local.
+Drive plan. The install checkpoint below records the separately requested local
+Trilium install; it does not constitute completion of native UI, offline, import,
+backup/restore, or Agent acceptance. No existing knowledge base was migrated and
+no unattended receiver was dispatched. Existing PoC code and raw results are
+unchanged. Planning branch `codex/plan-trilium-kb-20261111` was pushed; no PR or
+merge has been created.
+
+## Local install checkpoint (2026-11-11)
+
+- Installed the official TriliumNext Notes v0.107.0 Windows x64 package per-user
+  through WinGet (`TriliumNext.Notes`); WinGet verified installer SHA-256
+  `218b444138b52b212f914daa1f032221ecb30f83b579f43c19bc2de55e231129`.
+- Executable: `C:\Users\Y6T2\AppData\Local\trilium\Trilium.exe`.
+- Data directory: `C:\Users\Y6T2\AppData\Roaming\trilium-data`; a new database was
+  created on first launch. No pre-existing Trilium install/data directory was
+  found before installation.
+- First launch reached the native `Getting Started - Trilium Notes` window. The
+  process is running; screenshot capture was not available in this execution.
+- This confirms installation and startup only. KB-01 still must verify actual
+  browse/search tasks, offline behavior, safe import, backup/restore, and the
+  Traditional Chinese user guide. Upgrade/rollback acceptance was added to
+  GitHub issue #17 and remains NOT RUN.
+- No model, MCP, ETAPI, sync, external account, or production routing was enabled.
