@@ -16,12 +16,17 @@
 9. **高門禁審查 (High-Risk Review Only)**：僅在涉及安全、權限、認證、資料庫遷移、公共 API 變更或使用者明確要求時調度 Reviewer。
 10. **結構化跨平台交付 (Structured Cross-Runtime Contract)**：跨 Runtime 委派時遵循結構化通訊協定，一般單 Agent 任務無需載入封包規格。
 
+### 效率與證據補充不變量
+11. **重用最簡與精準讀取 (Reuse & Targeted I/O)**：先確認資料與呼叫路徑，依序優先重用既有實作、標準庫與原生能力，不為假想需求新增抽象或依賴；定錨後對已知獨立檔案在明確範圍內批次讀取必要區段，不足再擴讀，且不得為省回合而跳過人工核准閘門。
+12. **完整證據與獨立驗收 (Evidence Integrity)**：工具輸出採先精簡或切片導航時，必須於安全工作區保留原始去敏紀錄與真實 exit code（管線不得掩蓋失敗）；warnings／skips 僅於工具可觀測時如實記錄（不可觀測標 `UNAVAILABLE`，不得一律寫 `0`）；切片行數僅為起始預算，遇警告、結果矛盾或高風險檢查應擴讀，不可將截斷輸出誤判為操作通過。
+
 ---
 
 ## 2. 漸進式細節引用 (Progressive Disclosure)
 
 - **執行期能力與調度指南**：請參閱 `references/runtime-routing.md`。
 - **跨平台任務與結果封包規格**：請參閱 `references/cross-runtime-packets.md`。
+- **瀏覽器低用量預設原則**：請參閱 `references/neo-low-token-mode.md`。
 
 ## 3. 回應媒介選擇
 

@@ -46,6 +46,7 @@ description: 當需要在寄出、發布、合併、部署、歸檔或交接前�
 - 每個 failure 必須有明確原因。
 - 高風險項目需要人工核准。
 - 缺資料不可默默通過。
+- 必要硬閘門（`required` 項目失敗、權限阻擋或關鍵 `UNVERIFIED`）優先於 `readiness_score`，不得以高分數抵銷；非必要可選項的 `needs_review` 則依既有契約明確標記，不一律阻止低風險交付。
 - Drive 交付必須同時通過：`storage_location`、`project_reuse`、`filename_policy`、`remote_exists`；缺任一項即 `needs_review` 或 `fail`。
 - GitHub 交付必須確認 owner、repository、branch、實際檔案位置與 commit／遠端存在性；不可用本機路徑代替。
 - 本 Skill 負責判斷成果是否可交付；完成後的修改清單、測試結果與待確認事項格式由 `output-contract` 處理。
@@ -54,4 +55,4 @@ description: 當需要在寄出、發布、合併、部署、歸檔或交接前�
 
 - 目標省時：80-90%。
 - 目標正確率：90%。
-- 成功指標：交付前漏項明顯降低。
+- 成功指標：交付前漏項明顯降低（註：上述 KPI 僅為設計目標，不得充當實測通過證據）。

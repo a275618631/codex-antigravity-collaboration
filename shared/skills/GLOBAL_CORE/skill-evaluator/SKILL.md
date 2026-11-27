@@ -15,7 +15,7 @@ description: 建立、修改、比較、瘦身或優化 Codex / Claude / Agent S
 2. 讀取候選 skill 或官方範例，只吸收明顯更好的設計，不照搬無關內容。
 3. 用以下維度比較：觸發準確、步驟清楚、輸出契約、驗證方式、token 成本、安全邊界、可重用資源。
 4. 產生 5-10 個真實測試 prompt：包含 should-trigger、should-not-trigger、模糊口語、近似但不該觸發情境。
-5. 若能執行測試，做舊版 vs 新版比較；不能執行時，至少做人工靜態檢查。
+5. 若能執行測試，使用 5-10 題固定去敏 fixtures 與獨立成功條件做舊版 vs 新版對照（含觸發與不應觸發案例），並記錄模型版本、reasoning effort、日期與實際結果；未執行則標註 `NOT_RUN` 並至少完成人工靜態檢查。
 6. 修改 skill 時保持精簡；把長參考移到 `references/`，把重複程式放到 `scripts/`。
 
 ## 比較表格式
@@ -33,4 +33,4 @@ description: 建立、修改、比較、瘦身或優化 Codex / Claude / Agent S
 
 ## 完成回報
 
-列出：修改的 skill、吸收了哪些優點、未吸收項目與理由、測試/檢查結果、待確認事項。
+列出：修改的 skill、吸收了哪些優點、未吸收項目與理由、測試/檢查結果（依 `PASS / PARTIAL / FAIL / NOT_RUN` 分級並附持久化證據路徑）、待確認事項。
