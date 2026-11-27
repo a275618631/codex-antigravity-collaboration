@@ -57,4 +57,6 @@ result_packet:
 針對重大架構或技術選型，雙方 Reviewer 進行最多 **2 輪** 唯讀交叉評估：
 - 格式包含：`主張 (Claim)`、`證據 (Evidence)`、`風險 (Risk)`、`建議 (Recommendation)`。
 - 辯論期間**嚴禁修改任何正式檔案**。
+- 僅在高風險任務或使用者要求時調度獨立 Reviewer（一般簡單任務不強迫第二代理）；Reviewer 須以固定 base/head/diff、原始測試證據與獨立規格審查，不得由作者自評、不得僅因作者敘述降低缺陷嚴重度（須有已驗證修復或反證才可調整）。
+- Implementer 不可修改驗收基準（oracle），唯讀 Reviewer 不可寫入被審查工作區、HEAD 或驗收資料；重跑測試應於隔離副本進行，且只讀權限須由 host/CI/ACL 證實（不可僅靠 prompt 約束）。
 - 辯論結束後由主控者裁決，並指定單一 Implementer 執行。
